@@ -431,7 +431,11 @@ const Editorial: FC<ProductPageProps> = (props) => {
           />
         ) : (
           <div class="h-[52vh] min-h-[20rem] w-full bg-product-wash p-[6%]">
-            <IsoDrawing parts={resizeParts(specOf(p), props.selection)} />
+            <IsoDrawing
+              parts={resizeParts(specOf(p), props.selection)}
+              size={props.selection}
+              dims
+            />
           </div>
         )}
       </section>

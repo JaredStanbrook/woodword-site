@@ -70,11 +70,17 @@ const Progress = ({ order }: { order: SelectOrder }) => {
       {WORKFLOW.map((s, i) => (
         <li class="flex gap-3 sm:flex-col sm:gap-2" aria-current={i === at ? "step" : undefined}>
           <span
-            class={`mt-1.5 h-2 w-2 shrink-0 rounded-full sm:mt-0 sm:h-1 sm:w-full ${i <= at ? "bg-product" : "bg-border"}`}
+            class={`mt-1.5 shrink-0 sm:mt-0 sm:w-full ${
+              i < at
+                ? "h-2 w-2 rounded-full bg-foreground sm:h-1.5 sm:rounded-none"
+                : i === at
+                  ? "h-3 w-3 rounded-full bg-primary sm:h-1.5 sm:rounded-none"
+                  : "h-2 w-2 rounded-full border-2 border-dashed border-foreground/40 sm:h-0 sm:rounded-none sm:border-x-0 sm:border-b-0 sm:border-t-2"
+            }`}
             aria-hidden="true"
           ></span>
           <span
-            class={`text-sm ${i === at ? "font-medium" : i < at ? "" : "text-muted-foreground"}`}
+            class={`text-sm ${i === at ? "font-semibold text-primary" : i < at ? "" : "text-muted-foreground"}`}
           >
             {STATUS_LABELS[s]}
             <span class="sr-only">{i < at ? " (done)" : i === at ? " (current)" : ""}</span>

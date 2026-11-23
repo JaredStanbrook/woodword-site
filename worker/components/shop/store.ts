@@ -11,6 +11,7 @@ export interface FurnitureData extends FurnitureSpec {
   selection: Selection;
   locale: string;
   currency: string;
+  name: string;
   modelUrl: string | null;
 }
 

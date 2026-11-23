@@ -69,8 +69,8 @@ export const ProductCard = ({
             class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
           />
         ) : (
-          <div class="absolute inset-0 p-[11%] transition-transform duration-700 group-hover:-translate-y-1">
-            <IsoDrawing parts={resizeParts(spec, std)} />
+          <div class="absolute inset-0 p-[7%] transition-transform duration-700 group-hover:-translate-y-1">
+            <IsoDrawing parts={resizeParts(spec, std)} size={std} dims />
           </div>
         )}
       </div>
@@ -180,8 +180,13 @@ const Cover = ({
           <div class="absolute inset-x-[18%] top-[12%] h-[24%]">
             <NightSky />
           </div>
-          <div class="absolute inset-x-[12%] bottom-[11%] top-[36%] transition-transform duration-700 group-hover:-translate-y-1">
-            <IsoDrawing parts={resizeParts(spec, standardSelection(spec))} class="iso-foil" />
+          <div class="absolute inset-x-[10%] bottom-[10%] top-[33%] transition-transform duration-700 group-hover:-translate-y-1">
+            <IsoDrawing
+              parts={resizeParts(spec, standardSelection(spec))}
+              size={standardSelection(spec)}
+              foil
+              dims
+            />
           </div>
           <CoverFrame ratio={4 / 5} draw />
         </div>

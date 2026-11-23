@@ -9,7 +9,15 @@
 // Light DOM, no Lit: the markup is the server's, and stays usable if this
 // never loads.
 
-import { AXES, clampDimension, normaliseSelection, quote } from "@server/lib/furniture";
+import {
+  AXES,
+  clampDimension,
+  drawingLabel,
+  isoSvg,
+  normaliseSelection,
+  quote,
+  resizeParts,
+} from "@server/lib/furniture";
 import { formatPrice, priceGlyphs } from "@server/lib/money";
 import type { DimensionKey, Selection } from "@server/schema/furniture.config";
 import { furnitureStore, readFurnitureData, type FurnitureData } from "./store";
@@ -148,6 +156,15 @@ class FurnitureConfigurator extends HTMLElement {
     if (custom) custom.textContent = q.custom ? "made to your size" : "standard size";
     const lead = this.querySelector("[data-lead-label]");
     if (lead) lead.textContent = leadTimeLabel(q.leadDays);
+
+    const drawing = this.querySelector("[data-live-drawing]");
+    if (drawing) {
+      drawing.innerHTML = isoSvg(resizeParts(data, s), {
+        dims: true,
+        size: s,
+        label: drawingLabel(data.name, s),
+      });
+    }
 
     const breakdown = this.querySelector("[data-breakdown]");
     if (breakdown) {

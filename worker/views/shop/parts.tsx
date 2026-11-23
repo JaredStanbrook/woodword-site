@@ -4,7 +4,7 @@
 // price, availability badges and the product image URL.
 
 import type { ResolvedPart } from "@server/lib/furniture";
-import { isoDrawing } from "@server/lib/furniture";
+import { isoSvg } from "@server/lib/furniture";
 import { priceGlyphs, formatPrice } from "@server/lib/money";
 import type { Availability, Category } from "@server/schema/furniture.config";
 
@@ -47,45 +47,31 @@ export const AvailabilityBadge = ({ availability }: { availability: Availability
   );
 };
 
-const FACE_CLASS = {
-  top: "iso-top",
-  left: "iso-left",
-  right: "iso-right",
-} as const;
-
-const MATERIAL_CLASS = {
-  body: "",
-  accent: "iso-accent",
-  metal: "iso-metal",
-  glass: "iso-glass",
-} as const;
-
-/** The piece as an isometric line drawing. Decorative: pages describe it in words. */
+/**
+ * The piece as an isometric workshop drawing (lib/furniture.ts isoSvg).
+ * `dims` adds its width, depth and height as dimension lines. Decorative
+ * unless given a `label`; pages describe the piece in words.
+ */
 export const IsoDrawing = ({
   parts,
   class: cls = "",
+  dims = false,
+  foil = false,
+  label,
+  size,
 }: {
   parts: ResolvedPart[];
   class?: string;
-}) => {
-  const drawing = isoDrawing(parts);
-  return (
-    <svg
-      viewBox={drawing.viewBox}
-      class={`iso-drawing h-full w-full ${cls}`}
-      aria-hidden="true"
-      preserveAspectRatio="xMidYMid meet"
-    >
-      {drawing.faces.map((f) => (
-        <polygon
-          points={f.points}
-          class={`${FACE_CLASS[f.face]} ${MATERIAL_CLASS[f.material]}`}
-          stroke-width={drawing.stroke}
-        />
-      ))}
-    </svg>
-  );
-};
+  dims?: boolean;
+  foil?: boolean;
+  label?: string;
+  size?: { width: number; height: number; depth: number };
+}) => (
+  <span
+    class="block h-full w-full"
+    dangerouslySetInnerHTML={{ __html: isoSvg(parts, { dims, foil, class: cls, label, size }) }}
+  ></span>
+);
 
 /**
  * The price as rolling digits, server-rendered at its starting value so it

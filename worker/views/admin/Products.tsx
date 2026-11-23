@@ -490,7 +490,7 @@ const StandardPreview = ({
       <div class={`${paletteClass(product)} grid grid-cols-2 gap-3`}>
         <figure class="space-y-1">
           <div class="aspect-square rounded-sm bg-product-wash p-4">
-            <IsoDrawing parts={parts} />
+            <IsoDrawing parts={parts} size={std} dims />
           </div>
           <figcaption class="text-xs text-muted-foreground">
             Standard · {formatPrice(q.totalCents, locale, currency)}
@@ -498,7 +498,7 @@ const StandardPreview = ({
         </figure>
         <figure class="space-y-1">
           <div class="aspect-square rounded-sm bg-product-wash p-4">
-            <IsoDrawing parts={resizeParts(spec, max)} />
+            <IsoDrawing parts={resizeParts(spec, max)} size={max} dims />
           </div>
           <figcaption class="text-xs text-muted-foreground">
             Largest · {formatPrice(quote(spec, max).totalCents, locale, currency)}

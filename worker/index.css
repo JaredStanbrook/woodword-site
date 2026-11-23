@@ -392,6 +392,18 @@
 .iso-drawing .iso-accent.iso-right {
   fill: color-mix(in oklch, var(--foreground) 38%, var(--product-wash));
 }
+/* Dimension lines and figures: bone on the dark panels the drawings sit on,
+   set in the book face's italic, like pencil on a workshop sketch. */
+.iso-drawing .iso-dims {
+  color: color-mix(in oklch, var(--night-foreground) 78%, transparent);
+}
+.iso-drawing .iso-dims-text {
+  color: var(--night-foreground);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+}
 /* Line only: gold foil on the cover, no fill. */
 .iso-drawing.iso-foil polygon {
   fill: transparent;

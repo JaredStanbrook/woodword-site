@@ -13,7 +13,14 @@
 import type { SelectProduct } from "@server/schema/product.schema";
 import { specOf } from "@server/schema/product.schema";
 import type { DimensionKey, Selection } from "@server/schema/furniture.config";
-import { AXES, chosenOptions, type Quote } from "@server/lib/furniture";
+import {
+  AXES,
+  chosenOptions,
+  drawingLabel,
+  isoSvg,
+  resizeParts,
+  type Quote,
+} from "@server/lib/furniture";
 import { formatPrice } from "@server/lib/money";
 import { RollingPrice, buttonPrimary, buttonSecondary, leadTimeLabel } from "./parts";
 
@@ -151,6 +158,7 @@ export const Configurator = (props: ConfiguratorProps) => {
     selection,
     locale,
     currency,
+    name: product.name,
     modelUrl: product.modelKey ? `/media/${product.modelKey}?v=${product.modelVersion}` : null,
   };
 
@@ -247,6 +255,19 @@ export const Configurator = (props: ConfiguratorProps) => {
           class="on-night space-y-5 rounded-sm border-[3px] border-night p-6 shadow-lg"
           aria-label="Price"
         >
+          {/* The workshop drawing of exactly this configuration, redrawn by
+              <furniture-configurator> on every change. */}
+          <div
+            class="-mx-2 aspect-[16/10]"
+            data-live-drawing
+            dangerouslySetInnerHTML={{
+              __html: isoSvg(resizeParts(spec, selection), {
+                dims: true,
+                size: selection,
+                label: drawingLabel(product.name, selection),
+              }),
+            }}
+          ></div>
           <div>
             <p class="text-sm italic text-muted-foreground">Current configuration price</p>
             <p class="mt-2 font-serif text-6xl font-semibold text-gilt">

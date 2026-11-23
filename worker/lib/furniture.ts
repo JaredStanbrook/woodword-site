@@ -338,7 +338,7 @@ export function cutList(parts: ResolvedPart[]): CutListRow[] {
 }
 
 // ==========================================
-// ISOMETRIC PREVIEW
+// ISOMETRIC WORKSHOP DRAWING
 // ==========================================
 
 export interface IsoFace {
@@ -347,20 +347,33 @@ export interface IsoFace {
   material: ResolvedPart["material"];
 }
 
-/**
- * A line drawing of the piece, for gallery cards and as the placeholder the
- * 3D view loads over. Each component is drawn as a box seen from above and
- * to the front-right, back to front. No JavaScript, no image file, and it
- * follows the theme because the faces are styled from CSS tokens.
- */
-export function isoDrawing(parts: ResolvedPart[]) {
-  const cos = Math.cos(Math.PI / 6);
-  const sin = Math.sin(Math.PI / 6);
-  const project = (x: number, y: number, z: number): [number, number] => [
-    (x - z) * cos,
-    (x + z) * sin - y,
-  ];
+const COS30 = Math.cos(Math.PI / 6);
+const SIN30 = Math.sin(Math.PI / 6);
+/** World (mm, y up) to drawing coordinates, seen from above and front-right. */
+const project = (x: number, y: number, z: number): [number, number] => [
+  (x - z) * COS30,
+  (x + z) * SIN30 - y,
+];
 
+/** What a dimensioned drawing shows, for screen readers. */
+export const drawingLabel = (name: string, s: Pick<Selection, "width" | "depth" | "height">) =>
+  `Drawing of the ${name}, ${s.width} mm wide, ${s.depth} mm deep and ${s.height} mm high`;
+
+/** The overall extent of the components, in mm. */
+function extent(parts: ResolvedPart[]) {
+  const lo = [Infinity, Infinity, Infinity];
+  const hi = [-Infinity, -Infinity, -Infinity];
+  for (const p of parts) {
+    for (let a = 0; a < 3; a++) {
+      lo[a] = Math.min(lo[a], p.position[a] - p.size[a] / 2);
+      hi[a] = Math.max(hi[a], p.position[a] + p.size[a] / 2);
+    }
+  }
+  return { lo, hi };
+}
+
+/** Each component as three visible faces of a box, back to front. */
+export function isoDrawing(parts: ResolvedPart[]) {
   const ordered = [...parts].sort(
     (a, b) =>
       a.position[0] +
@@ -368,38 +381,25 @@ export function isoDrawing(parts: ResolvedPart[]) {
       a.position[2] -
       (b.position[0] + b.position[1] + b.position[2]),
   );
-
   const faces: IsoFace[] = [];
-  let minX = Infinity;
-  let minY = Infinity;
-  let maxX = -Infinity;
-  let maxY = -Infinity;
-
   for (const part of ordered) {
     const [sx, sy, sz] = part.size;
     const [cx, cy, cz] = part.position;
-    const x0 = cx - sx / 2;
-    const x1 = cx + sx / 2;
-    const y0 = cy - sy / 2;
-    const y1 = cy + sy / 2;
-    const z0 = cz - sz / 2;
-    const z1 = cz + sz / 2;
-
+    const [x0, x1] = [cx - sx / 2, cx + sx / 2];
+    const [y0, y1] = [cy - sy / 2, cy + sy / 2];
+    const [z0, z1] = [cz - sz / 2, cz + sz / 2];
     const poly = (pts: [number, number, number][]) =>
       pts
-        .map(([x, y, z]) => {
-          const [px, py] = project(x, y, z);
-          minX = Math.min(minX, px);
-          maxX = Math.max(maxX, px);
-          minY = Math.min(minY, py);
-          maxY = Math.max(maxY, py);
-          return `${px.toFixed(1)},${py.toFixed(1)}`;
-        })
+        .map(([x, y, z]) =>
+          project(x, y, z)
+            .map((v) => v.toFixed(1))
+            .join(","),
+        )
         .join(" ");
-
     faces.push(
+      // The +z face faces down-left on screen, the +x face down-right.
       {
-        face: "left", // the +z face, which faces down-left on screen
+        face: "left",
         material: part.material,
         points: poly([
           [x0, y0, z1],
@@ -409,7 +409,7 @@ export function isoDrawing(parts: ResolvedPart[]) {
         ]),
       },
       {
-        face: "right", // the +x face
+        face: "right",
         material: part.material,
         points: poly([
           [x1, y0, z1],
@@ -430,12 +430,147 @@ export function isoDrawing(parts: ResolvedPart[]) {
       },
     );
   }
+  return faces;
+}
 
-  const pad = Math.max(maxX - minX, maxY - minY) * 0.06;
-  return {
-    faces,
-    viewBox: `${(minX - pad).toFixed(1)} ${(minY - pad).toFixed(1)} ${(maxX - minX + pad * 2).toFixed(1)} ${(maxY - minY + pad * 2).toFixed(1)}`,
-    /** Stroke width that reads the same whatever the piece's size. */
-    stroke: (Math.max(maxX - minX, maxY - minY) / 120).toFixed(2),
+const FACE_CLASS = { top: "iso-top", left: "iso-left", right: "iso-right" } as const;
+const MATERIAL_CLASS = {
+  body: "",
+  accent: " iso-accent",
+  metal: " iso-metal",
+  glass: " iso-glass",
+} as const;
+
+/**
+ * The piece as a joiner's sketch: the engraved components, and — with
+ * `dims` — its overall width, depth and height drawn as dimension lines with
+ * tick marks, the way a workshop drawing gives them.
+ *
+ * Returned as an SVG string so the server views and the configurator in the
+ * browser draw exactly the same thing; the configurator redraws it on every
+ * change, so the numbers on the drawing are always the size being bought.
+ */
+export function isoSvg(
+  parts: ResolvedPart[],
+  opts: {
+    dims?: boolean;
+    foil?: boolean;
+    class?: string;
+    label?: string;
+    /** The size to write on the dimensions: the selection, not the parts' extent. */
+    size?: Pick<Selection, "width" | "height" | "depth">;
+  } = {},
+): string {
+  const faces = isoDrawing(parts);
+  const { lo, hi } = extent(parts);
+  const span = Math.max(...[0, 1, 2].map((a) => hi[a] - lo[a]));
+
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  const grow = (x: number, y: number) => {
+    minX = Math.min(minX, x);
+    maxX = Math.max(maxX, x);
+    minY = Math.min(minY, y);
+    maxY = Math.max(maxY, y);
   };
+  for (const f of faces) {
+    for (const pt of f.points.split(" ")) {
+      const [x, y] = pt.split(",").map(Number);
+      grow(x, y);
+    }
+  }
+
+  const n = (v: number) => v.toFixed(1);
+  let dims = "";
+  if (opts.dims) {
+    const gap = span * 0.075;
+    const font = span * 0.066;
+    const tick = span * 0.022;
+    const lines: string[] = [];
+    const labels: string[] = [];
+
+    /** A dimension from a to b, set off by `gap` along unit vector `out`. */
+    const dimension = (
+      a: [number, number],
+      b: [number, number],
+      out: [number, number],
+      value: number,
+    ) => {
+      const off = (p: [number, number], k: number): [number, number] => [
+        p[0] + out[0] * gap * k,
+        p[1] + out[1] * gap * k,
+      ];
+      const [a1, b1] = [off(a, 1), off(b, 1)];
+      // Extension lines from just clear of the piece to just past the dimension line.
+      lines.push(
+        `M${n(off(a, 0.25)[0])},${n(off(a, 0.25)[1])}L${n(off(a, 1.3)[0])},${n(off(a, 1.3)[1])}`,
+      );
+      lines.push(
+        `M${n(off(b, 0.25)[0])},${n(off(b, 0.25)[1])}L${n(off(b, 1.3)[0])},${n(off(b, 1.3)[1])}`,
+      );
+      lines.push(`M${n(a1[0])},${n(a1[1])}L${n(b1[0])},${n(b1[1])}`);
+      // Architect's ticks: a short slash across each end.
+      const len = Math.hypot(b1[0] - a1[0], b1[1] - a1[1]) || 1;
+      const [dx, dy] = [(b1[0] - a1[0]) / len, (b1[1] - a1[1]) / len];
+      const [tx, ty] = [(dx - dy) * Math.SQRT1_2 * tick, (dy + dx) * Math.SQRT1_2 * tick];
+      for (const p of [a1, b1])
+        lines.push(`M${n(p[0] - tx)},${n(p[1] - ty)}L${n(p[0] + tx)},${n(p[1] + ty)}`);
+      for (const p of [a1, b1, off(a, 1.3), off(b, 1.3)]) grow(p[0], p[1]);
+      // The figure, set along the line and just outside it, never upside down.
+      let angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+      if (angle > 90) angle -= 180;
+      if (angle < -90) angle += 180;
+      const mid: [number, number] = [
+        (a1[0] + b1[0]) / 2 + out[0] * font * 1.05,
+        (a1[1] + b1[1]) / 2 + out[1] * font * 1.05,
+      ];
+      labels.push(
+        `<text x="${n(mid[0])}" y="${n(mid[1])}" transform="rotate(${n(angle)} ${n(mid[0])} ${n(mid[1])})" text-anchor="middle" dominant-baseline="central" font-size="${n(font)}">${Math.round(value)}</text>`,
+      );
+      // Room for the figure whatever its angle.
+      grow(mid[0] - font * 2.2, mid[1] - font * 1.2);
+      grow(mid[0] + font * 2.2, mid[1] + font * 1.2);
+    };
+
+    const [x0, y0, z0] = lo;
+    const [x1, y1, z1] = hi;
+    const unit = (v: [number, number]): [number, number] => {
+      const l = Math.hypot(v[0], v[1]);
+      return [v[0] / l, v[1] / l];
+    };
+    // Width along the front edge, set off towards the viewer (down-left).
+    dimension(
+      project(x0, y0, z1),
+      project(x1, y0, z1),
+      unit([-COS30, SIN30]),
+      opts.size?.width ?? x1 - x0,
+    );
+    // Depth along the right edge, set off down-right.
+    dimension(
+      project(x1, y0, z1),
+      project(x1, y0, z0),
+      unit([COS30, SIN30]),
+      opts.size?.depth ?? z1 - z0,
+    );
+    // Height up the front-left corner, set off to the left.
+    dimension(project(x0, y0, z1), project(x0, y1, z1), [-1, 0], opts.size?.height ?? y1 - y0);
+
+    dims = `<g class="iso-dims" fill="none" stroke="currentColor" stroke-width="${n(span / 240)}" stroke-linecap="round"><path d="${lines.join("")}"/></g><g class="iso-dims-text" fill="currentColor">${labels.join("")}</g>`;
+  }
+
+  const pad = Math.max(maxX - minX, maxY - minY) * 0.04;
+  const stroke = n(span / 120);
+  const polys = faces
+    .map(
+      (f) =>
+        `<polygon points="${f.points}" class="${FACE_CLASS[f.face]}${MATERIAL_CLASS[f.material]}" stroke-width="${stroke}"/>`,
+    )
+    .join("");
+  const cls = `iso-drawing h-full w-full${opts.foil ? " iso-foil" : ""}${opts.class ? ` ${opts.class}` : ""}`;
+  const a11y = opts.label
+    ? `role="img" aria-label="${opts.label.replace(/"/g, "&quot;")}"`
+    : `aria-hidden="true"`;
+  return `<svg viewBox="${n(minX - pad)} ${n(minY - pad)} ${n(maxX - minX + pad * 2)} ${n(maxY - minY + pad * 2)}" class="${cls}" ${a11y} preserveAspectRatio="xMidYMid meet">${polys}${dims}</svg>`;
 }

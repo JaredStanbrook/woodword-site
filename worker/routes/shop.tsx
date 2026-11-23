@@ -104,13 +104,21 @@ shopRoute.get("/", async (c) => {
 
 const categoryTitle = (c: Category) => c.charAt(0).toUpperCase() + c.slice(1);
 
-shopRoute.get("/made-to-measure", (c) =>
-  c.render(<MadeToMeasurePage />, {
+shopRoute.get("/made-to-measure", async (c) => {
+  // The first piece in the collection, drawn at two sizes, shows what
+  // resizing does better than a paragraph can.
+  const [example] = await c.var.db
+    .select()
+    .from(product)
+    .where(live)
+    .orderBy(asc(product.sortOrder), desc(product.publishedAt))
+    .limit(1);
+  return c.render(<MadeToMeasurePage example={example} />, {
     title: "Made to measure",
     description:
       "How ordering furniture in your own size works: choose a piece, set the dimensions, see the price, and we build exactly that.",
-  }),
-);
+  });
+});
 
 // ==========================================
 // PRODUCT

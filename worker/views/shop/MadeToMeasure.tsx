@@ -2,7 +2,51 @@
 //
 // How ordering a custom size works, in plain words. Public, indexed.
 
-import { buttonPrimary } from "./parts";
+import type { SelectProduct } from "@server/schema/product.schema";
+import { specOf } from "@server/schema/product.schema";
+import { drawingLabel, normaliseSelection, resizeParts } from "@server/lib/furniture";
+import { paletteClass } from "./Gallery";
+import { IsoDrawing, buttonPrimary } from "./parts";
+
+/**
+ * One piece at its standard size and at its widest, both measured. The
+ * difference between the two drawings is the whole idea of the shop.
+ */
+const Resized = ({ product }: { product: SelectProduct }) => {
+  const spec = specOf(product);
+  const standard = normaliseSelection(spec, {});
+  const widest = normaliseSelection(spec, { width: spec.dimensions.width.max });
+  if (widest.width === standard.width) return null;
+  const panel = (sel: typeof standard, caption: string) => (
+    <figure class="space-y-3">
+      <div class="aspect-[4/3] rounded-sm border-[3px] border-foreground bg-product-wash p-[5%] shadow">
+        <IsoDrawing
+          parts={resizeParts(spec, sel)}
+          size={sel}
+          dims
+          label={drawingLabel(product.name, sel)}
+        />
+      </div>
+      <figcaption class="text-base italic">{caption}</figcaption>
+    </figure>
+  );
+  return (
+    <section
+      class={`${paletteClass(product)} mt-14 space-y-5`}
+      aria-label="The same piece at two sizes"
+    >
+      <div class="grid gap-6 sm:grid-cols-2">
+        {panel(standard, `The ${product.name} as drawn, ${standard.width} mm long.`)}
+        {panel(widest, `The same piece at ${widest.width} mm.`)}
+      </div>
+      <p class="max-w-2xl text-lg leading-relaxed">
+        Nothing is stretched. The top grows, the rails between the legs lengthen, and the legs move
+        out to carry it at the same section. The cut list your order sends to the workshop is these
+        drawings, piece by piece.
+      </p>
+    </section>
+  );
+};
 
 const steps = [
   {
@@ -27,11 +71,12 @@ const steps = [
   },
 ];
 
-export const MadeToMeasurePage = () => (
+export const MadeToMeasurePage = ({ example }: { example?: SelectProduct }) => (
   <div class="mx-auto max-w-5xl px-4 pt-14 sm:px-6 sm:pt-20 animate-in fade-in duration-500">
     <h1 class="max-w-3xl text-5xl leading-[0.98] sm:text-7xl">
       The size your room needs, not the size a factory picked.
     </h1>
+    {example ? <Resized product={example} /> : null}
     <ol class="mt-16 divide-y-2 border-y-2">
       {steps.map((s) => (
         <li class="grid gap-3 py-8 sm:grid-cols-[5rem_1fr_2fr]">
