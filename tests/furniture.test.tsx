@@ -318,3 +318,25 @@ describe("stripe webhook signature", () => {
     expect(await verifyWebhook(secret, undefined, body)).toBeNull();
   });
 });
+
+describe("collection layout", () => {
+  it("fills every row of three exactly, with the first piece wide", async () => {
+    const { collectionLayout } = await import("../worker/views/shop/Gallery");
+    for (let n = 1; n <= 20; n++) {
+      const layout = collectionLayout(n);
+      expect(layout).toHaveLength(n);
+      const cells = layout.reduce((sum, l) => sum + (l.wide ? 2 : 1), 0);
+      if (n >= 3) {
+        expect(cells % 3, `${n} pieces`).toBe(0);
+        // Walk the rows: none may overflow three cells.
+        let row = 0;
+        for (const l of layout) {
+          row += l.wide ? 2 : 1;
+          expect(row, `${n} pieces`).toBeLessThanOrEqual(3);
+          if (row === 3) row = 0;
+        }
+      }
+      if (n >= 4) expect(layout[0].wide, `${n} pieces`).toBe(true);
+    }
+  });
+});
