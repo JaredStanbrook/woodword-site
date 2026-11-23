@@ -122,11 +122,11 @@ describe("UI pages load", () => {
     // The sign-in card stops offering it. (The nav's "Get Started" link does
     // not know; it lands on /register, which redirects here.)
     const login = await (await get(closed, "/login")).text();
-    expect(login).not.toContain("have an account?");
+    expect(login).not.toContain("New here?");
 
     // Open by default: the prompt is there on an ordinary site.
     const open = await (await get(createTestApp(null), "/login")).text();
-    expect(open).toContain("have an account?");
+    expect(open).toContain("New here?");
   });
 
   it("does not offer a restricted role on the sign-up form", async () => {

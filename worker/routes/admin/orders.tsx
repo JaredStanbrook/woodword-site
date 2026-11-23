@@ -71,15 +71,21 @@ dashboardRoute.get("/", async (c) => {
     db
       .select()
       .from(orders)
-      .where(inArray(orders.status, [...OPEN, "completed"]))
-      .orderBy(desc(orders.id))
-      .limit(8),
+      .where(inArray(orders.status, OPEN))
+      .orderBy(asc(orders.paidAt))
+      .limit(200),
     db
       .select({ status: product.status, n: count() })
       .from(product)
       .where(isNull(product.deletedAt))
       .groupBy(product.status),
   ]);
+
+  // Every piece on the open orders, for the ledger's drawings.
+  const recentIds = recent.map((o) => o.id);
+  const items = recentIds.length
+    ? await db.select().from(orderItem).where(inArray(orderItem.orderId, recentIds))
+    : [];
 
   const monthCents = new Map(byMonth.map((m) => [m.month, Number(m.cents)]));
   const months = Array.from({ length: 6 }, (_, i) => {
@@ -104,7 +110,10 @@ dashboardRoute.get("/", async (c) => {
         averageCents: paidOrders ? Math.round(revenueCents / paidOrders) : 0,
         counts,
         months,
-        recent,
+        ledger: recent.map((order) => ({
+          order,
+          items: items.filter((i) => i.orderId === order.id),
+        })),
         liveProducts: productCount("published"),
         draftProducts: productCount("draft"),
       }}

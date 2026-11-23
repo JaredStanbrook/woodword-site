@@ -152,38 +152,21 @@ export const Layout: FC<LayoutProps> = (props) => {
           props.meta.bare
             ? ""
             : html`<footer class="mt-28 border-t-2 lg:ml-60">
+                <!-- One line. The spine (or the menu on a phone) already holds
+                     the navigation; the footer only says whose shop this is
+                     and where to find an order. -->
                 <div
-                  class="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr]"
+                  class="mx-auto flex max-w-6xl flex-wrap items-baseline justify-between gap-x-8 gap-y-3 px-5 py-8 sm:px-8"
                 >
-                  <div class="space-y-3">
-                    <p class="font-display text-3xl leading-none">${props.app.name}</p>
-                    <p class="max-w-sm text-sm leading-relaxed text-muted-foreground">
-                      ${props.app.tagline || props.app.name}
-                    </p>
-                  </div>
-                  <nav class="space-y-2 text-sm" aria-label="Shop">
-                    <p class="font-medium">Shop</p>
-                    <a href="/" class="block text-muted-foreground hover:text-foreground"
-                      >The collection</a
-                    >
-                    <a
-                      href="/made-to-measure"
-                      class="block text-muted-foreground hover:text-foreground"
-                      >How made to measure works</a
-                    >
-                    <a href="/cart" class="block text-muted-foreground hover:text-foreground"
-                      >Your cart</a
-                    >
-                  </nav>
-                  <nav class="space-y-2 text-sm" aria-label="Orders">
-                    <p class="font-medium">Orders</p>
-                    <a href="/orders" class="block text-muted-foreground hover:text-foreground"
-                      >Track an order</a
-                    >
-                    <a href="/account" class="block text-muted-foreground hover:text-foreground"
-                      >Your account</a
-                    >
-                  </nav>
+                  <p class="font-display text-3xl font-bold leading-none">${props.app.name}</p>
+                  <a
+                    href="/orders"
+                    class="inline-flex h-11 items-center text-base font-semibold italic underline decoration-2 underline-offset-4"
+                    >Track an order</a
+                  >
+                  <p class="text-sm text-muted-foreground">
+                    &copy; ${new Date().getFullYear()} ${props.app.name}
+                  </p>
                 </div>
               </footer>`
         }

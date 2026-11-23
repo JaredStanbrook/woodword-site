@@ -76,9 +76,7 @@ export const ProfilePage: FC<ProfileProps> = (props) => {
             </div>
 
             <div class="space-y-1">
-              <label class="text-muted-foreground text-xs uppercase font-medium">
-                Email Address
-              </label>
+              <label class="text-muted-foreground text-xs uppercase font-medium">Email</label>
               <div class="flex min-w-0 items-center gap-2">
                 <span class="truncate">{props.user.email}</span>
                 {props.user.emailVerified

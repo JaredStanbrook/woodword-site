@@ -38,18 +38,21 @@ export const Login: FC<LoginProps> = (props) => {
     <div class="max-w-7xl px-4 mx-auto pt-14">
       <div class="container grow flex flex-col items-center justify-center py-12">
         <auth-login
-          class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[400px] p-8 border-2 rounded-lg bg-card text-card-foreground"
+          class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[400px] p-8 border-2 rounded-sm bg-card text-card-foreground"
           default-tab={defaultTab}
           csrf-token={csrfToken || ""}
           hx-disable="true"
         >
-          <AuthHeading title="Welcome Back" sub="Sign in to your account" />
+          <AuthHeading
+            title="Welcome back"
+            sub="Sign in to follow your orders and keep your saved designs."
+          />
 
           <AuthError id="login-error" />
 
           {/* Tab triggers */}
           {multipleAuthMethods && (
-            <div class={`grid w-full ${gridColsFor(tabCount)} rounded-lg bg-muted p-1`} slot="tabs">
+            <div class={`grid w-full ${gridColsFor(tabCount)} rounded-sm bg-muted p-1`} slot="tabs">
               {hasPassword && (
                 <button type="button" data-tab="password" class={AUTH_TAB}>
                   Password
@@ -74,7 +77,7 @@ export const Login: FC<LoginProps> = (props) => {
               <form id="login-form" class="grid gap-4">
                 {csrfToken && <input type="hidden" name="_csrf" value={csrfToken} />}
 
-                <AuthField id="email" label="Email Address">
+                <AuthField id="email" label="Email">
                   <input
                     id="email"
                     name="email"
@@ -107,7 +110,7 @@ export const Login: FC<LoginProps> = (props) => {
                   />
                 </AuthField>
 
-                <button class={AUTH_BUTTON}>Sign In</button>
+                <button class={AUTH_BUTTON}>Sign in</button>
               </form>
             </div>
           )}
@@ -118,7 +121,7 @@ export const Login: FC<LoginProps> = (props) => {
               <form id="pin-login-form" class="grid gap-4">
                 {csrfToken && <input type="hidden" name="_csrf" value={csrfToken} />}
 
-                <AuthField id="pin-email" label="Email Address">
+                <AuthField id="pin-email" label="Email">
                   <input
                     id="pin-email"
                     name="email"
@@ -144,7 +147,7 @@ export const Login: FC<LoginProps> = (props) => {
                 </AuthField>
 
                 <button type="submit" class={AUTH_BUTTON}>
-                  Sign In
+                  Sign in
                 </button>
               </form>
             </div>
@@ -158,7 +161,7 @@ export const Login: FC<LoginProps> = (props) => {
               <form id="passkey-login-form" class="grid gap-4">
                 {csrfToken && <input type="hidden" name="_csrf" value={csrfToken} />}
 
-                <AuthField id="pk-email" label="Email Address">
+                <AuthField id="pk-email" label="Email">
                   <input
                     id="pk-email"
                     name="email"
@@ -170,7 +173,7 @@ export const Login: FC<LoginProps> = (props) => {
                 </AuthField>
 
                 <button type="submit" class={AUTH_BUTTON}>
-                  Sign In with Passkey
+                  Sign in with a passkey
                 </button>
               </form>
             </div>
@@ -180,9 +183,9 @@ export const Login: FC<LoginProps> = (props) => {
 
         {registrationOpen ? (
           <p class="px-8 mt-6 text-center text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            New here?{" "}
             <a href="/register" class="underline underline-offset-4 hover:text-primary font-medium">
-              Create Account
+              Make an account
             </a>
           </p>
         ) : null}

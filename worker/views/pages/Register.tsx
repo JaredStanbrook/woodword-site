@@ -42,19 +42,22 @@ export const Register: FC<RegisterProps> = (props) => {
     <div class="max-w-7xl px-4 mx-auto pt-14">
       <div class="container grow flex flex-col items-center justify-center py-12">
         <auth-register
-          class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[400px] p-8 border-2 rounded-lg bg-card text-card-foreground"
+          class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[400px] p-8 border-2 rounded-sm bg-card text-card-foreground"
           default-tab={defaultTab}
           csrf-token={csrfToken || ""}
           min-password-length={minLength}
           hx-disable="true"
         >
-          <AuthHeading title="Create Account" sub="Get started with our platform" />
+          <AuthHeading
+            title="Make an account"
+            sub="Keep your designs, and follow each order from the bench to your door."
+          />
 
           <AuthError id="register-error" />
 
           {/* Tab triggers */}
           {multipleAuthMethods && (
-            <div class={`grid w-full ${gridColsFor(tabCount)} rounded-lg bg-muted p-1`} slot="tabs">
+            <div class={`grid w-full ${gridColsFor(tabCount)} rounded-sm bg-muted p-1`} slot="tabs">
               {hasPassword && (
                 <button type="button" data-tab="password" class={AUTH_TAB}>
                   Password
@@ -97,7 +100,7 @@ export const Register: FC<RegisterProps> = (props) => {
               <form id="register-form" class="grid gap-4">
                 {csrfToken && <input type="hidden" name="_csrf" value={csrfToken} />}
 
-                <AuthField id="email" label="Email Address">
+                <AuthField id="email" label="Email">
                   <input
                     id="email"
                     name="email"
@@ -126,7 +129,7 @@ export const Register: FC<RegisterProps> = (props) => {
                   ) : null}
                 </AuthField>
 
-                <AuthField id="confirmPassword" label="Confirm Password">
+                <AuthField id="confirmPassword" label="Password again">
                   <input
                     id="confirmPassword"
                     name="confirmPassword"
@@ -139,7 +142,7 @@ export const Register: FC<RegisterProps> = (props) => {
                 </AuthField>
 
                 <button type="submit" class={AUTH_BUTTON}>
-                  Create Account
+                  Make an account
                 </button>
               </form>
             </div>
@@ -151,7 +154,7 @@ export const Register: FC<RegisterProps> = (props) => {
               <form id="pin-form" class="grid gap-4">
                 {csrfToken && <input type="hidden" name="_csrf" value={csrfToken} />}
 
-                <AuthField id="pin-email" label="Email Address">
+                <AuthField id="pin-email" label="Email">
                   <input
                     id="pin-email"
                     name="email"
@@ -162,7 +165,7 @@ export const Register: FC<RegisterProps> = (props) => {
                   />
                 </AuthField>
 
-                <AuthField id="pin" label="PIN (4-6 digits)">
+                <AuthField id="pin" label="PIN, 4 to 6 digits">
                   <input
                     id="pin"
                     name="pin"
@@ -176,7 +179,7 @@ export const Register: FC<RegisterProps> = (props) => {
                   />
                 </AuthField>
 
-                <AuthField id="confirmPin" label="Confirm PIN">
+                <AuthField id="confirmPin" label="PIN again">
                   <input
                     id="confirmPin"
                     name="confirmPin"
@@ -191,7 +194,7 @@ export const Register: FC<RegisterProps> = (props) => {
                 </AuthField>
 
                 <button type="submit" class={AUTH_BUTTON}>
-                  Create Account
+                  Make an account
                 </button>
               </form>
             </div>
@@ -207,7 +210,7 @@ export const Register: FC<RegisterProps> = (props) => {
               <form id="passkey-form" class="grid gap-4">
                 {csrfToken && <input type="hidden" name="_csrf" value={csrfToken} />}
 
-                <AuthField id="pk-email" label="Email Address">
+                <AuthField id="pk-email" label="Email">
                   <input
                     id="pk-email"
                     name="email"
@@ -218,19 +221,19 @@ export const Register: FC<RegisterProps> = (props) => {
                   />
                 </AuthField>
 
-                <AuthField id="pk-name" label="Display Name">
+                <AuthField id="pk-name" label="Your name">
                   <input
                     id="pk-name"
                     name="name"
                     type="text"
                     required
                     class={AUTH_INPUT}
-                    placeholder="Your Name"
+                    placeholder="Ada Joiner"
                   />
                 </AuthField>
 
                 <button type="submit" class={AUTH_BUTTON}>
-                  Register with Passkey
+                  Make an account with a passkey
                 </button>
               </form>
             </div>
@@ -240,7 +243,7 @@ export const Register: FC<RegisterProps> = (props) => {
         <p class="px-8 mt-6 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
           <a href="/login" class="underline underline-offset-4 hover:text-primary font-medium">
-            Sign In
+            Sign in
           </a>
         </p>
       </div>

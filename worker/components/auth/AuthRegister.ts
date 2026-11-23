@@ -119,12 +119,12 @@ export class AuthRegister extends LitElement {
 
     // Validation
     if (!email || !password || !confirmPassword) {
-      this.showError("All fields are required");
+      this.showError("Fill in every field.");
       return;
     }
 
     if (password !== confirmPassword) {
-      this.showError("Passwords do not match");
+      this.showError("The two passwords are different.");
       return;
     }
 
@@ -143,7 +143,7 @@ export class AuthRegister extends LitElement {
 
       if (!response.ok) throw new Error(await getErrorMessage(response));
 
-      redirectWithToast("/", "Account created successfully!", "Redirecting...", "success");
+      redirectWithToast("/", "Account made", "You are signed in.", "success");
     } catch (error: any) {
       this.showError(error.message);
     } finally {
@@ -166,17 +166,17 @@ export class AuthRegister extends LitElement {
 
     // Validation
     if (!email || !pin || !confirmPin) {
-      this.showError("All fields are required");
+      this.showError("Fill in every field.");
       return;
     }
 
     if (pin !== confirmPin) {
-      this.showError("PINs do not match");
+      this.showError("The two PINs are different.");
       return;
     }
 
     if (!/^\d{4,6}$/.test(pin)) {
-      this.showError("PIN must be 4-6 digits");
+      this.showError("Choose a PIN of 4 to 6 digits.");
       return;
     }
 
@@ -190,7 +190,7 @@ export class AuthRegister extends LitElement {
 
       if (!response.ok) throw new Error(await getErrorMessage(response));
 
-      redirectWithToast("/", "Account created successfully!", "Redirecting...", "success");
+      redirectWithToast("/", "Account made", "You are signed in.", "success");
     } catch (error: any) {
       this.showError(error.message);
     } finally {
@@ -211,7 +211,7 @@ export class AuthRegister extends LitElement {
     const role = formData.get("role") as string;
 
     if (!email || !name) {
-      this.showError("Email and name are required");
+      this.showError("Enter your email and name.");
       return;
     }
 
@@ -235,10 +235,15 @@ export class AuthRegister extends LitElement {
       });
 
       if (!verRes.ok) throw new Error(await getErrorMessage(verRes));
-      redirectWithToast("/", "Passkey registered successfully!", "Congrats!", "success");
+      redirectWithToast(
+        "/",
+        "Account made",
+        "Your passkey is saved; use it to sign in next time.",
+        "success",
+      );
     } catch (error: any) {
       if (error.name === "NotAllowedError") {
-        this.showError("Passkey registration was cancelled");
+        this.showError("The passkey was not saved. Try again, or use a password.");
       } else {
         this.showError(error.message);
       }

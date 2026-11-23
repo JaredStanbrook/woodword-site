@@ -12,7 +12,7 @@ import { ORDER_STATUSES } from "@server/schema/shop.schema";
 import { STATUS_LABELS, WORKFLOW } from "@server/services/order.service";
 import { formatPrice } from "@server/lib/money";
 import { formatDateShort } from "@views/lib/utils";
-import { buttonPrimary, buttonSecondary, inputClass } from "@views/shop/parts";
+import { IsoDrawing, buttonPrimary, buttonSecondary, inputClass } from "@views/shop/parts";
 import { OrderItems } from "@views/shop/Order";
 import { AdminShell } from "./Shell";
 
@@ -62,18 +62,11 @@ export interface DashboardData {
   averageCents: number;
   counts: Partial<Record<OrderStatus, number>>;
   months: { label: string; cents: number }[];
-  recent: SelectOrder[];
+  /** Open orders, oldest payment first, with their pieces. */
+  ledger: { order: SelectOrder; items: SelectOrderItem[] }[];
   liveProducts: number;
   draftProducts: number;
 }
-
-const Tile = ({ label, value, note }: { label: string; value: string; note?: string }) => (
-  <div class="rounded-sm border-2 bg-card p-5 text-card-foreground">
-    <p class="text-sm italic text-muted-foreground">{label}</p>
-    <p class="mt-2 font-display text-3xl tabular-nums">{value}</p>
-    {note ? <p class="mt-1 text-xs text-muted-foreground">{note}</p> : null}
-  </div>
-);
 
 /** One series, so one colour and no legend; the heading names it. */
 const RevenueChart = ({
@@ -250,6 +243,62 @@ export const OrderTable = ({ orders, locale }: { orders: SelectOrder[]; locale: 
     </div>
   );
 
+const LEDGER: OrderStatus[] = [
+  "received",
+  "awaiting_production",
+  "in_production",
+  "ready_for_dispatch",
+  "dispatched",
+];
+
+const daysSince = (iso: string | null) =>
+  iso ? Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000)) : 0;
+
+/** One open order in the ledger: the piece as drawn at its ordered size. */
+const LedgerEntry = ({ order, items }: { order: SelectOrder; items: SelectOrderItem[] }) => {
+  const first = items[0];
+  const next = WORKFLOW[WORKFLOW.indexOf(order.status) + 1];
+  const waited = daysSince(order.paidAt);
+  return (
+    <li class="rounded-sm border-2 bg-card">
+      <a href={`/admin/orders/${order.id}`} class="block hover:bg-accent/60">
+        {first ? (
+          <div class="aspect-[16/10] bg-product-wash p-2">
+            <IsoDrawing parts={first.spec.parts} size={first.spec.dimensions} dims />
+          </div>
+        ) : null}
+        <div class="space-y-0.5 p-3">
+          <p class="flex items-baseline justify-between gap-2">
+            <span class="font-semibold">{order.ref}</span>
+            <span class="text-xs text-muted-foreground">
+              {waited === 0 ? "paid today" : `paid ${waited} day${waited === 1 ? "" : "s"} ago`}
+            </span>
+          </p>
+          <p class="text-sm">{order.name}</p>
+          {items.map((i) => (
+            <p class="text-sm text-muted-foreground">
+              {i.productName}
+              {i.quantity > 1 ? ` × ${i.quantity}` : ""}, {i.spec.dimensions.width} ×{" "}
+              {i.spec.dimensions.depth} × {i.spec.dimensions.height} mm
+            </p>
+          ))}
+        </div>
+      </a>
+      {next ? (
+        <form method="post" action={`/admin/orders/${order.id}/status`} class="border-t-2 p-2">
+          <input type="hidden" name="status" value={next} />
+          <button
+            type="submit"
+            class="inline-flex h-11 w-full items-center justify-center rounded-sm text-sm font-semibold hover:bg-accent"
+          >
+            Move to {STATUS_LABELS[next].toLowerCase()}
+          </button>
+        </form>
+      ) : null}
+    </li>
+  );
+};
+
 export const DashboardPage = ({
   data,
   locale,
@@ -260,13 +309,7 @@ export const DashboardPage = ({
   currency: string;
 }) => {
   const money = (c: number) => formatPrice(c, locale, currency);
-  const pipeline: OrderStatus[] = [
-    "received",
-    "awaiting_production",
-    "in_production",
-    "ready_for_dispatch",
-    "dispatched",
-  ];
+  const onBench = data.ledger.length;
   return (
     <AdminShell
       title="Dashboard"
@@ -276,86 +319,60 @@ export const DashboardPage = ({
         </a>
       }
     >
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Tile
-          label="Total sales"
-          value={money(data.revenueCents)}
-          note="Paid orders, less refunds"
-        />
-        <Tile label="Last 30 days" value={money(data.revenue30Cents)} />
-        <Tile
-          label="Paid orders"
-          value={String(data.paidOrders)}
-          note={`Average ${money(data.averageCents)}`}
-        />
-        <Tile
-          label="In the shop"
-          value={String(data.liveProducts)}
-          note={
-            data.draftProducts
-              ? `${data.draftProducts} draft${data.draftProducts === 1 ? "" : "s"} waiting`
-              : "No drafts"
-          }
-        />
-      </div>
+      {/* The numbers as a sentence, the way you would say them. */}
+      <p class="max-w-4xl text-xl leading-relaxed">
+        {money(data.revenue30Cents)} paid in the last 30 days, {money(data.revenueCents)} in all
+        across {data.paidOrders} order{data.paidOrders === 1 ? "" : "s"}
+        {data.paidOrders ? ` (about ${money(Math.round(data.averageCents / 100) * 100)} each)` : ""}
+        .{" "}
+        {onBench === 0
+          ? "Nothing is waiting in the workshop."
+          : `${onBench} order${onBench === 1 ? " is" : "s are"} open in the workshop.`}{" "}
+        <a href="/admin/products" class="underline decoration-2 underline-offset-4">
+          {data.liveProducts} piece{data.liveProducts === 1 ? "" : "s"} in the shop
+          {data.draftProducts ? `, ${data.draftProducts} in draft` : ""}
+        </a>
+        .
+      </p>
 
-      <div class="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-        <RevenueChart months={data.months} money={money} />
-        <section
-          class="rounded-sm border-2 bg-card p-5 text-card-foreground"
-          aria-labelledby="pipeline-heading"
-        >
-          <h2 id="pipeline-heading" class="mb-3 text-sm font-medium">
-            Workshop pipeline
-          </h2>
-          <ul class="divide-y-2">
-            {pipeline.map((s) => (
-              <li>
-                <a
-                  href={`/admin/orders?status=${s}`}
-                  class="flex min-h-11 items-center justify-between gap-3 py-2 text-sm hover:text-foreground"
-                >
-                  <span class="text-muted-foreground">{STATUS_LABELS[s]}</span>
-                  <span class="font-display text-xl tabular-nums">{data.counts[s] ?? 0}</span>
-                </a>
-              </li>
-            ))}
-            <li>
-              <a
-                href="/admin/orders?status=completed"
-                class="flex min-h-11 items-center justify-between gap-3 py-2 text-sm"
-              >
-                <span class="text-muted-foreground">Completed</span>
-                <span class="tabular-nums">{data.counts.completed ?? 0}</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="/admin/orders?status=cancelled"
-                class="flex min-h-11 items-center justify-between gap-3 py-2 text-sm"
-              >
-                <span class="text-muted-foreground">Cancelled / refunded</span>
-                <span class="tabular-nums">
-                  {(data.counts.cancelled ?? 0) + (data.counts.refunded ?? 0)}
-                </span>
-              </a>
-            </li>
-          </ul>
-        </section>
-      </div>
-
-      <section class="space-y-3">
-        <div class="flex items-baseline justify-between">
-          <h2 class="font-display text-xl">Recent orders</h2>
-          <a
-            href="/admin/orders"
-            class="inline-flex h-11 items-center text-sm text-muted-foreground hover:text-foreground"
-          >
-            All orders
-          </a>
+      <section aria-labelledby="ledger-heading" class="space-y-4">
+        <h2 id="ledger-heading" class="font-display text-3xl font-bold">
+          The workshop
+        </h2>
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          {LEDGER.map((status) => {
+            const entries = data.ledger.filter((e) => e.order.status === status);
+            return (
+              <section aria-label={STATUS_LABELS[status]} class="space-y-3">
+                <h3 class="flex items-baseline justify-between border-b-2 border-foreground pb-1 font-semibold">
+                  {STATUS_LABELS[status]}
+                  <span class="tabular-nums text-muted-foreground">{entries.length}</span>
+                </h3>
+                {entries.length === 0 ? (
+                  <p class="text-sm italic text-muted-foreground">Nothing here.</p>
+                ) : (
+                  <ol class="space-y-3">
+                    {entries.map((e) => (
+                      <LedgerEntry order={e.order} items={e.items} />
+                    ))}
+                  </ol>
+                )}
+              </section>
+            );
+          })}
         </div>
-        <OrderTable orders={data.recent} locale={locale} />
+        <p class="text-sm text-muted-foreground">
+          Oldest payment first in each column.{" "}
+          <a href="/admin/orders?status=all" class="underline underline-offset-4">
+            Every order, including completed and cancelled
+          </a>
+          .
+        </p>
       </section>
+
+      <div class="max-w-3xl">
+        <RevenueChart months={data.months} money={money} />
+      </div>
     </AdminShell>
   );
 };

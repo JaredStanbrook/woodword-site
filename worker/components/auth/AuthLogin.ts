@@ -124,7 +124,7 @@ export class AuthLogin extends LitElement {
     const password = formData.get("password") as string;
 
     if (!email || !password) {
-      this.showError("Email and password are required");
+      this.showError("Enter your email and password.");
       return;
     }
 
@@ -146,7 +146,7 @@ export class AuthLogin extends LitElement {
 
       if (!response.ok) throw new Error(await getErrorMessage(response));
 
-      redirectWithToast("/", "Login successful!", "Welcome to your dashboard.", "success");
+      redirectWithToast("/", "Signed in", undefined, "success");
     } catch (error: any) {
       this.showError(error.message);
     } finally {
@@ -180,7 +180,7 @@ export class AuthLogin extends LitElement {
       this.totpModal.verifySuccess();
       this.totpSessionData = null;
 
-      redirectWithToast("/", "Login successful!", "Welcome to your dashboard.", "success");
+      redirectWithToast("/", "Signed in", undefined, "success");
     } catch (error: any) {
       this.totpModal.verifyError("Verification failed. Please try again.");
       console.error("TOTP verification error:", error);
@@ -198,12 +198,12 @@ export class AuthLogin extends LitElement {
     const pin = formData.get("pin") as string;
 
     if (!email || !pin) {
-      this.showError("Email and PIN are required");
+      this.showError("Enter your email and PIN.");
       return;
     }
 
     if (!/^\d{4,6}$/.test(pin)) {
-      this.showError("PIN must be 4-6 digits");
+      this.showError("Your PIN is 4 to 6 digits.");
       return;
     }
 
@@ -215,7 +215,7 @@ export class AuthLogin extends LitElement {
 
       if (!response.ok) throw new Error(await getErrorMessage(response));
 
-      redirectWithToast("/", "Login successful!", "Welcome to your dashboard.", "success");
+      redirectWithToast("/", "Signed in", undefined, "success");
     } catch (error: any) {
       this.showError(error.message);
     } finally {
@@ -234,7 +234,7 @@ export class AuthLogin extends LitElement {
     const email = formData.get("email") as string;
 
     if (!email) {
-      this.showError("Email is required");
+      this.showError("Enter your email.");
       return;
     }
 
@@ -257,7 +257,7 @@ export class AuthLogin extends LitElement {
 
       if (!verRes.ok) throw new Error(await getErrorMessage(verRes));
 
-      redirectWithToast("/", "Login successful!", "Welcome to your dashboard.", "success");
+      redirectWithToast("/", "Signed in", undefined, "success");
     } catch (error: any) {
       this.showError(error.message);
     } finally {

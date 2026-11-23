@@ -28,18 +28,18 @@ export const gridColsFor = (count: number) => (count >= 3 ? "grid-cols-3" : "gri
  * screen every user meets before they have any investment in the product.
  */
 export const AUTH_TAB =
-  "tab-btn inline-flex h-11 items-center justify-center whitespace-nowrap rounded-lg px-3 " +
+  "tab-btn inline-flex h-11 items-center justify-center whitespace-nowrap rounded-sm px-3 " +
   "text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 " +
   "focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 " +
   "data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm";
 
 export const AUTH_INPUT =
-  "flex h-11 w-full rounded-lg border-2 border-input bg-background px-3 py-2 text-sm " +
+  "flex h-11 w-full rounded-sm border-2 border-input bg-background px-3 py-2 text-sm " +
   "ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none " +
   "focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
 
 export const AUTH_BUTTON =
-  "inline-flex h-11 w-full items-center justify-center whitespace-nowrap rounded-lg px-4 " +
+  "inline-flex h-11 w-full items-center justify-center whitespace-nowrap rounded-sm px-4 " +
   "text-sm font-medium bg-primary text-primary-foreground transition-colors hover:bg-primary/90 " +
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring " +
   "disabled:pointer-events-none disabled:opacity-50";
@@ -77,7 +77,7 @@ export const AuthError = ({ id }: { id: string }) => (
   <div
     id={id}
     role="alert"
-    class="hidden flex items-center gap-2 rounded-lg bg-destructive/15 px-4 py-3 text-sm font-medium text-destructive"
+    class="hidden flex items-center gap-2 rounded-sm bg-destructive/15 px-4 py-3 text-sm font-medium text-destructive"
   >
     <i data-lucide="circle-x" class="h-4 w-4 shrink-0" aria-hidden="true"></i>
     <span id={`${id}-msg`}></span>
@@ -85,7 +85,7 @@ export const AuthError = ({ id }: { id: string }) => (
 );
 
 export const AuthNote = ({ icon, children }: { icon: string; children?: unknown }) => (
-  <p class="mb-2 flex items-center gap-2 rounded-lg bg-muted p-4 text-sm text-muted-foreground">
+  <p class="mb-2 flex items-center gap-2 rounded-sm bg-muted p-4 text-sm text-muted-foreground">
     <i data-lucide={icon} class="h-4 w-4 shrink-0" aria-hidden="true"></i>
     {children}
   </p>
