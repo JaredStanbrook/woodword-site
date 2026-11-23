@@ -1,18 +1,18 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* THEME: "Dusk"
-   One theme, made for this shop rather than a light or dark mode. The page
-   is heather dusk: the hour after sunset, neither day nor night. Text and
-   every rule are drawn in ink, heavy, like a woodcut or a letterpress print.
-   The furniture lives in deep jewel-toned panels, engraved in gilt; bone is
-   for text on those panels and inside fields; one blood-rose marks the
-   action on a page.
+/* THEME: "Candlelight"
+   One theme, made for this shop rather than a light or dark mode: a room lit
+   by candles. The page is warm honey, text and every rule are drawn in
+   brown-black ink, heavy, like a woodcut or a letterpress print. The
+   furniture sits in deep jewel-toned panels, engraved in gilt; the spine,
+   the cover and the price are warm night panels with bone text; one
+   blood-rose marks the action on a page.
 
    Contrast is the point of the palette, so check new colours against it:
-   ink on dusk is about 6:1; muted text on dusk about 4.6:1; bone on any
-   panel well over 7:1. Gilt is an ornament colour: use it on panels, not as
-   text on dusk.
+   ink on honey is about 13:1, muted text on honey about 7:1, bone on any
+   panel well over 7:1. Gilt is an ornament colour for the dark panels; it
+   does not read as text on honey.
 
    Product pages set a palette class that recolours the --product tokens:
      palette-oak     Gilt amber
@@ -74,65 +74,65 @@
 :root {
   color-scheme: light;
 
-  --background: oklch(0.7 0.045 355); /* Heather dusk */
-  --foreground: oklch(0.17 0.03 345); /* Ink */
-  --card: oklch(0.84 0.03 355); /* Pale heather, for fields and panels of text */
-  --card-foreground: oklch(0.17 0.03 345);
-  --popover: oklch(0.86 0.028 355);
-  --popover-foreground: oklch(0.17 0.03 345);
+  --background: oklch(0.89 0.05 70); /* Candlelit honey */
+  --foreground: oklch(0.22 0.04 35); /* Brown-black ink */
+  --card: oklch(0.95 0.028 78); /* Pale wax, for fields and panels of text */
+  --card-foreground: oklch(0.22 0.04 35);
+  --popover: oklch(0.955 0.026 78);
+  --popover-foreground: oklch(0.22 0.04 35);
 
-  --primary: oklch(0.4 0.16 22); /* Blood rose */
-  --primary-foreground: oklch(0.95 0.02 80);
+  --primary: oklch(0.45 0.17 25); /* Blood rose */
+  --primary-foreground: oklch(0.96 0.02 80);
 
-  --secondary: oklch(0.63 0.05 355);
-  --secondary-foreground: oklch(0.17 0.03 345);
+  --secondary: oklch(0.83 0.06 64);
+  --secondary-foreground: oklch(0.22 0.04 35);
 
-  --muted: oklch(0.64 0.045 355);
-  --muted-foreground: oklch(0.29 0.045 345);
+  --muted: oklch(0.85 0.055 66);
+  --muted-foreground: oklch(0.38 0.05 40);
 
-  --accent: oklch(0.77 0.045 355);
-  --accent-foreground: oklch(0.17 0.03 345);
+  --accent: oklch(0.93 0.04 74);
+  --accent-foreground: oklch(0.22 0.04 35);
 
-  --destructive: oklch(0.36 0.16 28);
-  --destructive-foreground: oklch(0.95 0.02 80);
+  --destructive: oklch(0.43 0.17 30);
+  --destructive-foreground: oklch(0.96 0.02 80);
 
-  --success: oklch(0.31 0.08 160);
-  --success-foreground: oklch(0.95 0.02 80);
-  --warning: oklch(0.8 0.13 80);
-  --warning-foreground: oklch(0.17 0.03 345);
+  --success: oklch(0.4 0.09 150);
+  --success-foreground: oklch(0.96 0.02 80);
+  --warning: oklch(0.78 0.14 70);
+  --warning-foreground: oklch(0.22 0.04 35);
 
-  --border: oklch(0.24 0.035 345);
-  --input: oklch(0.17 0.03 345);
-  --ring: oklch(0.95 0.02 80);
+  --border: oklch(0.3 0.045 38);
+  --input: oklch(0.22 0.04 35);
+  --ring: oklch(0.45 0.17 25);
 
   /* Gold foil, for ornament on the jewel panels and the night spine. */
   --gilt: oklch(0.8 0.12 82);
 
   /* The deep panel: the spine, the cover, a block that should read as night. */
-  --night: oklch(0.17 0.03 345);
-  --night-foreground: oklch(0.95 0.02 80);
+  --night: oklch(0.25 0.045 32);
+  --night-foreground: oklch(0.96 0.02 80);
 
-  --chart-1: oklch(0.4 0.16 22);
-  --chart-2: oklch(0.3 0.07 65);
-  --chart-3: oklch(0.31 0.08 160);
-  --chart-4: oklch(0.28 0.05 290);
-  --chart-5: oklch(0.4 0.12 45);
+  --chart-1: oklch(0.45 0.17 25);
+  --chart-2: oklch(0.42 0.09 65);
+  --chart-3: oklch(0.4 0.09 150);
+  --chart-4: oklch(0.4 0.06 290);
+  --chart-5: oklch(0.5 0.13 45);
 
   /* Shadows are a hard offset in ink, like a second pull of a print. */
-  --shadow-ink: oklch(0.17 0.03 345);
+  --shadow-ink: oklch(0.22 0.04 35);
 
-  --sidebar: oklch(0.17 0.03 345);
-  --sidebar-foreground: oklch(0.95 0.02 80);
+  --sidebar: oklch(0.25 0.045 32);
+  --sidebar-foreground: oklch(0.96 0.02 80);
   --sidebar-primary: oklch(0.8 0.12 82);
-  --sidebar-primary-foreground: oklch(0.17 0.03 345);
-  --sidebar-accent: oklch(0.25 0.035 345);
-  --sidebar-accent-foreground: oklch(0.95 0.02 80);
-  --sidebar-border: oklch(0.32 0.035 345);
+  --sidebar-primary-foreground: oklch(0.25 0.045 32);
+  --sidebar-accent: oklch(0.32 0.05 32);
+  --sidebar-accent-foreground: oklch(0.96 0.02 80);
+  --sidebar-border: oklch(0.4 0.05 35);
   --sidebar-ring: oklch(0.8 0.12 82);
 
   --product: oklch(0.62 0.12 75);
-  --product-foreground: oklch(0.17 0.03 345);
-  --product-wash: oklch(0.24 0.04 70);
+  --product-foreground: oklch(0.22 0.04 35);
+  --product-wash: oklch(0.29 0.04 70);
   --product-ink: oklch(0.3 0.07 65);
 
   --font-display: "Grenze Gotisch", "UnifrakturMaguntia", ui-serif, Georgia, serif;
@@ -160,49 +160,49 @@
 .palette-oak {
   --product: oklch(0.62 0.12 75);
   --product-foreground: oklch(0.17 0.03 345);
-  --product-wash: oklch(0.24 0.04 70);
+  --product-wash: oklch(0.29 0.04 70);
   --product-ink: oklch(0.3 0.07 65);
 }
 .palette-walnut {
   --product: oklch(0.5 0.13 25);
   --product-foreground: oklch(0.95 0.02 80);
-  --product-wash: oklch(0.2 0.05 22);
+  --product-wash: oklch(0.25 0.05 22);
   --product-ink: oklch(0.3 0.1 22);
 }
 .palette-ash {
   --product: oklch(0.6 0.05 290);
   --product-foreground: oklch(0.17 0.03 345);
-  --product-wash: oklch(0.21 0.03 295);
+  --product-wash: oklch(0.26 0.03 295);
   --product-ink: oklch(0.28 0.05 290);
 }
 .palette-ebony {
   --product: oklch(0.3 0.02 340);
   --product-foreground: oklch(0.95 0.02 80);
-  --product-wash: oklch(0.14 0.012 340);
+  --product-wash: oklch(0.19 0.012 340);
   --product-ink: oklch(0.18 0.02 340);
 }
 .palette-cherry {
   --product: oklch(0.5 0.17 12);
   --product-foreground: oklch(0.95 0.02 80);
-  --product-wash: oklch(0.2 0.06 12);
+  --product-wash: oklch(0.25 0.06 12);
   --product-ink: oklch(0.3 0.13 12);
 }
 .palette-sage {
   --product: oklch(0.5 0.08 165);
   --product-foreground: oklch(0.95 0.02 80);
-  --product-wash: oklch(0.18 0.035 170);
+  --product-wash: oklch(0.23 0.035 170);
   --product-ink: oklch(0.27 0.06 165);
 }
 .palette-clay {
   --product: oklch(0.6 0.14 45);
   --product-foreground: oklch(0.17 0.03 345);
-  --product-wash: oklch(0.21 0.05 40);
+  --product-wash: oklch(0.26 0.05 40);
   --product-ink: oklch(0.32 0.1 42);
 }
 .palette-slate {
   --product: oklch(0.45 0.09 272);
   --product-foreground: oklch(0.95 0.02 80);
-  --product-wash: oklch(0.17 0.045 272);
+  --product-wash: oklch(0.22 0.045 272);
   --product-ink: oklch(0.27 0.08 272);
 }
 
@@ -210,17 +210,18 @@
    — muted text, rules, fields, hovers — reads correctly without per-element
    overrides. */
 .on-night {
-  --background: oklch(0.23 0.035 345);
-  --foreground: oklch(0.95 0.02 80);
-  --card: oklch(0.23 0.035 345);
-  --card-foreground: oklch(0.95 0.02 80);
-  --muted: oklch(0.23 0.035 345);
-  --muted-foreground: oklch(0.8 0.03 75);
-  --accent: oklch(0.28 0.04 345);
-  --accent-foreground: oklch(0.95 0.02 80);
-  --border: oklch(0.42 0.04 345);
-  --input: oklch(0.6 0.04 345);
-  --shadow-ink: oklch(0.1 0.02 345);
+  --background: oklch(0.31 0.045 32);
+  --foreground: oklch(0.96 0.02 80);
+  --card: oklch(0.31 0.045 32);
+  --card-foreground: oklch(0.96 0.02 80);
+  --muted: oklch(0.31 0.045 32);
+  --muted-foreground: oklch(0.84 0.035 75);
+  --accent: oklch(0.36 0.05 32);
+  --accent-foreground: oklch(0.96 0.02 80);
+  --border: oklch(0.48 0.05 35);
+  --input: oklch(0.64 0.05 40);
+  --ring: oklch(0.8 0.12 82);
+  --shadow-ink: oklch(0.15 0.03 32);
   background-color: var(--night);
   color: var(--foreground);
 }
