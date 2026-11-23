@@ -1,0 +1,299 @@
+# Changelog
+
+All notable changes to this template are documented here.
+This project follows Semantic Versioning.
+
+Every change to the template is a release: bump `version` in `frugal.json`
+and add a section here headed `## [<version>] - <date>`. CI refuses a pull
+request that does neither, and merging to `main` tags the release `v<version>`.
+Sites built from the template read these sections when they upgrade, so write
+each one for a site owner: what changed, and anything they must do by hand.
+See `docs/template-versions.md`.
+
+## [0.3.0] - 2026-11-15
+
+### Faster sign-in check
+
+Every signed-in request used to wait on four D1 round trips before the page
+did any work: the session, then the user, then roles and permissions. The
+user id is in the verified token, so all four now go in one `db.batch`, and
+the last-seen/renewal write runs after the response via `waitUntil`. With
+D1 a region away, that is three fewer network hops on every signed-in page.
+
+- `RoleService` gains `activeRolesQuery`, `directPermissionsQuery` and
+  `resolve`, so a caller can batch the role reads with its own.
+  `getRolesAndPermissions` is unchanged.
+
+### Access gate on some paths only
+
+- `ACCESS_GATE_PATHS` (comma separated, e.g. `"/reports,/beta"`) limits the
+  gate to those sections; the rest of the site stays public, keeps its nav
+  and footer, and stays in robots.txt and the sitemap. Empty means the whole
+  site, as before. An opened link now lands on the first guarded path.
+- The middleware leaves the link that let a visitor in on
+  `c.var.accessLink`, so a route can tell whose invitation it was.
+
+### Documented
+
+- Never batch a join on D1: drizzle reads batch rows by column name, so
+  tables that share a name (`id`, `created_at`) come back misaligned with no
+  error. Never bind an unbounded id list: D1 refuses more than 100
+  parameters. Both in the skill's backend reference and its traps list.
+- `tests/utils/fakeDb.ts`'s `batch` returns each query's rows instead of an
+  empty list.
+
+Upgrading: add `"ACCESS_GATE_PATHS": ""` to `wrangler.jsonc` if you use the
+gate. No migration.
+
+## [0.2.1] - 2026-11-15
+
+### Fixed
+
+- CI's placeholder check failed on every push since the template began
+  running as a demo: it demanded the `change-me` D1 and KV ids that the demo's
+  own ids had replaced on purpose. It now accepts exactly the demo's ids and
+  still fails on any other real one. Because CI never passed, `v0.2.0` was
+  never tagged; `v0.2.1` is the first tagged versioned release.
+- `npm run template -- upgrade` now lists the template migrations in the
+  range. `npm run gen` writes only structure, so a hand-added data step (such
+  as the email-lowercasing backfill in `0002`) has to be copied into the site's own
+  migration.
+- The session-limit test opened sessions in the same millisecond and so
+  occasionally evicted the wrong one. Test-only; real sign-ins never collide.
+
+Nothing to do by hand.
+
+## [0.2.0] - 2026-11-15
+
+### Template versions
+
+- `frugal.json` records the template release a repo is built from. A site made
+  from the template inherits it, so it knows which version it started on.
+- `npm run template` lists the releases a site has not applied, with their
+  changelog. `npm run template -- upgrade [version]` replays the template's
+  changes between the two releases as a three-way merge, then sets the new
+  version. `drizzle/` is skipped (run `npm run gen` for schema changes), as
+  are files the site deleted.
+- Sites made before versioning have no `frugal.json`. Work out by hand which
+  release they match (`npm run template -- guess` helps), then
+  `npm run template -- pin <version>`.
+- CI (template repo only) requires a version bump and a changelog section on
+  every pull request. A merge to `main` tags `v<version>` and publishes a
+  GitHub release from that section.
+
+### Access gate
+
+Lock a site to invited visitors while it is not public yet. Ported from a
+production site and generalised.
+
+- `ACCESS_GATE` in `wrangler.jsonc`: `"off"` (default), `"session"` or
+  `"link"`. `"true"` is read as `"session"`.
+  - `"session"`: a link works once. Opening it mints a session token for that
+    browser's `site_access` cookie, so a forwarded copy is refused.
+  - `"link"`: the link is the credential. It keeps working, in any browser,
+    until it expires or is revoked.
+- Admins create, copy and revoke links at `/admin/access`. A link's clock
+  starts on first open, not on creation. Opening takes a POST from a Continue
+  button, so chat link previews cannot spend or start a link.
+- Everyone else is sent to `/gone`. Sign-in, `/api`, the bundle, fonts and
+  favicon stay reachable; a signed-in admin sees everything. While locked,
+  `robots.txt` disallows all, `sitemap.xml` is a 404, and pages a locked-out
+  visitor can reach render bare, with no nav, footer, tagline or share image.
+- Files in `public/` are not gated unless `run_worker_first` is uncommented in
+  `wrangler.jsonc`.
+- Schema: new `access_link` table. `timestampColumns` added to
+  `worker/schema/common.ts` for rows that belong to the site, not a user.
+- Upgrading: run `npm run gen` for the table, and add the `site_access` cookie
+  to your privacy notice if you turn the gate on.
+
+## [0.1.0]
+
+The first release: everything before versioning began. Tagged `v0.1.0` at
+commit `0896328`.
+
+First release. The template is the platform layer of a production Cloudflare
+Workers application, with that application's domain removed, designed so a new
+site goes from template to live without a terminal.
+
+### The template
+
+- Hono on Cloudflare Workers: server-rendered JSX, HTMX for partial updates,
+  Tailwind v4, Lit Web Components only where client state is unavoidable.
+- Multi-method authentication — password, PIN, TOTP, passkey/WebAuthn — with
+  failed-attempt lockout, session limits and an `auth_logs` audit trail. Which
+  methods a site offers is one variable.
+- Role-based access control: roles, role-inherited permissions and per-user
+  grants with expiry, all declared in `wrangler.jsonc`. `requireUser`,
+  `requireRole` and `requirePermission` guards, plus an `AccessControl` service
+  for per-row ownership checks.
+- Cloudflare D1 with Drizzle ORM and Zod validators derived from the same table
+  definitions, so a schema change propagates to validation and types.
+- `worker/config/app.config.ts` — per-site branding, locale and currency are
+  configuration, not code edits.
+- A `notes` example feature: one complete vertical slice (schema, validation,
+  guarded routes, ownership checks, HTMX fragments, soft deletes) to copy the
+  shape of and then delete.
+- Admin-gated `/dev` database inspector and `/admin/logs` audit view.
+- A retro-futurist theme: lunar-grey and deep-navy palettes with an Apollo
+  orange primary, self-hosted Michroma and IBM Plex Sans, hard offset shadows,
+  a tri-colour stripe band framing the page chrome, an orbit brand mark and a
+  home hero built around it. All of it is token-driven in `worker/index.css`.
+- `RATE_LIMITER` binding, wired into the auth API as a per-IP throttle ahead of
+  any database work. Skipped when the binding is absent, so local dev and tests
+  are unaffected.
+- Vitest smoke tests covering every route, signed out and signed in.
+- Vite build for client and worker bundles, ESLint, Prettier, GitHub Actions CI.
+
+### Deploying without a terminal
+
+The whole dev-to-prod cycle completes from a phone: Claude prepares the repo,
+and Cloudflare's Git integration builds, migrates and deploys on every push.
+Three dashboard steps are the only manual work. See `docs/deploy.md`.
+
+- `npm run deploy` — `wrangler d1 migrations apply DB --remote && wrangler
+deploy`. This is the Deploy command pasted into the dashboard; the default
+  `npx wrangler deploy` would ship code against an un-migrated schema.
+- `npm run build` runs `wrangler types` first, so the build succeeds in a
+  container that starts without the generated, git-ignored
+  `worker-configuration.d.ts`.
+- `BOOTSTRAP_ADMIN_EMAIL` — registering with this exact address grants `admin`,
+  but only while no admin exists, so it disarms itself permanently on first
+  use. This is the first-admin path, because `create-admin` needs a CLI.
+  Explicit `"role": "admin"` at registration is still rejected.
+- `npm run configure` (`scripts/configure.ts`) rewrites every placeholder in
+  `wrangler.jsonc` from a few flags, validates the ids, and reports whatever is
+  still unset. Intended to be run by Claude from values pasted into chat.
+- `docs/deploy.md` is the dashboard-first walkthrough, with a build-failure
+  table, a no-CLI manual migration fallback via the D1 console, rollback notes,
+  and an appendix on adding a staging environment.
+- `wrangler.jsonc` ships production-only with placeholders and inline notes on
+  where each value comes from. No staging block: the dashboard flow is one
+  Worker, one connected repo, one deploy command.
+- `ENVIRONMENT` var, so code can distinguish deployments.
+
+### Self-hosted client assets
+
+- HTMX and Lucide are bundled into `/static/client.js` instead of loaded from
+  `cdn.jsdelivr.net` and `unpkg.com`. The page now makes no third-party request
+  at runtime: it works offline, needs no `script-src` exception, and no longer
+  depends on two external hosts staying up. `lucide@latest` was also unpinned,
+  so the icon set could change under a deployed site without a commit.
+- Icons are imported individually via `worker/components/lib/icons.ts`, so the
+  bundle carries the ~30 in use rather than Lucide's ~1600. Total client
+  JavaScript went from 528KB across three requests to 174KB in one — 67% less.
+- `tests/icons.test.ts` fails the build for any `data-lucide` literal that is
+  not registered, naming the file and the import to add; `renderIcons()` warns
+  in the console for names built at runtime. Together these turn a silently
+  invisible icon into a caught error.
+
+### SEO
+
+- Per-page metadata via `worker/lib/seo.ts`: a route sets `description`,
+  `image`, `type` or `noindex` on `c.render` and inherits the rest. Previously
+  every page carried the site tagline as its description, which search engines
+  read as duplicate content.
+- Canonical URLs built from `ORIGIN` and the path, so a site reachable on both
+  a custom domain and `workers.dev` points at one address — and so filters and
+  tracking params (`?q=…`, `?utm_source=…`) resolve to the page they vary,
+  rather than each combination ranking as its own thin page.
+- Open Graph and Twitter card tags, so a shared link renders a preview.
+- `<html lang>` now comes from `APP_LOCALE` instead of being hardcoded `en`.
+- `/robots.txt` and `/sitemap.xml`. robots disallows everything when
+  `ENVIRONMENT` is not `production`, so a staging copy cannot be indexed
+  alongside the real site.
+- `/login`, `/register`, `/admin`, `/api` and `/dev` are `noindex`.
+- One URL per page: `canonical-url.middleware.ts` 301s HTTP → HTTPS on the
+  production host (with HSTS) and `/path/` → `/path`. Before, Cloudflare served
+  every page over plain HTTP too, and a trailing slash was a 404. The scheme is
+  read from `CF-Visitor`, because `wrangler dev` presents the production host
+  over HTTP and trusting the URL looped a local preview.
+- A real 404 page (`views/pages/NotFound.tsx`, status 404, `noindex`) for
+  missed page requests, instead of the asset layer's empty body.
+- JSON-LD: `jsonLd` on `c.render`, serialised safely by `jsonLdScript`, with
+  `websiteSchema` and `faqSchema` in `lib/structured-data.ts`. The home page
+  emits `WebSite`.
+- A default share image: `APP_OG_IMAGE`, plus `scripts/og-image.mjs`, which
+  renders one from the site's own name, tagline, colours and logo. Empty by
+  default, so no site ships the template's. `og:image:alt`, `twitter:title` and
+  `twitter:description` are added.
+- The home page's title is `"{APP_TAGLINE} · {APP_NAME}"` rather than the bare
+  site name.
+- The frugal skill gains `references/seo.md`: what's built in and how to extend
+  it, the per-page checklist, titles and descriptions, headings, canonicals and
+  the sitemap, the traps above, how to audit a site, and the owner actions code
+  can't do. `SKILL.md` has a "Search and sharing" section, and `new-site.md`
+  includes the SEO steps.
+
+### Performance
+
+- Staff-only components (sign-in, registration, profile, and with them the
+  WebAuthn client and QR-code library) load only on pages that render them,
+  through `ISLANDS` in `components/main.ts`. Public-page JavaScript: 178 KB →
+  106 KB minified, 52 KB → 34 KB gzipped.
+- `public/_headers` caches `main.css` and the hashed chunks for a year. The
+  stylesheet URL carries the deployment ID from the new `CF_VERSION_METADATA`
+  binding: a Vite `define` can't do this, because `wrangler deploy` bundles
+  `worker/` itself. `client.js` keeps one URL, since the chunks import it by
+  that URL.
+- The auth path ran **four sequential D1 queries on every authenticated
+  request** — the user row, then `user_roles`, then `user_roles` again inside
+  the permission lookup, then `user_permissions`. `getRolesAndPermissions()`
+  now derives both halves from one concurrent query pair, removing the
+  duplicate and two of the four round trips. Locally that is ~25% off the
+  database-attributable time per page; on remote D1, where each query is a
+  network hop, the saving is proportionally larger.
+- The theme named Montserrat, Domine and Source Code Pro but never loaded
+  them, so every page silently fell back to system fonts. The tokens are now
+  honest system stacks — no download, no layout shift, text on the first
+  frame — with a note on how to self-host a real typeface without adding a
+  font CDN.
+
+### Build environment
+
+Every item here would have broken the Cloudflare build:
+
+- `@hono/zod-validator` 0.5 → 0.9. 0.5 peer-depends on zod 3 while this project
+  uses zod 4; Bun tolerated the conflict, npm refuses to install at all.
+- All `package.json` scripts are runtime-agnostic — no `bunx`/`bun run` — so the
+  build image runs them whichever package manager it selects.
+- npm is the canonical package manager (`package-lock.json` committed) because
+  it is what the build image detects most reliably. Bun still works locally.
+- `.node-version` is `24.18.0`, preinstalled in the build image. `20.11.1` is
+  not.
+- Dropped `bun-types`; added `tsx` so the repo's scripts run under Node.
+  `scripts/create-admin.ts` no longer uses Bun-only APIs.
+
+### Fixed, carried over from the source application
+
+- Login responses returned the raw `users` row, exposing `passwordHash`. Every
+  user object now exits the auth service through `toSafeUser()`, which strips
+  `passwordHash`, `pin` and `totpSecret` and hydrates roles and permissions.
+- The CSRF origin check was pinned to a hardcoded personal domain, via a regex
+  whose alternation did not bind as intended. It now compares exactly against
+  `ORIGIN` plus localhost.
+- `/dev` dumped every table without authentication. It now requires `admin`.
+- A `*` permission grant was stored literally, so `requirePermission` failed for
+  wildcard roles. It now expands to `PERMISSIONS_AVAILABLE`.
+- `verify` needs an explicit algorithm on current Hono versions; signing and
+  verification now share one `HS256` constant.
+- `deploy:staging` ran `migrate:remote`, which targets production — a staging
+  deploy would have migrated the live database.
+- `assets.not_found_handling` was `single-page-application`. This app
+  server-renders every route, so the SPA fallback swallowed 404s that should
+  reach the worker's own handler. Now `none`.
+- `JWT_EXPIRY` is documented as **seconds** at every mention. It sets the JWT
+  `exp` claim and the cookie `Max-Age` directly, so a millisecond value
+  (`86400000`) yields a ~2.7 year session rather than a day.
+- `drizzle-orm` 0.43 → 0.45.2, clearing a high-severity advisory. The generated
+  migration SQL is byte-identical.
+- CI ran `bun test` — Bun's own runner, not the vitest script — and lacked the
+  step generating the types its typecheck depends on.
+
+### Removed from the source application
+
+- Its domain: properties, rooms, tenancies, invoices, expenses, bonds, rent,
+  billing and PDF generation.
+- The legacy `wrangler.toml`, which duplicated and contradicted
+  `wrangler.jsonc`.
+- Committed secrets and live resource identifiers. `wrangler.jsonc` ships
+  placeholders only.

@@ -1,0 +1,349 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* THEME: "Retro-futurist"
+   Space-age mission control, circa 1969: lunar-grey daylight panels and a
+   deep-navy night sky, Apollo orange for the one action on a page, teal and
+   mustard as instrument accents. Borders are drawn, and shadows are hard
+   offsets like a two-colour print rather than soft blurs, so a card keeps its
+   edge in both modes. */
+
+/* Self-hosted (SIL OFL 1.1): no font CDN, no third party on first paint.
+   Michroma is a Microgramma-style extended face, the lettering of that era's
+   instrument panels; it has one weight, so it is kept to headlines.
+   IBM Plex Sans carries the body. Renaming a file busts its year-long cache. */
+@font-face {
+  font-family: "Michroma";
+  src: url("/fonts/michroma-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("/fonts/plex-sans-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("/fonts/plex-sans-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("/fonts/plex-sans-600.woff2") format("woff2");
+  font-weight: 600 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Tells the browser to render native controls (checkboxes, radios,
+     scrollbars, date pickers) in the matching scheme. Without it a native
+     checkbox stays light-on-dark and looks pasted on. */
+  color-scheme: light;
+
+  --background: oklch(0.95 0.008 210); /* Lunar grey, a breath of teal */
+  --foreground: oklch(0.25 0.06 265); /* Navy ink */
+  --card: oklch(0.985 0.004 210);
+  --card-foreground: oklch(0.25 0.06 265);
+  --popover: oklch(0.985 0.004 210);
+  --popover-foreground: oklch(0.25 0.06 265);
+
+  --primary: oklch(0.56 0.18 40); /* Apollo orange */
+  --primary-foreground: oklch(0.985 0.01 80);
+
+  --secondary: oklch(0.9 0.045 195); /* Instrument teal wash */
+  --secondary-foreground: oklch(0.3 0.06 215);
+
+  --muted: oklch(0.915 0.012 225);
+  --muted-foreground: oklch(0.46 0.035 255);
+
+  --accent: oklch(0.91 0.06 85); /* Mustard wash */
+  --accent-foreground: oklch(0.25 0.06 265);
+
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  /* Status roles, so a feature never has to reach for a raw palette colour.
+     `bg-emerald-100 text-emerald-800` and friends have no dark counterpart —
+     they render dark-on-dark the moment the theme flips — and that is exactly
+     what happens when the theme offers no semantic token for "this went well"
+     or "this needs attention". */
+  --success: oklch(0.52 0.11 175);
+  --success-foreground: oklch(0.98 0 0);
+  --warning: oklch(0.82 0.15 82);
+  --warning-foreground: oklch(0.25 0.05 80);
+
+  --border: oklch(0.82 0.025 245);
+  --input: oklch(0.76 0.03 250);
+  --ring: oklch(0.56 0.18 40);
+
+  --chart-1: oklch(0.56 0.18 40); /* Orange */
+  --chart-2: oklch(0.56 0.1 195); /* Teal */
+  --chart-3: oklch(0.78 0.15 80); /* Mustard */
+  --chart-4: oklch(0.52 0.16 350); /* Magenta */
+  --chart-5: oklch(0.4 0.1 265); /* Navy */
+
+  /* The colour of the hard offset shadow. Its own token because it is not a
+     border and not text, and it wants a different weight in each mode. */
+  --shadow-ink: oklch(0.25 0.06 265 / 0.22);
+
+  --sidebar: oklch(0.93 0.01 215);
+  --sidebar-foreground: oklch(0.25 0.06 265);
+  --sidebar-primary: oklch(0.56 0.18 40);
+  --sidebar-primary-foreground: oklch(0.985 0.01 80);
+  --sidebar-accent: oklch(0.91 0.06 85);
+  --sidebar-accent-foreground: oklch(0.25 0.06 265);
+  --sidebar-border: oklch(0.82 0.025 245);
+  --sidebar-ring: oklch(0.56 0.18 40);
+
+  /* Named faces first, then the system stack they fall back to while the
+     woff2 loads (`font-display: swap`) or if it never does. */
+  --font-sans:
+    "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-display: "Michroma", "Eurostile", "Microgramma", var(--font-sans);
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --radius: 0.75rem; /* Rounded like a console bezel */
+  --shadow-2xs: 1px 1px 0 0 var(--shadow-ink);
+  --shadow-xs: 2px 2px 0 0 var(--shadow-ink);
+  --shadow-sm: 3px 3px 0 0 var(--shadow-ink);
+  --shadow: 3px 3px 0 0 var(--shadow-ink);
+  --shadow-md: 4px 4px 0 0 var(--shadow-ink);
+  --shadow-lg: 6px 6px 0 0 var(--shadow-ink);
+  --shadow-xl: 8px 8px 0 0 var(--shadow-ink);
+  --shadow-2xl: 12px 12px 0 0 var(--shadow-ink);
+}
+
+/* Night side: deep navy, never black, with starlight text. Colours lift in
+   lightness rather than invert, so orange still reads as the one action. */
+.dark {
+  color-scheme: dark;
+
+  --background: oklch(0.2 0.045 268);
+  --foreground: oklch(0.94 0.015 90);
+  --card: oklch(0.245 0.05 268);
+  --card-foreground: oklch(0.94 0.015 90);
+  --popover: oklch(0.245 0.05 268);
+  --popover-foreground: oklch(0.94 0.015 90);
+
+  --primary: oklch(0.73 0.16 52);
+  --primary-foreground: oklch(0.2 0.045 268);
+
+  --secondary: oklch(0.31 0.055 225);
+  --secondary-foreground: oklch(0.92 0.025 195);
+
+  --muted: oklch(0.28 0.045 268);
+  --muted-foreground: oklch(0.75 0.03 250);
+
+  --accent: oklch(0.33 0.06 255);
+  --accent-foreground: oklch(0.94 0.015 90);
+
+  --destructive: oklch(0.66 0.2 25);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  /* Brighter, so both still clear 4.5:1 against a dark field. */
+  --success: oklch(0.76 0.13 175);
+  --success-foreground: oklch(0.2 0.045 268);
+  --warning: oklch(0.85 0.15 85);
+  --warning-foreground: oklch(0.2 0.045 268);
+
+  --border: oklch(0.4 0.055 262);
+  --input: oklch(0.46 0.055 258);
+  --ring: oklch(0.73 0.16 52);
+
+  --chart-1: oklch(0.73 0.16 52);
+  --chart-2: oklch(0.75 0.11 195);
+  --chart-3: oklch(0.85 0.15 85);
+  --chart-4: oklch(0.72 0.15 350);
+  --chart-5: oklch(0.72 0.1 280);
+
+  --shadow-ink: oklch(0.12 0.04 268 / 0.9);
+
+  --sidebar: oklch(0.18 0.045 268);
+  --sidebar-foreground: oklch(0.94 0.015 90);
+  --sidebar-primary: oklch(0.73 0.16 52);
+  --sidebar-primary-foreground: oklch(0.2 0.045 268);
+  --sidebar-accent: oklch(0.33 0.06 255);
+  --sidebar-accent-foreground: oklch(0.94 0.015 90);
+  --sidebar-border: oklch(0.4 0.055 262);
+  --sidebar-ring: oklch(0.73 0.16 52);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+
+  --text-tiny: 0.625rem;
+
+  /* Derived from --radius (0.5rem) as 4/6/8/12px. The multiplier form these
+     replace produced NEGATIVE lengths for sm and md, which CSS rejects, so
+     `rounded-sm` and `rounded-md` silently rendered square. */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  --shadow-2xs: var(--shadow-2xs);
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow: var(--shadow);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-2xl: var(--shadow-2xl);
+}
+
+/* Tailwind v4 made a bare `border` default to currentColor, so every card,
+   divider and the header rule rendered in the text colour — near-black in
+   light mode — unless it also named `border-border`. The theme owns the
+   border colour, so set it once here rather than on every element. */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-border, currentColor);
+  }
+
+  /* Page titles take the display face everywhere, so a new page gets it
+     without remembering a class. Michroma has one weight: refuse the faux
+     bold a `font-bold` would otherwise smear across it. */
+  h1 {
+    font-family: var(--font-display);
+    font-synthesis: none;
+    letter-spacing: 0.01em;
+  }
+}
+
+/* The signature: a mustard / orange / teal racing band, drawn from chart
+   tokens so it follows the theme. Structural, not decorative filler — it
+   marks the top and bottom edges of the page chrome. */
+@utility retro-stripes {
+  background-image: linear-gradient(
+    to bottom,
+    var(--chart-3) 0 33.34%,
+    var(--chart-1) 33.34% 66.67%,
+    var(--chart-2) 66.67% 100%
+  );
+}
+
+/* Container for scrolling text */
+.scroll-text-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  display: block;
+}
+
+/* Scrolling text itself */
+.scroll-text {
+  display: inline-block;
+  white-space: nowrap;
+  will-change: transform;
+  /* Animation: scroll left, jump to right, scroll left again */
+  -webkit-animation: infinite-marquee 8s linear infinite;
+  -moz-animation: infinite-marquee 8s linear infinite;
+  animation: infinite-marquee 8s linear infinite;
+}
+
+@keyframes infinite-marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  45% {
+    transform: translateX(-100%);
+    visibility: hidden;
+  }
+  46% {
+    transform: translateX(100%);
+    visibility: hidden;
+  }
+  100% {
+    transform: translateX(0%);
+    visibility: visible;
+  }
+}
+@-webkit-keyframes infinite-marquee {
+  0% {
+    -webkit-transform: translateX(0%);
+  }
+  45% {
+    -webkit-transform: translateX(-100%);
+    visibility: hidden;
+  }
+  46% {
+    -webkit-transform: translateX(100%);
+    visibility: hidden;
+  }
+  100% {
+    visibility: visible;
+    -webkit-transform: translateX(0%);
+  }
+}
+@-moz-keyframes infinite-marquee {
+  0% {
+    -moz-transform: translateX(0%);
+  }
+  45% {
+    -moz-transform: translateX(-100%);
+    visibility: hidden;
+  }
+  46% {
+    -moz-transform: translateX(100%);
+    visibility: hidden;
+  }
+  100% {
+    -moz-transform: translateX(0%);
+    visibility: visible;
+  }
+}
