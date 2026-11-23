@@ -88,7 +88,7 @@ export const ProductListPage = ({
       <div class="overflow-x-auto rounded-xl border bg-card text-card-foreground">
         <table class="w-full text-sm">
           <thead>
-            <tr class="border-b text-left text-xs uppercase tracking-[0.12em] text-muted-foreground">
+            <tr class="border-b text-left text-sm italic text-muted-foreground">
               <th class="p-3 font-medium" scope="col">
                 Piece
               </th>
@@ -651,7 +651,7 @@ export const ProductEditorPage = ({
             <div class="overflow-x-auto">
               <table class="w-full min-w-[28rem] text-sm">
                 <thead>
-                  <tr class="text-left text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                  <tr class="text-left text-sm italic text-muted-foreground">
                     <th class="pb-2 font-medium"></th>
                     <th class="pb-2 font-medium">Standard</th>
                     <th class="pb-2 font-medium">Min</th>

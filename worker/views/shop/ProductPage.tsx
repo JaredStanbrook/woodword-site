@@ -16,6 +16,7 @@ import { resizeParts, type Quote } from "@server/lib/furniture";
 import { Configurator, type ConfiguratorProps } from "./Configurator";
 import { paletteClass } from "./Gallery";
 import { AvailabilityBadge, CATEGORY_LABELS, IsoDrawing, mediaUrl } from "./parts";
+import { ArchLine, Flourish } from "./ornaments";
 
 export interface ProductPageProps extends ConfiguratorProps {
   /** Admin preview of an unpublished piece. */
@@ -36,21 +37,31 @@ export const Viewer = ({
   product,
   selection,
   class: cls = "",
+  arched = false,
 }: {
   product: SelectProduct;
   selection: Selection;
   class?: string;
+  /** Inside the site's pointed arch, with its gilt line. */
+  arched?: boolean;
 }) => (
-  <furniture-viewer class={`relative block overflow-hidden bg-product-wash ${cls}`} data-viewer>
-    <div class="absolute inset-0 p-[8%] transition-opacity duration-500" data-viewer-fallback>
+  <furniture-viewer
+    class={`relative block overflow-hidden bg-product-wash ${arched ? "arch" : ""} ${cls}`}
+    data-viewer
+  >
+    {arched ? <ArchLine ratio={4 / 5} /> : null}
+    <div
+      class={`absolute inset-0 transition-opacity duration-500 ${arched ? "px-[8%] pt-[30%] pb-[8%]" : "p-[8%]"}`}
+      data-viewer-fallback
+    >
       <IsoDrawing parts={resizeParts(specOf(product), selection)} />
     </div>
     <div class="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3">
       <p
-        class="hidden rounded-full bg-background/80 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur"
+        class="hidden rounded-sm bg-background/80 px-3 py-1.5 text-sm italic text-muted-foreground backdrop-blur"
         data-viewer-hint
       >
-        Drag to turn<span class="hidden sm:inline"> · pinch or scroll to zoom</span>
+        Drag to turn<span class="hidden sm:inline">, pinch or scroll to zoom</span>
       </p>
       <button
         type="button"
@@ -104,7 +115,7 @@ const DimensionTable = ({ product }: { product: SelectProduct }) => (
     <table class="w-full text-sm tabular-nums">
       <caption class="sr-only">Standard size and the range it can be made in</caption>
       <thead>
-        <tr class="border-b text-left text-xs uppercase tracking-[0.12em] text-muted-foreground">
+        <tr class="border-b text-left text-sm italic text-muted-foreground">
           <th scope="col" class="py-2 pr-4 font-medium">
             Dimension
           </th>
@@ -168,12 +179,12 @@ const Architectural: FC<ProductPageProps> = (props) => {
   return (
     <div class="mx-auto max-w-7xl px-4 sm:px-6">
       <div class="grid gap-10 pt-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-14 lg:pt-12">
-        <div class="lg:sticky lg:top-20 lg:self-start">
+        <div class="lg:sticky lg:top-8 lg:self-start">
           <Viewer product={p} selection={props.selection} class="aspect-[4/3] rounded-sm border" />
           <div class="mt-3 grid grid-cols-3 border-y text-xs tabular-nums">
             {(["width", "depth", "height"] as const).map((k) => (
               <div class="border-r px-3 py-2 last:border-r-0">
-                <span class="block uppercase tracking-[0.14em] text-muted-foreground">{k}</span>
+                <span class="block italic text-muted-foreground">{k}</span>
                 <span data-axis-readout={k}>{props.selection[k]}</span> mm
               </div>
             ))}
@@ -181,7 +192,7 @@ const Architectural: FC<ProductPageProps> = (props) => {
         </div>
         <div class="space-y-8">
           <header class="space-y-4 border-b pb-8">
-            <div class="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+            <div class="flex flex-wrap items-center gap-3 text-sm italic text-muted-foreground">
               <span>{CATEGORY_LABELS[p.category]}</span>
               <span class="h-px w-8 bg-product"></span>
               <AvailabilityBadge availability={p.availability} />
@@ -197,7 +208,7 @@ const Architectural: FC<ProductPageProps> = (props) => {
       <section class="mt-24 grid gap-px overflow-hidden border bg-border sm:grid-cols-2 lg:grid-cols-3">
         {d.highlights.map((h) => (
           <div class="bg-background p-6">
-            <p class="text-xs uppercase tracking-[0.16em] text-muted-foreground">{h.label}</p>
+            <p class="text-sm italic text-muted-foreground">{h.label}</p>
             <p class="mt-2 font-heading text-2xl">{h.value}</p>
           </div>
         ))}
@@ -210,10 +221,10 @@ const Architectural: FC<ProductPageProps> = (props) => {
           <CareNote product={p} />
         </div>
         <div class="divide-y border-y">
-          {d.story.map((s, i) => (
+          {d.story.map((s) => (
             <article class="grid gap-3 py-8 sm:grid-cols-[4rem_1fr]">
-              <span class="font-mono text-sm text-product tabular-nums">
-                {String(i + 1).padStart(2, "0")}
+              <span class="pt-2" aria-hidden="true">
+                <span class="inline-block h-2 w-2 rotate-45 bg-gilt"></span>
               </span>
               <div class="space-y-3">
                 <h3 class="font-heading text-xl">{s.heading}</h3>
@@ -237,15 +248,7 @@ const Architectural: FC<ProductPageProps> = (props) => {
 // HERITAGE — warm and centred: serif, ornament, a washed band
 // ==========================================
 
-const Ornament = () => (
-  <div class="flex items-center justify-center gap-3 text-product" aria-hidden="true">
-    <span class="h-px w-16 bg-current opacity-50"></span>
-    <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5">
-      <path d="M12 3c3 4 3 14 0 18M12 3c-3 4-3 14 0 18M3 12h18" />
-    </svg>
-    <span class="h-px w-16 bg-current opacity-50"></span>
-  </div>
-);
+const Ornament = () => <Flourish class="mx-auto max-w-xs" />;
 
 const Heritage: FC<ProductPageProps> = (props) => {
   const { product: p } = props;
@@ -267,11 +270,12 @@ const Heritage: FC<ProductPageProps> = (props) => {
 
       <section class="bg-product-wash py-10 sm:py-14">
         <div class="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
-          <div class="lg:sticky lg:top-20 lg:self-start">
+          <div class="lg:sticky lg:top-8 lg:self-start">
             <Viewer
               product={p}
               selection={props.selection}
-              class="aspect-square rounded-[2rem] bg-background/40 sm:aspect-[5/4]"
+              arched
+              class="mx-auto aspect-[4/5] max-w-lg"
             />
           </div>
           <div class="rounded-2xl bg-background p-5 shadow-sm sm:p-8">
@@ -342,14 +346,12 @@ const Geometric: FC<ProductPageProps> = (props) => {
       <section class="border-b bg-product-wash">
         <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
           <div class="flex flex-wrap items-center gap-3">
-            <span class="inline-flex h-7 items-center bg-product px-3 text-xs uppercase tracking-[0.2em] text-product-foreground">
+            <span class="inline-flex h-7 items-center bg-product px-3 text-sm italic text-product-foreground">
               {CATEGORY_LABELS[p.category]}
             </span>
             <AvailabilityBadge availability={p.availability} />
           </div>
-          <h1 class="mt-6 max-w-4xl break-words text-4xl uppercase leading-[1.05] sm:text-6xl">
-            {p.name}
-          </h1>
+          <h1 class="mt-6 max-w-4xl break-words text-5xl leading-[1.02] sm:text-7xl">{p.name}</h1>
           {d.headline ? <p class="mt-6 max-w-2xl text-lg text-product-ink">{d.headline}</p> : null}
         </div>
       </section>
@@ -357,15 +359,13 @@ const Geometric: FC<ProductPageProps> = (props) => {
       <div class="mx-auto max-w-7xl px-4 sm:px-6">
         <div class="grid border-x border-b lg:grid-cols-2">
           <div class="border-b lg:border-b-0 lg:border-r">
-            <div class="lg:sticky lg:top-14">
+            <div class="lg:sticky lg:top-0">
               <Viewer product={p} selection={props.selection} class="aspect-square" />
               <div class="grid grid-cols-3 border-t">
                 {(["width", "depth", "height"] as const).map((k) => (
                   <div class="border-r p-4 last:border-r-0">
-                    <span class="block font-geometric text-[0.625rem] uppercase tracking-[0.2em] text-muted-foreground">
-                      {k}
-                    </span>
-                    <span class="font-geometric text-lg tabular-nums" data-axis-readout={k}>
+                    <span class="block font-heading text-sm italic text-muted-foreground">{k}</span>
+                    <span class="font-heading text-lg tabular-nums" data-axis-readout={k}>
                       {props.selection[k]}
                     </span>
                   </div>
@@ -383,10 +383,8 @@ const Geometric: FC<ProductPageProps> = (props) => {
           <section class="grid grid-cols-2 border-x border-b md:grid-cols-3">
             {d.highlights.map((h) => (
               <div class="border-b border-r p-6 [&:nth-child(2n)]:border-r-0 md:[&:nth-child(2n)]:border-r md:[&:nth-child(3n)]:border-r-0">
-                <p class="font-geometric text-2xl leading-tight">{h.value}</p>
-                <p class="mt-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
-                  {h.label}
-                </p>
+                <p class="font-heading text-2xl leading-tight">{h.value}</p>
+                <p class="mt-2 text-sm italic text-muted-foreground">{h.label}</p>
               </div>
             ))}
           </section>
@@ -395,7 +393,7 @@ const Geometric: FC<ProductPageProps> = (props) => {
         <section class="mt-16 grid gap-6 md:grid-cols-3">
           {d.story.map((s) => (
             <article class="space-y-3 border-t-4 border-product pt-5">
-              <h2 class="font-heading text-sm uppercase tracking-[0.12em]">{s.heading}</h2>
+              <h2 class="font-heading text-xl">{s.heading}</h2>
               <Paragraphs text={s.body} class="text-sm leading-relaxed text-muted-foreground" />
             </article>
           ))}
@@ -403,7 +401,7 @@ const Geometric: FC<ProductPageProps> = (props) => {
 
         <section class="mt-16 grid gap-10 md:grid-cols-[2fr_1fr]">
           <div class="space-y-4">
-            <h2 class="font-heading text-sm uppercase tracking-[0.12em]">Size range</h2>
+            <h2 class="font-heading text-xl">Size range</h2>
             <DimensionTable product={p} />
             {p.description ? (
               <div class="space-y-4 pt-6">
@@ -444,10 +442,7 @@ const Editorial: FC<ProductPageProps> = (props) => {
       </section>
       <div class="mx-auto max-w-6xl px-4 sm:px-6">
         <header class="-mt-16 relative rounded-t-2xl bg-background px-2 pt-10 sm:-mt-24 sm:px-10">
-          <p class="text-xs uppercase tracking-[0.22em] text-product-ink">
-            {CATEGORY_LABELS[p.category]} —{" "}
-            {p.availability === "sold_out" ? "not available" : "made to order"}
-          </p>
+          <p class="text-sm italic text-product-ink">{CATEGORY_LABELS[p.category]}</p>
           <h1 class="mt-4 text-5xl leading-[0.98] sm:text-7xl">{p.name}</h1>
           {d.headline ? (
             <p class="mt-6 max-w-3xl font-heading text-2xl leading-snug text-muted-foreground">
@@ -479,7 +474,7 @@ const Editorial: FC<ProductPageProps> = (props) => {
             <AvailabilityBadge availability={p.availability} />
           </div>
           <div class="grid gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
-            <div class="lg:sticky lg:top-20 lg:self-start">
+            <div class="lg:sticky lg:top-8 lg:self-start">
               <Viewer product={p} selection={props.selection} class="aspect-[4/3] rounded-2xl" />
             </div>
             <Configurator {...props} />
@@ -493,9 +488,7 @@ const Editorial: FC<ProductPageProps> = (props) => {
           <div class="space-y-6">
             {d.highlights.map((h) => (
               <p class="border-l-2 border-product pl-4">
-                <span class="block text-xs uppercase tracking-[0.14em] text-muted-foreground">
-                  {h.label}
-                </span>
+                <span class="block text-sm italic text-muted-foreground">{h.label}</span>
                 <span class="font-heading text-lg">{h.value}</span>
               </p>
             ))}

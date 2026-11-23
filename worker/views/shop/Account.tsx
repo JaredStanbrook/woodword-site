@@ -47,8 +47,7 @@ export const AccountPage = ({ name, orders, designs, locale }: AccountProps) => 
                 <span>
                   <span class="font-medium">{o.ref}</span>
                   <span class="text-sm text-muted-foreground">
-                    {" "}
-                    · {formatDateShort(o.createdAt, locale)}
+                    {`, ${formatDateShort(o.createdAt, locale)}`}
                   </span>
                 </span>
                 <span class="flex items-center gap-4 text-sm">

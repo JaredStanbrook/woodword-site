@@ -44,7 +44,7 @@ export const LineDetails = ({ line }: { line: CartLine }) => {
     <ul class="space-y-0.5 text-sm text-muted-foreground">
       <li class="tabular-nums">
         {sel.width} W × {sel.depth} D × {sel.height} H mm
-        {line.quote.custom ? <span class="text-product-ink"> · your size</span> : null}
+        {line.quote.custom ? <span class="italic text-product-ink">, your size</span> : null}
       </li>
       {options.map((o) => (
         <li>
@@ -159,7 +159,7 @@ export const CartPage = ({ lines, locale, currency }: CartProps) => {
             ))}
           </ul>
 
-          <aside class="h-fit space-y-4 rounded-xl border bg-card p-5 text-card-foreground shadow-sm lg:sticky lg:top-20">
+          <aside class="h-fit space-y-4 rounded-xl border bg-card p-5 text-card-foreground shadow-sm lg:sticky lg:top-8">
             <div class="flex justify-between">
               <span class="text-muted-foreground">Subtotal</span>
               <Price cents={subtotal} locale={locale} currency={currency} />
@@ -171,7 +171,7 @@ export const CartPage = ({ lines, locale, currency }: CartProps) => {
               <p class="text-sm text-destructive">Remove the unavailable piece to continue.</p>
             ) : (
               <a href="/checkout" class={`${buttonPrimary} w-full`}>
-                Checkout <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                Checkout
               </a>
             )}
             <a href="/" class={`${buttonSecondary} w-full`}>

@@ -94,7 +94,7 @@ export const OrderPage = ({
   testPaymentUrl,
 }: OrderProps) => (
   <div class="mx-auto max-w-3xl px-4 pt-12 sm:px-6 animate-in fade-in duration-500">
-    <p class="text-xs uppercase tracking-[0.18em] text-muted-foreground">Order {order.ref}</p>
+    <p class="text-sm italic text-muted-foreground">Order {order.ref}</p>
     <h1 class="mt-3 text-4xl">
       {order.paymentStatus === "paid" && justPaid
         ? `Thank you, ${order.name.split(" ")[0]}.`
@@ -174,7 +174,7 @@ export const OrderPage = ({
           {[...events].reverse().map((e) => (
             <li>
               <span class="font-medium">{STATUS_LABELS[e.status]}</span>
-              <span class="text-muted-foreground"> · {formatDateShort(e.createdAt, locale)}</span>
+              <span class="text-muted-foreground">, {formatDateShort(e.createdAt, locale)}</span>
               {e.note ? <span class="block text-muted-foreground">{e.note}</span> : null}
             </li>
           ))}

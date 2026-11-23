@@ -1,39 +1,51 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* THEME: "Workshop"
-   A showroom with the lights low: warm paper in daylight, a dark oiled-wood
-   room at night. The interface keeps to ink and paper so the furniture is the
-   only colourful thing on a page; timber tones appear as accents, never as
-   chrome. Soft shadows, fine rules, generous space.
+/* THEME: "Night court"
+   A romantasy book cover rather than a shop template. Night is the default:
+   a wine-black room, candle-coloured text, gilt for every ornament, and one
+   blood-rose for the action on a page. By day the same book is printed on
+   rose-grey vellum in wine ink. Headings are blackletter, set the way a
+   cover sets its title; everything else is a book face.
 
-   Each product page also sets a palette class (`palette-oak`, `palette-walnut`
-   …) that redefines the `--product*` tokens for that page only, light and
-   dark, so a piece can bring its own colour without touching the rest. */
+   The navigation spine (sidebar tokens) stays night in both themes, so the
+   brand reads the same by day — the black column is a nod to a site the
+   owner admires, and to the spine of a book.
 
-/* Self-hosted (SIL OFL 1.1): no font CDN, no third party on first paint.
-   Fraunces is a soft, variable old-style serif for headlines; IBM Plex Sans
-   carries the body. Michroma stays for product pages that ask for a
-   geometric voice. Renaming a file busts its year-long cache. */
+   Product pages set a palette class that recolours the --product tokens for
+   that page, light and dark:
+   palette-oak     Gilt amber
+   palette-walnut  Oxblood
+   palette-ash     Moonstone
+   palette-ebony   Obsidian
+   palette-cherry  Rose
+   palette-sage    Verdigris
+   palette-clay    Ember
+   palette-slate   Midnight */
+
+/* Self-hosted (SIL OFL 1.1). Grenze Gotisch is a legible, variable
+   blackletter for titles and the wordmark; EB Garamond carries everything
+   else. Plex Sans stays only for product pages that ask for a modern voice.
+   Renaming a file busts its year-long cache. */
 @font-face {
-  font-family: "Fraunces";
-  src: url("/fonts/fraunces-var.woff2") format("woff2");
+  font-family: "Grenze Gotisch";
+  src: url("/fonts/grenze-gotisch-var.woff2") format("woff2");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: "Fraunces";
-  src: url("/fonts/fraunces-var-italic.woff2") format("woff2");
-  font-weight: 100 900;
+  font-family: "EB Garamond";
+  src: url("/fonts/eb-garamond-var.woff2") format("woff2");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "EB Garamond";
+  src: url("/fonts/eb-garamond-var-italic.woff2") format("woff2");
+  font-weight: 400 800;
   font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Michroma";
-  src: url("/fonts/michroma-400.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
   font-display: swap;
 }
 @font-face {
@@ -58,84 +70,79 @@
   font-display: swap;
 }
 
+/* DAY: vellum and wine ink. */
 :root {
-  /* Tells the browser to render native controls (checkboxes, radios,
-     scrollbars, date pickers) in the matching scheme. Without it a native
-     checkbox stays light-on-dark and looks pasted on. */
   color-scheme: light;
 
-  --background: oklch(0.975 0.006 80); /* Warm paper */
-  --foreground: oklch(0.23 0.015 55); /* Charcoal with a little brown in it */
-  --card: oklch(0.99 0.004 80);
-  --card-foreground: oklch(0.23 0.015 55);
-  --popover: oklch(0.99 0.004 80);
-  --popover-foreground: oklch(0.23 0.015 55);
+  --background: oklch(0.945 0.012 20); /* Rose-grey vellum */
+  --foreground: oklch(0.2 0.025 350); /* Wine ink */
+  --card: oklch(0.975 0.006 30);
+  --card-foreground: oklch(0.2 0.025 350);
+  --popover: oklch(0.975 0.006 30);
+  --popover-foreground: oklch(0.2 0.025 350);
 
-  --primary: oklch(0.28 0.02 50); /* Ink: the one action on a page */
-  --primary-foreground: oklch(0.975 0.006 80);
+  --primary: oklch(0.45 0.16 18); /* Blood rose */
+  --primary-foreground: oklch(0.975 0.006 30);
 
-  --secondary: oklch(0.935 0.018 75); /* Sanded oak wash */
-  --secondary-foreground: oklch(0.3 0.03 55);
+  --secondary: oklch(0.905 0.02 20);
+  --secondary-foreground: oklch(0.28 0.04 350);
 
-  --muted: oklch(0.945 0.008 75);
-  --muted-foreground: oklch(0.47 0.018 55);
+  --muted: oklch(0.915 0.014 20);
+  --muted-foreground: oklch(0.44 0.03 350);
 
-  --accent: oklch(0.925 0.025 75);
-  --accent-foreground: oklch(0.23 0.015 55);
+  --accent: oklch(0.9 0.03 75); /* Gilt wash */
+  --accent-foreground: oklch(0.2 0.025 350);
 
-  --destructive: oklch(0.52 0.17 28);
+  --destructive: oklch(0.5 0.19 32);
   --destructive-foreground: oklch(0.98 0 0);
 
-  /* Status roles, so a feature never has to reach for a raw palette colour. */
-  --success: oklch(0.5 0.09 150);
+  --success: oklch(0.47 0.08 160);
   --success-foreground: oklch(0.98 0 0);
-  --warning: oklch(0.8 0.13 75);
-  --warning-foreground: oklch(0.26 0.04 60);
+  --warning: oklch(0.78 0.13 75);
+  --warning-foreground: oklch(0.25 0.04 60);
 
-  --border: oklch(0.885 0.012 70);
-  --input: oklch(0.8 0.015 65);
-  --ring: oklch(0.6 0.1 65);
+  --border: oklch(0.85 0.02 20);
+  --input: oklch(0.75 0.025 20);
+  --ring: oklch(0.55 0.11 75);
 
-  --chart-1: oklch(0.6 0.1 65); /* Oak */
-  --chart-2: oklch(0.42 0.06 45); /* Walnut */
-  --chart-3: oklch(0.6 0.06 145); /* Sage */
-  --chart-4: oklch(0.6 0.11 40); /* Clay */
-  --chart-5: oklch(0.45 0.03 250); /* Slate */
+  /* Gold foil: rules, ornaments, the line drawings, focus. Darker by day so
+     a hairline still reads on vellum. */
+  --gilt: oklch(0.58 0.11 75);
 
-  --shadow-ink: oklch(0.3 0.03 55 / 0.08);
+  --chart-1: oklch(0.45 0.16 18); /* Rose */
+  --chart-2: oklch(0.58 0.11 75); /* Gilt */
+  --chart-3: oklch(0.5 0.07 165); /* Verdigris */
+  --chart-4: oklch(0.5 0.06 290); /* Moonstone */
+  --chart-5: oklch(0.55 0.13 45); /* Ember */
 
-  --sidebar: oklch(0.96 0.008 78);
-  --sidebar-foreground: oklch(0.23 0.015 55);
-  --sidebar-primary: oklch(0.28 0.02 50);
-  --sidebar-primary-foreground: oklch(0.975 0.006 80);
-  --sidebar-accent: oklch(0.925 0.025 75);
-  --sidebar-accent-foreground: oklch(0.23 0.015 55);
-  --sidebar-border: oklch(0.885 0.012 70);
-  --sidebar-ring: oklch(0.6 0.1 65);
+  --shadow-ink: oklch(0.2 0.03 350 / 0.12);
 
-  /* The product palette. These defaults are oak; a `palette-*` class on a
-     product page replaces them. `--product` is a timber tone for marks and
-     rules, `--product-wash` a pale field of it, and `--product-ink` text that
-     reads on the wash. */
-  --product: oklch(0.6 0.1 65);
-  --product-foreground: oklch(0.99 0.004 80);
-  --product-wash: oklch(0.94 0.025 75);
-  --product-ink: oklch(0.32 0.05 55);
+  /* The spine is night in both themes. */
+  --sidebar: oklch(0.16 0.022 350);
+  --sidebar-foreground: oklch(0.92 0.02 70);
+  --sidebar-primary: oklch(0.79 0.11 80);
+  --sidebar-primary-foreground: oklch(0.16 0.022 350);
+  --sidebar-accent: oklch(0.24 0.03 350);
+  --sidebar-accent-foreground: oklch(0.92 0.02 70);
+  --sidebar-border: oklch(0.3 0.03 350);
+  --sidebar-ring: oklch(0.79 0.11 80);
 
-  /* Named faces first, then the system stack they fall back to while the
-     woff2 loads (`font-display: swap`) or if it never does. */
-  --font-sans:
-    "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-  --font-display: "Fraunces", ui-serif, Georgia, Cambria, "Times New Roman", serif;
-  --font-geometric: "Michroma", "Eurostile", var(--font-sans);
-  --font-serif: var(--font-display);
+  --product: oklch(0.6 0.11 75);
+  --product-foreground: oklch(0.2 0.025 350);
+  --product-wash: oklch(0.915 0.03 75);
+  --product-ink: oklch(0.38 0.07 60);
+
+  --font-display: "Grenze Gotisch", "UnifrakturMaguntia", ui-serif, Georgia, serif;
+  --font-serif: "EB Garamond", ui-serif, Georgia, Cambria, "Times New Roman", serif;
+  --font-sans: var(--font-serif);
+  --font-modern:
+    "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono:
     ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-  /* What a product page's headings are set in; its typeface class changes it. */
+  /* A product page's headings; its typeface class changes it. */
   --font-heading: var(--font-display);
 
-  --radius: 0.5rem;
+  --radius: 0.375rem;
   --shadow-2xs: 0 1px 1px 0 var(--shadow-ink);
   --shadow-xs: 0 1px 2px 0 var(--shadow-ink);
   --shadow-sm: 0 1px 3px 0 var(--shadow-ink), 0 1px 2px -1px var(--shadow-ink);
@@ -146,176 +153,174 @@
   --shadow-2xl: 0 32px 64px -16px var(--shadow-ink);
 }
 
-/* Night: an oiled-walnut room. Never black; text is warm off-white, and the
-   one action flips to pale oak so it still reads as the brightest thing. */
+/* NIGHT: the default. Wine-black, never neutral black; candlelit text. */
 .dark {
   color-scheme: dark;
 
-  --background: oklch(0.18 0.01 55);
-  --foreground: oklch(0.93 0.012 80);
-  --card: oklch(0.215 0.012 55);
-  --card-foreground: oklch(0.93 0.012 80);
-  --popover: oklch(0.225 0.012 55);
-  --popover-foreground: oklch(0.93 0.012 80);
+  --background: oklch(0.16 0.022 350);
+  --foreground: oklch(0.92 0.02 70);
+  --card: oklch(0.195 0.026 350);
+  --card-foreground: oklch(0.92 0.02 70);
+  --popover: oklch(0.205 0.028 350);
+  --popover-foreground: oklch(0.92 0.02 70);
 
-  --primary: oklch(0.88 0.045 78);
-  --primary-foreground: oklch(0.2 0.012 55);
+  --primary: oklch(0.52 0.17 18);
+  --primary-foreground: oklch(0.97 0.012 70);
 
-  --secondary: oklch(0.27 0.02 60);
-  --secondary-foreground: oklch(0.9 0.02 78);
+  --secondary: oklch(0.24 0.03 345);
+  --secondary-foreground: oklch(0.9 0.02 70);
 
-  --muted: oklch(0.25 0.012 55);
-  --muted-foreground: oklch(0.72 0.018 70);
+  --muted: oklch(0.22 0.025 348);
+  --muted-foreground: oklch(0.74 0.025 60);
 
-  --accent: oklch(0.29 0.02 60);
-  --accent-foreground: oklch(0.93 0.012 80);
+  --accent: oklch(0.26 0.035 345);
+  --accent-foreground: oklch(0.94 0.02 70);
 
-  --destructive: oklch(0.68 0.17 28);
-  --destructive-foreground: oklch(0.18 0.01 55);
+  --destructive: oklch(0.68 0.18 32);
+  --destructive-foreground: oklch(0.16 0.022 350);
 
-  --success: oklch(0.74 0.11 150);
-  --success-foreground: oklch(0.18 0.01 55);
-  --warning: oklch(0.83 0.12 78);
-  --warning-foreground: oklch(0.2 0.02 60);
+  --success: oklch(0.75 0.1 160);
+  --success-foreground: oklch(0.16 0.022 350);
+  --warning: oklch(0.82 0.12 80);
+  --warning-foreground: oklch(0.16 0.022 350);
 
-  --border: oklch(0.32 0.014 60);
-  --input: oklch(0.4 0.016 60);
-  --ring: oklch(0.75 0.09 70);
+  --border: oklch(0.31 0.03 348);
+  --input: oklch(0.4 0.035 348);
+  --ring: oklch(0.79 0.11 80);
 
-  --chart-1: oklch(0.75 0.09 70);
-  --chart-2: oklch(0.66 0.07 45);
-  --chart-3: oklch(0.74 0.07 145);
-  --chart-4: oklch(0.72 0.11 40);
-  --chart-5: oklch(0.7 0.04 250);
+  --gilt: oklch(0.79 0.11 80);
 
-  --shadow-ink: oklch(0.08 0.01 55 / 0.5);
+  --chart-1: oklch(0.62 0.17 18);
+  --chart-2: oklch(0.79 0.11 80);
+  --chart-3: oklch(0.72 0.08 165);
+  --chart-4: oklch(0.76 0.05 290);
+  --chart-5: oklch(0.72 0.13 45);
 
-  --sidebar: oklch(0.2 0.01 55);
-  --sidebar-foreground: oklch(0.93 0.012 80);
-  --sidebar-primary: oklch(0.88 0.045 78);
-  --sidebar-primary-foreground: oklch(0.2 0.012 55);
-  --sidebar-accent: oklch(0.29 0.02 60);
-  --sidebar-accent-foreground: oklch(0.93 0.012 80);
-  --sidebar-border: oklch(0.32 0.014 60);
-  --sidebar-ring: oklch(0.75 0.09 70);
+  --shadow-ink: oklch(0.05 0.02 350 / 0.6);
 
-  --product: oklch(0.75 0.09 70);
-  --product-foreground: oklch(0.18 0.01 55);
-  --product-wash: oklch(0.25 0.025 65);
-  --product-ink: oklch(0.88 0.05 78);
+  --sidebar: oklch(0.13 0.02 350);
+  --sidebar-foreground: oklch(0.92 0.02 70);
+  --sidebar-primary: oklch(0.79 0.11 80);
+  --sidebar-primary-foreground: oklch(0.16 0.022 350);
+  --sidebar-accent: oklch(0.22 0.03 350);
+  --sidebar-accent-foreground: oklch(0.92 0.02 70);
+  --sidebar-border: oklch(0.27 0.03 350);
+  --sidebar-ring: oklch(0.79 0.11 80);
+
+  --product: oklch(0.79 0.11 80);
+  --product-foreground: oklch(0.16 0.022 350);
+  --product-wash: oklch(0.23 0.03 65);
+  --product-ink: oklch(0.87 0.07 80);
 }
 
-/* PRODUCT PALETTES
-   Each sets the four --product tokens, once for light and once for dark.
-   Lightness lifts in dark mode rather than inverting, so a walnut page stays
-   recognisably walnut. Add a palette in schema/furniture.config.ts PALETTES
-   too, or the admin form will not offer it. */
+/* PRODUCT PALETTES — each sets the four --product tokens, for day and
+   night. Add one in schema/furniture.config.ts PALETTES too. */
 .palette-oak {
-  --product: oklch(0.6 0.1 65);
-  --product-foreground: oklch(0.99 0.004 80);
-  --product-wash: oklch(0.94 0.025 75);
-  --product-ink: oklch(0.32 0.05 55);
+  --product: oklch(0.6 0.11 75);
+  --product-foreground: oklch(0.2 0.025 350);
+  --product-wash: oklch(0.915 0.03 75);
+  --product-ink: oklch(0.38 0.07 60);
 }
 .palette-walnut {
-  --product: oklch(0.42 0.06 45);
-  --product-foreground: oklch(0.97 0.01 70);
-  --product-wash: oklch(0.925 0.02 55);
-  --product-ink: oklch(0.3 0.05 45);
+  --product: oklch(0.4 0.1 25);
+  --product-foreground: oklch(0.975 0.006 30);
+  --product-wash: oklch(0.905 0.03 20);
+  --product-ink: oklch(0.33 0.09 20);
 }
 .palette-ash {
-  --product: oklch(0.55 0.03 85);
-  --product-foreground: oklch(0.99 0.004 80);
-  --product-wash: oklch(0.955 0.012 90);
-  --product-ink: oklch(0.32 0.02 80);
+  --product: oklch(0.56 0.045 285);
+  --product-foreground: oklch(0.2 0.025 350);
+  --product-wash: oklch(0.92 0.015 290);
+  --product-ink: oklch(0.35 0.045 285);
 }
 .palette-ebony {
-  --product: oklch(0.27 0.01 60);
-  --product-foreground: oklch(0.97 0.005 80);
-  --product-wash: oklch(0.92 0.006 70);
-  --product-ink: oklch(0.22 0.01 60);
+  --product: oklch(0.26 0.02 340);
+  --product-foreground: oklch(0.975 0.006 30);
+  --product-wash: oklch(0.88 0.01 340);
+  --product-ink: oklch(0.22 0.02 340);
 }
 .palette-cherry {
-  --product: oklch(0.5 0.12 35);
-  --product-foreground: oklch(0.98 0.01 60);
-  --product-wash: oklch(0.935 0.025 40);
-  --product-ink: oklch(0.35 0.08 35);
+  --product: oklch(0.48 0.16 10);
+  --product-foreground: oklch(0.975 0.006 30);
+  --product-wash: oklch(0.915 0.035 10);
+  --product-ink: oklch(0.37 0.13 10);
 }
 .palette-sage {
-  --product: oklch(0.52 0.06 145);
-  --product-foreground: oklch(0.98 0.01 120);
-  --product-wash: oklch(0.94 0.02 140);
-  --product-ink: oklch(0.32 0.04 145);
+  --product: oklch(0.55 0.07 165);
+  --product-foreground: oklch(0.2 0.025 350);
+  --product-wash: oklch(0.915 0.025 165);
+  --product-ink: oklch(0.32 0.05 165);
 }
 .palette-clay {
-  --product: oklch(0.58 0.11 42);
-  --product-foreground: oklch(0.98 0.01 60);
-  --product-wash: oklch(0.935 0.03 50);
-  --product-ink: oklch(0.36 0.07 42);
+  --product: oklch(0.6 0.13 45);
+  --product-foreground: oklch(0.2 0.025 350);
+  --product-wash: oklch(0.915 0.035 45);
+  --product-ink: oklch(0.38 0.09 40);
 }
 .palette-slate {
-  --product: oklch(0.45 0.035 250);
-  --product-foreground: oklch(0.98 0.005 250);
-  --product-wash: oklch(0.935 0.01 250);
-  --product-ink: oklch(0.3 0.03 250);
+  --product: oklch(0.4 0.08 272);
+  --product-foreground: oklch(0.975 0.006 30);
+  --product-wash: oklch(0.905 0.025 272);
+  --product-ink: oklch(0.3 0.07 272);
 }
 .dark .palette-oak {
-  --product: oklch(0.75 0.09 70);
-  --product-foreground: oklch(0.18 0.01 55);
-  --product-wash: oklch(0.25 0.025 65);
-  --product-ink: oklch(0.88 0.05 78);
+  --product: oklch(0.79 0.11 80);
+  --product-foreground: oklch(0.16 0.022 350);
+  --product-wash: oklch(0.23 0.03 65);
+  --product-ink: oklch(0.87 0.07 80);
 }
 .dark .palette-walnut {
-  --product: oklch(0.66 0.07 45);
-  --product-foreground: oklch(0.18 0.01 55);
-  --product-wash: oklch(0.24 0.025 45);
-  --product-ink: oklch(0.85 0.05 50);
+  --product: oklch(0.64 0.13 25);
+  --product-foreground: oklch(0.16 0.022 350);
+  --product-wash: oklch(0.22 0.045 20);
+  --product-ink: oklch(0.83 0.07 25);
 }
 .dark .palette-ash {
-  --product: oklch(0.78 0.03 85);
-  --product-foreground: oklch(0.18 0.01 55);
-  --product-wash: oklch(0.25 0.01 85);
-  --product-ink: oklch(0.9 0.02 85);
+  --product: oklch(0.78 0.045 290);
+  --product-foreground: oklch(0.16 0.022 350);
+  --product-wash: oklch(0.22 0.02 300);
+  --product-ink: oklch(0.88 0.03 290);
 }
 .dark .palette-ebony {
-  --product: oklch(0.85 0.01 70);
-  --product-foreground: oklch(0.18 0.01 55);
-  --product-wash: oklch(0.23 0.006 60);
-  --product-ink: oklch(0.92 0.01 70);
+  --product: oklch(0.84 0.03 75);
+  --product-foreground: oklch(0.16 0.022 350);
+  --product-wash: oklch(0.13 0.012 340);
+  --product-ink: oklch(0.9 0.02 70);
 }
 .dark .palette-cherry {
-  --product: oklch(0.7 0.12 35);
-  --product-foreground: oklch(0.18 0.01 55);
-  --product-wash: oklch(0.25 0.04 35);
-  --product-ink: oklch(0.86 0.07 40);
+  --product: oklch(0.68 0.15 10);
+  --product-foreground: oklch(0.16 0.022 350);
+  --product-wash: oklch(0.22 0.05 10);
+  --product-ink: oklch(0.85 0.08 10);
 }
 .dark .palette-sage {
-  --product: oklch(0.74 0.07 145);
-  --product-foreground: oklch(0.18 0.01 55);
-  --product-wash: oklch(0.24 0.025 145);
-  --product-ink: oklch(0.88 0.04 140);
+  --product: oklch(0.73 0.08 165);
+  --product-foreground: oklch(0.16 0.022 350);
+  --product-wash: oklch(0.2 0.03 170);
+  --product-ink: oklch(0.86 0.05 165);
 }
 .dark .palette-clay {
-  --product: oklch(0.72 0.11 42);
-  --product-foreground: oklch(0.18 0.01 55);
-  --product-wash: oklch(0.25 0.04 45);
-  --product-ink: oklch(0.87 0.06 50);
+  --product: oklch(0.73 0.13 45);
+  --product-foreground: oklch(0.16 0.022 350);
+  --product-wash: oklch(0.22 0.045 40);
+  --product-ink: oklch(0.86 0.07 50);
 }
 .dark .palette-slate {
-  --product: oklch(0.72 0.04 250);
-  --product-foreground: oklch(0.18 0.01 55);
-  --product-wash: oklch(0.24 0.015 250);
-  --product-ink: oklch(0.88 0.02 250);
+  --product: oklch(0.72 0.08 275);
+  --product-foreground: oklch(0.16 0.022 350);
+  --product-wash: oklch(0.19 0.04 275);
+  --product-ink: oklch(0.86 0.04 275);
 }
 
-/* A product page's typeface. Headings use --font-heading. */
+/* A product page's heading face. */
 .type-serif {
-  --font-heading: var(--font-display);
+  --font-heading: var(--font-serif);
 }
 .type-sans {
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-modern);
 }
 .type-display {
-  --font-heading: var(--font-geometric);
+  --font-heading: var(--font-display);
 }
 
 @theme inline {
@@ -355,6 +360,7 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-gilt: var(--gilt);
   --color-product: var(--product);
   --color-product-foreground: var(--product-foreground);
   --color-product-wash: var(--product-wash);
@@ -364,10 +370,15 @@
   --font-display: var(--font-display);
   --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);
-  --font-geometric: var(--font-geometric);
+  --font-modern: var(--font-modern);
   --font-heading: var(--font-heading);
 
-  --text-tiny: 0.625rem;
+  --text-tiny: 0.6875rem;
+  /* Garamond has a small x-height; the stock sizes read a step too small. */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.4;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.45;
 
   /* Derived from --radius (0.5rem) as 4/6/8/12px. The multiplier form these
      replace produced NEGATIVE lengths for sm and md, which CSS rejects, so
@@ -401,14 +412,24 @@
     border-color: var(--color-border, currentColor);
   }
 
-  /* Page titles take the display face everywhere, so a new page gets it
-     without remembering a class. Fraunces is variable: a lighter weight and
-     the large optical size read as print rather than as a bold web heading. */
+  /* Blackletter titles everywhere, the way a cover sets one. Grenze is
+     variable; a medium weight keeps the counters open at small sizes. */
   h1 {
     font-family: var(--font-heading);
-    font-weight: 380;
-    letter-spacing: -0.015em;
-    font-variation-settings: "opsz" 96;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1;
+  }
+
+  /* Garamond's old-style figures are lovely in prose and wrong in a price
+     or a measurement, which is most of the numbers here. */
+  body {
+    font-variant-numeric: lining-nums;
+    font-size: 1.0625rem;
+  }
+
+  ::selection {
+    background: color-mix(in oklch, var(--gilt) 45%, transparent);
   }
 }
 
@@ -418,37 +439,68 @@
 }
 
 /* ISOMETRIC LINE DRAWING (lib/furniture.ts isoDrawing)
-   Faces are shaded from tokens so the drawing follows the theme and the
-   product palette. Stroke is set inline, scaled to the drawing. */
+   An engraving: gilt lines over faces shaded from the page's product wash, so
+   at night it reads as gold foil on a dark cover. */
 .iso-drawing polygon {
-  stroke: var(--foreground);
+  stroke: var(--gilt);
   stroke-linejoin: round;
-  stroke-opacity: 0.55;
 }
 .iso-drawing .iso-top {
-  fill: color-mix(in oklch, var(--product) 14%, var(--card));
+  fill: color-mix(in oklch, var(--product) 22%, var(--product-wash));
 }
 .iso-drawing .iso-left {
-  fill: color-mix(in oklch, var(--product) 34%, var(--card));
+  fill: color-mix(in oklch, var(--product) 40%, var(--product-wash));
 }
 .iso-drawing .iso-right {
-  fill: color-mix(in oklch, var(--product) 52%, var(--card));
+  fill: color-mix(in oklch, var(--product) 58%, var(--product-wash));
 }
 .iso-drawing .iso-metal {
-  fill: color-mix(in oklch, var(--foreground) 55%, var(--card));
+  fill: color-mix(in oklch, var(--gilt) 60%, var(--product-wash));
 }
 .iso-drawing .iso-glass {
-  fill: color-mix(in oklch, var(--chart-5) 18%, var(--card));
+  fill: color-mix(in oklch, var(--chart-4) 25%, var(--product-wash));
   fill-opacity: 0.6;
 }
 .iso-drawing .iso-accent.iso-top {
-  fill: color-mix(in oklch, var(--foreground) 12%, var(--card));
+  fill: color-mix(in oklch, var(--foreground) 14%, var(--product-wash));
 }
 .iso-drawing .iso-accent.iso-left {
-  fill: color-mix(in oklch, var(--foreground) 24%, var(--card));
+  fill: color-mix(in oklch, var(--foreground) 26%, var(--product-wash));
 }
 .iso-drawing .iso-accent.iso-right {
-  fill: color-mix(in oklch, var(--foreground) 36%, var(--card));
+  fill: color-mix(in oklch, var(--foreground) 38%, var(--product-wash));
+}
+/* Line only: gold foil on the cover, no fill. */
+.iso-drawing.iso-foil polygon {
+  fill: transparent;
+}
+
+/* THE ARCH — a pointed window, the one shape this site repeats. The path
+   is defined once in Layout.tsx (#arch-clip, in bounding-box units), so
+   whatever sits inside — a photograph, a drawing, the 3D view — takes it. */
+.arch {
+  clip-path: url(#arch-clip);
+}
+
+/* The cover's gilt line draws itself in, once, on arrival. */
+@keyframes draw-in {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.draw-in {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-in 2.4s cubic-bezier(0.6, 0, 0.2, 1) 0.2s forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .draw-in {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
 }
 
 /* ROLLING PRICE (components/shop/RollingPrice.ts)
@@ -513,20 +565,22 @@ input[type="range"].slider::-moz-range-progress {
 }
 input[type="range"].slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  margin-top: -10.5px;
-  height: 24px;
-  width: 24px;
-  border-radius: 999px;
+  margin-top: -9px;
+  height: 21px;
+  width: 21px;
+  rotate: 45deg;
+  border-radius: 2px;
   background: var(--card);
-  border: 2px solid var(--product);
+  border: 2px solid var(--gilt);
   box-shadow: var(--shadow-sm);
 }
 input[type="range"].slider::-moz-range-thumb {
-  height: 20px;
-  width: 20px;
-  border-radius: 999px;
+  height: 17px;
+  width: 17px;
+  rotate: 45deg;
+  border-radius: 2px;
   background: var(--card);
-  border: 2px solid var(--product);
+  border: 2px solid var(--gilt);
 }
 input[type="range"].slider:focus-visible {
   outline: 2px solid var(--ring);

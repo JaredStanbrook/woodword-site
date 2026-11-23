@@ -10,16 +10,17 @@ import { PropsUser } from "@server/schema/auth.schema";
  */
 const menuConfig: Record<string, Array<{ to: string; name: string }>> = {
   default: [
-    { to: "/", name: "Collection" },
+    { to: "/", name: "The collection" },
     { to: "/made-to-measure", name: "Made to measure" },
+    { to: "/orders", name: "Track an order" },
   ],
   user: [
-    { to: "/", name: "Collection" },
+    { to: "/", name: "The collection" },
     { to: "/made-to-measure", name: "Made to measure" },
-    { to: "/account", name: "Your account" },
+    { to: "/account", name: "Your orders" },
   ],
   admin: [
-    { to: "/", name: "Collection" },
+    { to: "/", name: "The collection" },
     { to: "/admin", name: "Dashboard" },
     { to: "/admin/products", name: "Products" },
     { to: "/admin/orders", name: "Orders" },
@@ -56,7 +57,7 @@ export const GrainMark = () => html`
       stroke-width="1"
       opacity="0.5"
     />
-    <circle cx="13.6" cy="17.4" r="2" class="fill-product" />
+    <circle cx="13.6" cy="17.4" r="2" class="fill-gilt" />
   </svg>
 `;
 
@@ -67,8 +68,8 @@ export const GrainMark = () => html`
 export const ThemeToggle = () => html`
   <button
     type="button"
-    class="theme-toggle-btn inline-flex h-11 w-11 items-center justify-center rounded-lg border border-input bg-transparent hover:bg-accent hover:text-accent-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-    aria-label="Toggle theme"
+    class="theme-toggle-btn inline-flex h-11 w-11 items-center justify-center rounded-full text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+    aria-label="Switch between night, day and your device's setting"
   >
     <i data-theme-icon="light" data-lucide="sun" class="hidden w-5 h-5"></i>
     <i data-theme-icon="dark" data-lucide="moon" class="hidden w-5 h-5"></i>
@@ -89,8 +90,8 @@ export const ThemeToggle = () => html`
         return document.querySelectorAll(".theme-toggle-btn");
       }
 
-      let currentTheme = localStorage.getItem(STORAGE_KEY) || "system";
-      if (!THEMES.includes(currentTheme)) currentTheme = "system";
+      let currentTheme = localStorage.getItem(STORAGE_KEY) || "dark";
+      if (!THEMES.includes(currentTheme)) currentTheme = "dark";
 
       function applyTheme(theme) {
         root.classList.remove(...THEMES);
@@ -146,54 +147,6 @@ export const ThemeToggle = () => html`
   </script>
 `;
 
-/**
- * UserMenu (Desktop)
- * Classic dropdown for the top bar.
- */
-const UserMenu = ({ user }: { user: PropsUser }) => html`
-  <div class="relative">
-    <details class="group relative">
-      <summary
-        class="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-primary/10 hover:bg-primary/20 transition-colors list-none marker:hidden [&::-webkit-details-marker]:hidden border border-transparent focus:border-ring ring-offset-background"
-      >
-        <span class="font-bold text-sm text-primary"
-          >${(user.email || "??").substring(0, 2).toUpperCase()}</span
-        >
-      </summary>
-
-      <div
-        class="fixed inset-0 z-40 hidden"
-        onclick="this.parentNode.removeAttribute('open')"
-      ></div>
-
-      <div
-        class="absolute right-0 top-full mt-2 w-56 rounded-lg border bg-popover p-1 text-popover-foreground shadow-md animate-in fade-in zoom-in-95 z-50"
-      >
-        <div class="px-2 py-1.5 text-sm">
-          <div class="flex flex-col space-y-1">
-            <p class="font-medium leading-none truncate">${user.displayName || "User"}</p>
-            <p class="text-xs leading-none text-muted-foreground truncate">${user.email}</p>
-          </div>
-        </div>
-        <div class="h-px bg-muted my-1"></div>
-        <a
-          href="/profile"
-          class="flex w-full items-center rounded-sm px-2 py-2 text-sm hover:bg-accent transition-colors no-underline"
-        >
-          <i data-lucide="user" class="mr-2 h-4 w-4"></i> Profile
-        </a>
-        <div class="h-px bg-muted my-1"></div>
-        <button
-          hx-post="/web/auth/logout"
-          class="flex w-full items-center rounded-sm px-2 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
-        >
-          <i data-lucide="log-out" class="mr-2 h-4 w-4"></i> Log out
-        </button>
-      </div>
-    </details>
-  </div>
-`;
-
 // --- MAIN NAVBAR ---
 
 interface NavBarProps {
@@ -203,226 +156,208 @@ interface NavBarProps {
   cartCount?: number;
 }
 
-/** The cart, on every page. The count is the number of pieces, not lines. */
-const CartLink = ({ count }: { count: number }) => html`
-  <a
-    href="/cart"
-    class="relative inline-flex h-11 w-11 items-center justify-center rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors"
-    aria-label="${count > 0 ? `Cart, ${count} item${count === 1 ? "" : "s"}` : "Cart, empty"}"
-  >
-    <i data-lucide="shopping-bag" class="h-5 w-5"></i>
-    ${
-      count > 0
-        ? html`<span
-            class="absolute right-1 top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-product px-1 text-[0.625rem] font-semibold leading-none text-product-foreground tabular-nums"
-            aria-hidden="true"
-            >${count > 99 ? "99+" : count}</span
-          >`
-        : ""
-    }
-  </a>
-`;
-
 const getMenuItems = (user: PropsUser | null | undefined) => {
   const items: { to: string; name: string }[] = [];
   const seen = new Set<string>();
-
-  const roles = user?.roles ?? [];
-  for (const role of roles) {
+  for (const role of user?.roles ?? []) {
     for (const item of menuConfig[role] ?? []) {
       if (seen.has(item.to)) continue;
       seen.add(item.to);
       items.push(item);
     }
   }
-
   return items.length > 0 ? items : menuConfig.default;
 };
 
+/** A gilt double rule: the bands stamped across a book's spine. */
+const SpineBand = () => html`
+  <div class="flex flex-col gap-[3px] px-6" aria-hidden="true">
+    <span class="h-px bg-gilt/70"></span>
+    <span class="h-px bg-gilt/35"></span>
+  </div>
+`;
+
+const Wordmark = ({ appName, size }: { appName: string; size: "lg" | "sm" }) => html`
+  <a
+    href="/"
+    class="inline-flex items-center gap-2.5 font-display leading-none text-sidebar-foreground ${
+      size === "lg" ? "text-[2.6rem]" : "h-11 text-[1.75rem]"
+    }"
+  >
+    ${size === "sm" ? GrainMark() : ""}<span>${appName}</span>
+  </a>
+`;
+
+/**
+ * The site's navigation is a book spine: a night-dark column down the left
+ * on large screens, a bar across the top on small ones. It stays night in
+ * both themes, so the brand reads the same by day.
+ */
 export const NavBar = ({ appName, user, currentPath, cartCount = 0 }: NavBarProps) => {
   const menuItems = getMenuItems(user);
+  const isActive = (to: string) =>
+    to === "/" || to === "/admin" ? currentPath === to : Boolean(currentPath?.startsWith(to));
+  const cartLabel =
+    cartCount > 0 ? `Cart, ${cartCount} piece${cartCount === 1 ? "" : "s"}` : "Cart, empty";
 
-  const isActive = (to: string) => {
-    if (to === "/" || to === "/admin") return currentPath === to;
-    return currentPath?.startsWith(to);
-  };
+  const link = (item: { to: string; name: string }, big = false) => html`
+    <a
+      href="${item.to}"
+      aria-current="${isActive(item.to) ? "page" : "false"}"
+      class="group flex min-h-11 items-center gap-3 px-6 ${big ? "text-xl" : "text-lg"} transition-colors ${
+        isActive(item.to)
+          ? "text-sidebar-foreground"
+          : "text-sidebar-foreground/65 hover:text-sidebar-foreground"
+      }"
+    >
+      <span
+        class="h-1.5 w-1.5 shrink-0 rotate-45 ${isActive(item.to) ? "bg-gilt" : "bg-transparent group-hover:bg-gilt/50"}"
+        aria-hidden="true"
+      ></span>
+      ${item.name}
+    </a>
+  `;
 
   return html`
+    <!-- Small screens: a bar across the top. -->
     <header
-      class="fixed top-0 left-0 right-0 z-40 w-full border-b border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/75"
+      class="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between bg-sidebar px-3 text-sidebar-foreground lg:hidden"
     >
-      <div class="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <div class="flex items-center gap-6">
-          <a
-            href="/"
-            class="flex h-11 items-center gap-2.5 font-display text-xl tracking-tight mr-4"
-          >
-            ${GrainMark()} ${appName}
-          </a>
-
-          <nav class="hidden lg:flex items-center gap-6">
-            ${menuItems.map(
-              (item) => html`
-                <a
-                  href="${item.to}"
-                  class="text-sm font-medium transition-colors hover:text-primary ${
-                    isActive(item.to) ? "text-foreground" : "text-muted-foreground"
-                  }"
-                >
-                  ${item.name}
-                </a>
-              `,
-            )}
-          </nav>
-        </div>
-
-        <div class="flex items-center gap-2">
-          ${CartLink({ count: cartCount })}
-          <div class="hidden lg:block">${ThemeToggle()}</div>
-
-          <div class="hidden lg:block">
-            ${
-              !user
-                ? html`
-                    <div class="flex items-center gap-2">
-                      <a
-                        href="/login"
-                        class="text-sm font-medium text-muted-foreground hover:text-primary"
-                        >Sign in</a
-                      >
-                    </div>
-                  `
-                : UserMenu({ user })
-            }
-          </div>
-
-          <button
-            id="mobile-menu-toggle"
-            class="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-md text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
-            aria-label="Open menu"
-          >
-            <i data-lucide="menu" class="h-6 w-6"></i>
-          </button>
-        </div>
+      ${Wordmark({ appName, size: "sm" })}
+      <div class="flex items-center">
+        <a
+          href="/cart"
+          aria-label="${cartLabel}"
+          class="relative inline-flex h-11 w-11 items-center justify-center rounded-full hover:bg-sidebar-accent"
+        >
+          <i data-lucide="shopping-bag" class="h-5 w-5"></i>
+          ${
+            cartCount > 0
+              ? html`<span
+                  class="absolute right-1 top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-gilt px-1 text-[0.65rem] font-semibold leading-none text-sidebar tabular-nums"
+                  aria-hidden="true"
+                  >${cartCount > 99 ? "99+" : cartCount}</span
+                >`
+              : ""
+          }
+        </a>
+        <button
+          id="mobile-menu-toggle"
+          class="inline-flex h-11 w-11 items-center justify-center rounded-full hover:bg-sidebar-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+          aria-label="Open menu"
+        >
+          <i data-lucide="menu" class="h-6 w-6"></i>
+        </button>
       </div>
     </header>
 
+    <!-- Large screens: the spine. -->
+    <aside
+      class="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col bg-sidebar py-8 text-sidebar-foreground lg:flex"
+      aria-label="Site"
+    >
+      <div class="px-6">${Wordmark({ appName, size: "lg" })}</div>
+      <p class="mt-2 px-6 text-sm italic leading-snug text-sidebar-foreground/60">
+        Furniture, made to measure
+      </p>
+      <div class="mt-7">${SpineBand()}</div>
+      <nav class="mt-5 flex flex-col" aria-label="Main">
+        ${menuItems.map((item) => link(item))}
+        ${link({ to: "/cart", name: cartCount > 0 ? `Cart (${cartCount})` : "Cart" })}
+      </nav>
+      <div class="mt-auto">
+        ${SpineBand()}
+        <div class="mt-4 flex items-center justify-between gap-2 pl-6 pr-4">
+          ${
+            user
+              ? html`<div class="min-w-0">
+                  <a
+                    href="/account"
+                    class="block truncate text-base text-sidebar-foreground/80 hover:text-sidebar-foreground"
+                    >${user.displayName || user.email}</a
+                  >
+                  <div class="flex gap-3 text-sm">
+                    <a
+                      href="/profile"
+                      class="inline-flex h-11 items-center text-sidebar-foreground/60 hover:text-sidebar-foreground"
+                      >Security</a
+                    >
+                    <button
+                      hx-post="/web/auth/logout"
+                      class="inline-flex h-11 items-center text-sidebar-foreground/60 hover:text-sidebar-foreground"
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                </div>`
+              : html`<a
+                  href="/login"
+                  class="inline-flex h-11 items-center text-base text-sidebar-foreground/80 hover:text-sidebar-foreground"
+                  >Sign in</a
+                >`
+          }
+          ${ThemeToggle()}
+        </div>
+      </div>
+    </aside>
+
     <div
       id="mobile-menu"
-      class="hidden fixed inset-0 z-[100] bg-background text-foreground lg:hidden flex flex-col animate-in slide-in-from-right-10 duration-200"
+      class="fixed inset-0 z-[100] hidden flex-col bg-sidebar text-sidebar-foreground lg:hidden"
     >
-      <div class="flex items-center justify-between px-4 h-14 border-b">
-        <span class="font-display text-xl tracking-tight flex items-center gap-2.5">
-          ${GrainMark()} Menu
-        </span>
+      <div class="flex h-14 items-center justify-between px-3">
+        ${Wordmark({ appName, size: "sm" })}
         <button
           id="mobile-menu-close"
-          class="inline-flex h-11 w-11 items-center justify-center rounded-md hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
+          class="inline-flex h-11 w-11 items-center justify-center rounded-full hover:bg-sidebar-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
           aria-label="Close menu"
         >
           <i data-lucide="x" class="h-6 w-6"></i>
         </button>
       </div>
-
-      <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-6">
-        <nav class="flex flex-col gap-2">
-          ${menuItems.map(
-            (item) => html`
-              <a
-                href="${item.to}"
-                class="flex items-center py-3 px-4 rounded-lg text-lg font-medium transition-colors hover:bg-accent ${
-                  isActive(item.to) ? "bg-accent text-foreground" : "text-muted-foreground"
-                }"
-              >
-                ${item.name}
-                ${
-                  isActive(item.to)
-                    ? html`<i data-lucide="chevron-right" class="ml-auto h-5 w-5 opacity-50"></i>`
-                    : ""
-                }
-              </a>
-            `,
-          )}
-        </nav>
-
-        <hr class="border-border/50" />
-
-        <div class="mt-auto flex flex-col gap-6">
-          <div class="flex items-center justify-between px-2">
-            <span class="text-sm font-medium">Appearance</span>
-            ${ThemeToggle()}
-          </div>
-
-          ${
-            !user
-              ? html`
-                  <div class="grid grid-cols-2 gap-4">
-                    <a
-                      href="/login"
-                      class="inline-flex items-center justify-center rounded-lg h-12 border border-input bg-background px-4 py-2 text-base font-medium hover:bg-accent hover:text-accent-foreground"
-                    >
-                      Sign in
-                    </a>
-                    <a
-                      href="/register"
-                      class="inline-flex items-center justify-center rounded-lg h-12 bg-primary px-4 py-2 text-base font-medium text-primary-foreground hover:bg-primary/90"
-                    >
-                      Create account
-                    </a>
-                  </div>
-                `
-              : html`
-                  <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
-                    <div class="p-4 flex items-center gap-3 border-b">
-                      <div
-                        class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold"
-                      >
-                        ${(user.email || "??").substring(0, 2).toUpperCase()}
-                      </div>
-                      <div class="flex flex-col min-w-0">
-                        <span class="font-medium truncate">${user.displayName || "User"}</span>
-                        <span class="text-xs text-muted-foreground truncate">${user.email}</span>
-                      </div>
-                    </div>
-                    <div class="p-2 grid grid-cols-2 gap-2">
-                      <a
-                        href="/profile"
-                        class="flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent transition-colors"
-                      >
-                        <i data-lucide="user" class="h-4 w-4"></i> Profile
-                      </a>
-                      <button
-                        hx-post="/web/auth/logout"
-                        class="flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
-                      >
-                        <i data-lucide="log-out" class="h-4 w-4"></i> Log out
-                      </button>
-                    </div>
-                  </div>
-                `
-          }
+      <div class="mt-4">${SpineBand()}</div>
+      <nav class="mt-4 flex flex-col" aria-label="Main">
+        ${menuItems.map((item) => link(item, true))}
+        ${link({ to: "/cart", name: cartCount > 0 ? `Cart (${cartCount})` : "Cart" }, true)}
+        ${
+          user
+            ? html`${link({ to: "/profile", name: "Sign-in and security" }, true)}
+                <button
+                  hx-post="/web/auth/logout"
+                  class="flex min-h-11 items-center gap-3 px-6 text-xl text-sidebar-foreground/65"
+                >
+                  <span class="h-1.5 w-1.5 shrink-0" aria-hidden="true"></span>Sign out
+                </button>`
+            : link({ to: "/login", name: "Sign in" }, true)
+        }
+      </nav>
+      <div class="mt-auto pb-8">
+        ${SpineBand()}
+        <div class="mt-3 flex items-center justify-between px-6">
+          <span class="text-base text-sidebar-foreground/70">Night or day</span>
+          ${ThemeToggle()}
         </div>
       </div>
     </div>
 
     <script>
       (function () {
-        const toggleBtn = document.getElementById("mobile-menu-toggle");
-        const closeBtn = document.getElementById("mobile-menu-close");
         const menu = document.getElementById("mobile-menu");
-
-        function openMenu() {
+        const open = () => {
           menu.classList.remove("hidden");
-          document.body.style.overflow = "hidden"; // Prevent background scroll
-        }
-
-        function closeMenu() {
+          menu.classList.add("flex");
+          document.body.style.overflow = "hidden";
+        };
+        const close = () => {
           menu.classList.add("hidden");
+          menu.classList.remove("flex");
           document.body.style.overflow = "";
-        }
-
-        if (toggleBtn) toggleBtn.addEventListener("click", openMenu);
-        if (closeBtn) closeBtn.addEventListener("click", closeMenu);
+        };
+        document.getElementById("mobile-menu-toggle")?.addEventListener("click", open);
+        document.getElementById("mobile-menu-close")?.addEventListener("click", close);
+        menu.addEventListener("click", (e) => {
+          if (e.target.closest("a")) close();
+        });
       })();
     </script>
   `;

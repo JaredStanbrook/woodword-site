@@ -69,7 +69,7 @@ export interface DashboardData {
 
 const Tile = ({ label, value, note }: { label: string; value: string; note?: string }) => (
   <div class="rounded-xl border bg-card p-5 text-card-foreground">
-    <p class="text-xs uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
+    <p class="text-sm italic text-muted-foreground">{label}</p>
     <p class="mt-2 font-display text-3xl tabular-nums">{value}</p>
     {note ? <p class="mt-1 text-xs text-muted-foreground">{note}</p> : null}
   </div>
@@ -198,7 +198,7 @@ export const OrderTable = ({ orders, locale }: { orders: SelectOrder[]; locale: 
     <div class="overflow-x-auto rounded-xl border bg-card text-card-foreground">
       <table class="w-full text-sm">
         <thead>
-          <tr class="border-b text-left text-xs uppercase tracking-[0.12em] text-muted-foreground">
+          <tr class="border-b text-left text-sm italic text-muted-foreground">
             <th class="p-3 font-medium" scope="col">
               Order
             </th>
@@ -521,7 +521,7 @@ export const OrderDetailPage = ({
               <form method="post" action={`/admin/orders/${order.id}/status`}>
                 <input type="hidden" name="status" value={next} />
                 <button type="submit" class={`${buttonPrimary} w-full`}>
-                  Move to: {STATUS_LABELS[next]} <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                  Move to: {STATUS_LABELS[next]}
                 </button>
               </form>
             ) : null}
@@ -609,9 +609,7 @@ export const SpecSheet = ({
   <div class="mx-auto max-w-4xl space-y-10 px-4 py-8 sm:px-6 print:max-w-none print:p-0">
     <header class="flex flex-wrap items-end justify-between gap-4 border-b pb-4">
       <div>
-        <p class="text-xs uppercase tracking-[0.16em] text-muted-foreground">
-          Manufacturing specification
-        </p>
+        <p class="text-sm italic text-muted-foreground">Manufacturing specification</p>
         <h1 class="text-3xl">Order {order.ref}</h1>
         <p class="text-sm text-muted-foreground">
           {order.name} · placed {formatDateShort(order.createdAt, locale)} · {order.deliveryLabel}
@@ -636,7 +634,7 @@ export const SpecSheet = ({
         </div>
         <table class="w-full text-sm tabular-nums">
           <thead>
-            <tr class="border-b text-left text-xs uppercase tracking-[0.12em] text-muted-foreground">
+            <tr class="border-b text-left text-sm italic text-muted-foreground">
               <th class="py-2" scope="col">
                 Overall
               </th>
@@ -675,7 +673,7 @@ export const SpecSheet = ({
           <h3 class="mb-1 text-sm font-medium">Cut list (finished sizes, per piece)</h3>
           <table class="w-full text-sm tabular-nums">
             <thead>
-              <tr class="border-b text-left text-xs uppercase tracking-[0.12em] text-muted-foreground">
+              <tr class="border-b text-left text-sm italic text-muted-foreground">
                 <th class="py-2" scope="col">
                   Component
                 </th>

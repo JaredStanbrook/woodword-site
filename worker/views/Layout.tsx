@@ -82,19 +82,35 @@ export const Layout: FC<LayoutProps> = (props) => {
         )}
 
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <!-- Night is the default. Set the class before first paint, or a
+             returning visitor sees a flash of the other theme while the
+             theme-provider module loads. -->
+        <script>
+          (function () {
+            try {
+              var t = localStorage.getItem("vite-ui-theme") || "dark";
+              var dark =
+                t === "dark" ||
+                (t === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+              document.documentElement.classList.toggle("dark", dark);
+            } catch (e) {
+              document.documentElement.classList.add("dark");
+            }
+          })();
+        </script>
         <!-- The two faces above the fold. Without a preload the browser only
              discovers them after parsing the stylesheet, and the headline
              visibly swaps. crossorigin is required even same-origin. -->
         <link
           rel="preload"
-          href="/fonts/fraunces-var.woff2"
+          href="/fonts/grenze-gotisch-var.woff2"
           as="font"
           type="font/woff2"
           crossorigin
         />
         <link
           rel="preload"
-          href="/fonts/plex-sans-400.woff2"
+          href="/fonts/eb-garamond-var.woff2"
           as="font"
           type="font/woff2"
           crossorigin
@@ -111,7 +127,7 @@ export const Layout: FC<LayoutProps> = (props) => {
         ${props.headExtra}
       </head>
       <body class="bg-background text-foreground antialiased min-h-screen font-sans flex flex-col">
-        <theme-provider defaultTheme="system"></theme-provider>
+        <theme-provider defaultTheme="dark"></theme-provider>
 
         ${
           props.meta.bare
@@ -134,23 +150,31 @@ export const Layout: FC<LayoutProps> = (props) => {
         <main
           hx-boost="true"
           id="main-content"
-          class="relative flex-grow w-full ${props.meta.bare ? "" : "pt-14"}"
+          class="relative flex-grow w-full ${props.meta.bare ? "" : "pt-14 lg:pt-0 lg:pl-60"}"
         >
           ${props.children}
         </main>
         <div id="modal-container"></div>
+        <!-- The pointed arch the .arch utility clips to (worker/index.css). -->
+        <svg width="0" height="0" class="absolute" aria-hidden="true" focusable="false">
+          <defs>
+            <clipPath id="arch-clip" clipPathUnits="objectBoundingBox">
+              <path d="M0,1 V0.34 C0,0.16 0.28,0.05 0.5,0 C0.72,0.05 1,0.16 1,0.34 V1 Z" />
+            </clipPath>
+          </defs>
+        </svg>
 
         <app-toaster></app-toaster>
 
         ${
           props.meta.bare
             ? ""
-            : html`<footer class="mt-24 border-t">
+            : html`<footer class="mt-28 border-t lg:ml-60">
                 <div
                   class="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr]"
                 >
                   <div class="space-y-3">
-                    <p class="font-display text-2xl tracking-tight">${props.app.name}</p>
+                    <p class="font-display text-3xl leading-none">${props.app.name}</p>
                     <p class="max-w-sm text-sm leading-relaxed text-muted-foreground">
                       ${props.app.tagline || props.app.name}
                     </p>

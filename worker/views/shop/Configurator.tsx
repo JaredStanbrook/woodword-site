@@ -64,7 +64,7 @@ const DimensionControl = ({
           {label}
         </label>
         <span class="text-xs text-muted-foreground tabular-nums" id={`${id}-range`}>
-          {fixed ? "Fixed size" : `${dim.min}–${dim.max} mm · standard ${dim.standard}`}
+          {fixed ? "Fixed size" : `${dim.min} to ${dim.max} mm, standard ${dim.standard}`}
         </span>
       </div>
       <div class="flex items-center gap-2">
@@ -169,7 +169,7 @@ export const Configurator = (props: ConfiguratorProps) => {
         ) : null}
 
         <fieldset class="space-y-5">
-          <legend class="mb-4 flex w-full items-baseline justify-between text-xs uppercase tracking-[0.16em] text-muted-foreground">
+          <legend class="mb-4 flex w-full items-baseline justify-between text-sm italic text-muted-foreground">
             <span>Size</span>
             <button
               type="button"
@@ -186,7 +186,7 @@ export const Configurator = (props: ConfiguratorProps) => {
 
         {spec.options.map((group) => (
           <fieldset class="space-y-3">
-            <legend class="mb-3 flex w-full items-baseline justify-between gap-3 text-xs uppercase tracking-[0.16em] text-muted-foreground">
+            <legend class="mb-3 flex w-full items-baseline justify-between gap-3 text-sm italic text-muted-foreground">
               <span>{group.label}</span>
               <span
                 class="normal-case tracking-normal text-sm text-foreground"
@@ -248,17 +248,15 @@ export const Configurator = (props: ConfiguratorProps) => {
           aria-label="Price"
         >
           <div>
-            <p class="text-xs uppercase tracking-[0.16em] text-muted-foreground">
-              Current configuration price
-            </p>
-            <p class="mt-2 font-heading text-5xl tracking-tight">
+            <p class="text-sm italic text-muted-foreground">Current configuration price</p>
+            <p class="mt-2 font-serif text-5xl font-medium text-gilt">
               <RollingPrice cents={quote.totalCents} locale={locale} currency={currency} />
             </p>
             <p class="mt-2 text-sm text-muted-foreground">
               <span data-size-label>
                 {selection.width} × {selection.depth} × {selection.height} mm
               </span>
-              {" · "}
+              {", "}
               <span data-custom-label>{quote.custom ? "made to your size" : "standard size"}</span>
             </p>
           </div>
