@@ -188,7 +188,7 @@ export const OrderLookupPage = ({ error, ref }: { error?: string; ref?: string }
   <div class="mx-auto max-w-md px-4 pt-16 sm:px-6">
     <h1 class="text-4xl">Track an order</h1>
     <p class="mt-3 text-muted-foreground">
-      Your order reference is in your confirmation email, and starts with HW.
+      Your order reference is in your confirmation email, and starts with MH.
     </p>
     <form method="post" action="/orders/lookup" class="mt-8 space-y-4">
       <div class="space-y-1.5">

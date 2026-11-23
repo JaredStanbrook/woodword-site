@@ -79,11 +79,11 @@ buttons. The JSON has every component's final size and position. To get a
 Blender file of exactly what was ordered:
 
 ```bash
-blender piece.blend --background --python scripts/blender/apply_spec.py -- HW-7K3P9Q-spec.json
+blender piece.blend --background --python scripts/blender/apply_spec.py -- MH-7K3P9Q-spec.json
 # an order with several pieces: add the item number (1-based)
-blender piece.blend --background --python scripts/blender/apply_spec.py -- HW-7K3P9Q-spec.json 2
+blender piece.blend --background --python scripts/blender/apply_spec.py -- MH-7K3P9Q-spec.json 2
 ```
 
-It saves `piece-HW-7K3P9Q-1.blend` beside the original and leaves the original
+It saves `piece-MH-7K3P9Q-1.blend` beside the original and leaves the original
 untouched. Objects the spec does not name (decoration, a floor plane) are not
 moved.

@@ -106,7 +106,7 @@ export const orders = sqliteTable(
   "orders",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    /** Human-readable reference, e.g. HW-7K3P9Q. */
+    /** Human-readable reference, e.g. MH-7K3P9Q. */
     ref: text("ref").notNull().unique(),
     /** Secret in the confirmation link, so a guest can see their order. */
     accessToken: text("access_token").notNull(),

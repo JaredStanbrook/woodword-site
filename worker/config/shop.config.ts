@@ -39,8 +39,8 @@ export const DELIVERY_OPTIONS: DeliveryOption[] = [
 
 export const deliveryOption = (id: string) => DELIVERY_OPTIONS.find((d) => d.id === id);
 
-/** Prefix for order references: HW-7K3P9Q. */
-export const ORDER_REF_PREFIX = "HW";
+/** Prefix for order references: MH-7K3P9Q. */
+export const ORDER_REF_PREFIX = "MH";
 
 /** Most of any one configuration a single cart line may hold. */
 export const MAX_QUANTITY = 20;

@@ -1,4 +1,4 @@
-# Heartwood
+# Mooihout
 
 A shop for handmade, made-to-measure furniture. Every piece has its own
 product page, an interactive 3D model customers can turn and resize within the

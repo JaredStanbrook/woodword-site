@@ -61,7 +61,7 @@ export type Vars = {
   AI_MODEL?: string;
   /** Secret. Resend API key for order emails. Unset: no emails are sent. */
   RESEND_API_KEY?: string;
-  /** Sender for order emails, e.g. "Heartwood <orders@example.com>". */
+  /** Sender for order emails, e.g. "Mooihout <orders@example.com>". */
   EMAIL_FROM?: string;
   /** Where new-order notifications go. */
   ORDERS_EMAIL?: string;

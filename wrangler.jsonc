@@ -13,7 +13,7 @@
   // CHANGE_ME — the Worker script name. This is the identity Cloudflare
   // stores secrets, routes and deployments against, so renaming it later
   // creates a *new* worker and orphans the old one's secrets.
-  "name": "heartwood",
+  "name": "mooihout",
 
   "compatibility_date": "2025-01-01",
   "main": "worker/index.ts",
@@ -82,7 +82,7 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "heartwood-db",
+      "database_name": "mooihout-db",
       "database_id": "00000000-0000-0000-0000-000000000000",
       "migrations_dir": "drizzle",
     },
@@ -102,7 +102,7 @@
   "r2_buckets": [
     {
       "binding": "R2",
-      "bucket_name": "heartwood-files",
+      "bucket_name": "mooihout-files",
     },
   ],
 
@@ -138,7 +138,7 @@
 
     // --- BRANDING ---
     // CHANGE_ME — how the site names itself in the title, nav and footer.
-    "APP_NAME": "Heartwood",
+    "APP_NAME": "Mooihout",
     "APP_TAGLINE": "Handmade furniture, made to your measurements. Turn it, resize it, see the price, and we build exactly that.",
     "APP_LOCALE": "en-IE",
     "APP_CURRENCY": "EUR",
@@ -209,7 +209,7 @@
     // CHANGE_ME — these MUST match the deployed domain or passkeys fail
     // with no useful error. RP_ID is the bare hostname (no scheme, no
     // port); ORIGIN is the full origin users load the site from.
-    "RP_NAME": "Heartwood",
+    "RP_NAME": "Mooihout",
     "RP_ID": "change-me.example.com",
     "ORIGIN": "https://change-me.example.com",
 
@@ -242,7 +242,7 @@
 
     // --- TOTP CONFIG ---
     // TOTP_ISSUER is the name shown in the user's authenticator app.
-    "TOTP_ISSUER": "Heartwood",
+    "TOTP_ISSUER": "Mooihout",
     "TOTP_ALGORITHM": "SHA1",
     "TOTP_DIGITS": "6",
     "TOTP_PERIOD": "30",
@@ -257,7 +257,7 @@
     //   RESEND_API_KEY         order confirmation emails
     // Claude model for product generation.
     "AI_MODEL": "claude-opus-5-5",
-    // Sender for order emails, e.g. "Heartwood <orders@your-domain>". Needs
+    // Sender for order emails, e.g. "Mooihout <orders@your-domain>". Needs
     // RESEND_API_KEY and a domain verified with Resend.
     "EMAIL_FROM": "",
     // Where a "new paid order" email goes. Empty: none.

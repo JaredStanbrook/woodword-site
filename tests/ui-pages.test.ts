@@ -160,7 +160,7 @@ describe("UI pages load", () => {
       "/profile",
       "/account",
       "/furniture/nord-dining-table",
-      "/orders/HW-TEST01?t=token",
+      "/orders/MH-TEST01?t=token",
       "/admin",
       "/admin/products",
       "/admin/products/new",
@@ -192,7 +192,7 @@ describe("UI pages load", () => {
   });
 
   it("hides an order from someone without its link", async () => {
-    const res = await get(createTestApp(null), "/orders/HW-TEST01?t=wrong");
+    const res = await get(createTestApp(null), "/orders/MH-TEST01?t=wrong");
     expect(res.status).toBe(404);
   });
 

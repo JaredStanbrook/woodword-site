@@ -6,9 +6,9 @@ moves and scales each named object to the size and position the shop
 calculated, and saves a copy of the file next to the original. The original
 is not changed.
 
-    blender table.blend --background --python scripts/blender/apply_spec.py -- HW-7K3P9Q-spec.json
+    blender table.blend --background --python scripts/blender/apply_spec.py -- MH-7K3P9Q-spec.json
     # An order with several pieces: pick one (1-based, default 1)
-    blender table.blend --background --python scripts/blender/apply_spec.py -- HW-7K3P9Q-spec.json 2
+    blender table.blend --background --python scripts/blender/apply_spec.py -- MH-7K3P9Q-spec.json 2
 
 The model must follow the conventions in docs/blender.md (rotation applied,
 standing on the origin), the same ones export_components.py checks. Objects
