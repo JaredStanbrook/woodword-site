@@ -37,7 +37,7 @@ export const AccountPage = ({ name, orders, designs, locale }: AccountProps) => 
           .
         </p>
       ) : (
-        <ul class="divide-y border-y">
+        <ul class="divide-y-2 border-y-2">
           {orders.map((o) => (
             <li>
               <a
@@ -72,7 +72,7 @@ export const AccountPage = ({ name, orders, designs, locale }: AccountProps) => 
       ) : (
         <ul class="grid gap-4 sm:grid-cols-2">
           {designs.map(({ design, product }) => (
-            <li class="flex items-start justify-between gap-3 rounded-xl border bg-card p-4 text-card-foreground">
+            <li class="flex items-start justify-between gap-3 rounded-sm border-2 bg-card p-4 text-card-foreground">
               <a
                 href={`/furniture/${product.slug}?${selectionToQuery(design.selection)}`}
                 class="min-w-0 space-y-1"
@@ -92,7 +92,7 @@ export const AccountPage = ({ name, orders, designs, locale }: AccountProps) => 
                 <button
                   type="submit"
                   aria-label={`Remove saved ${product.name}`}
-                  class="inline-flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                  class="inline-flex h-11 w-11 items-center justify-center rounded-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                 >
                   <i data-lucide="trash-2" class="h-4 w-4"></i>
                 </button>

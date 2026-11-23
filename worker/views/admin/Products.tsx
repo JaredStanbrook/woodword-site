@@ -42,7 +42,7 @@ const STATUS_STYLES: Record<string, string> = {
 
 export const StatusPill = ({ status }: { status: string }) => (
   <span
-    class={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[status] ?? STATUS_STYLES.draft}`}
+    class={`inline-flex items-center rounded-full border-2 px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[status] ?? STATUS_STYLES.draft}`}
   >
     {status}
   </span>
@@ -78,17 +78,17 @@ export const ProductListPage = ({
     }
   >
     {products.length === 0 ? (
-      <div class="rounded-xl border border-dashed px-6 py-16 text-center">
+      <div class="rounded-sm border-2 border-dashed px-6 py-16 text-center">
         <p class="font-display text-xl">No products yet</p>
         <p class="mt-2 text-sm text-muted-foreground">
           Describe a piece and let the generator draft it, or start from a blank form.
         </p>
       </div>
     ) : (
-      <div class="overflow-x-auto rounded-xl border bg-card text-card-foreground">
+      <div class="overflow-x-auto rounded-sm border-2 bg-card text-card-foreground">
         <table class="w-full text-sm">
           <thead>
-            <tr class="border-b text-left text-sm italic text-muted-foreground">
+            <tr class="border-b-2 text-left text-sm italic text-muted-foreground">
               <th class="p-3 font-medium" scope="col">
                 Piece
               </th>
@@ -114,7 +114,7 @@ export const ProductListPage = ({
           </thead>
           <tbody>
             {products.map((p) => (
-              <tr class="border-b last:border-0">
+              <tr class="border-b-2 last:border-0">
                 <td class="p-3">
                   <a
                     href={`/admin/products/${p.id}`}
@@ -159,7 +159,7 @@ export const ProductListPage = ({
                 <td class="p-3 text-right">
                   <a
                     href={`/furniture/${p.slug}`}
-                    class="inline-flex h-11 items-center gap-1.5 rounded-lg px-3 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    class="inline-flex h-11 items-center gap-1.5 rounded-sm px-3 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                   >
                     <i data-lucide="eye" class="h-4 w-4"></i>
                     <span class="hidden sm:inline">
@@ -294,7 +294,7 @@ const Section = ({
   hint?: string;
   children?: unknown;
 }) => (
-  <section class="space-y-5 rounded-xl border bg-card p-5 text-card-foreground sm:p-6">
+  <section class="space-y-5 rounded-sm border-2 bg-card p-5 text-card-foreground sm:p-6">
     <div>
       <h2 class="font-display text-xl">{title}</h2>
       {hint ? <p class="mt-1 text-sm text-muted-foreground">{hint}</p> : null}
@@ -336,7 +336,7 @@ const UploadForms = ({
           <img
             src={mediaUrl(key)}
             alt={`Image ${i + 1}`}
-            class="aspect-square w-full rounded-lg object-cover"
+            class="aspect-square w-full rounded-sm object-cover"
           />
           <form
             method="post"
@@ -348,7 +348,7 @@ const UploadForms = ({
               <button
                 name="action"
                 value="first"
-                class="h-11 flex-1 rounded-lg text-xs text-muted-foreground hover:bg-accent"
+                class="h-11 flex-1 rounded-sm text-xs text-muted-foreground hover:bg-accent"
               >
                 Make first
               </button>
@@ -361,7 +361,7 @@ const UploadForms = ({
               name="action"
               value="remove"
               aria-label={`Remove image ${i + 1}`}
-              class="inline-flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+              class="inline-flex h-11 w-11 items-center justify-center rounded-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
             >
               <i data-lucide="trash-2" class="h-4 w-4"></i>
             </button>
@@ -385,14 +385,14 @@ const UploadForms = ({
         name="images"
         multiple
         accept="image/jpeg,image/png,image/webp,image/avif"
-        class="text-sm file:mr-3 file:h-11 file:rounded-lg file:border file:border-input file:bg-background file:px-4 file:text-sm"
+        class="text-sm file:mr-3 file:h-11 file:rounded-lg file:border-2 file:border-input file:bg-background file:px-4 file:text-sm"
       />
       <button type="submit" class={buttonSecondary} disabled={!r2Available}>
         <i data-lucide="upload" class="h-4 w-4"></i> Upload images
       </button>
     </form>
 
-    <div class="grid gap-6 border-t pt-5 md:grid-cols-2">
+    <div class="grid gap-6 border-t-2 pt-5 md:grid-cols-2">
       <form
         method="post"
         action={`/admin/products/${product.id}/model`}
@@ -411,7 +411,7 @@ const UploadForms = ({
           name="file"
           accept=".glb,model/gltf-binary"
           aria-label="GLB model file"
-          class="text-sm file:mr-3 file:h-11 file:rounded-lg file:border file:border-input file:bg-background file:px-4 file:text-sm"
+          class="text-sm file:mr-3 file:h-11 file:rounded-lg file:border-2 file:border-input file:bg-background file:px-4 file:text-sm"
         />
         <div class="flex flex-wrap gap-2">
           <button type="submit" class={buttonSecondary} disabled={!r2Available}>
@@ -421,7 +421,7 @@ const UploadForms = ({
             <button
               type="submit"
               formaction={`/admin/products/${product.id}/model/remove`}
-              class="inline-flex h-11 items-center gap-2 rounded-lg px-3 text-sm text-destructive hover:bg-destructive/10"
+              class="inline-flex h-11 items-center gap-2 rounded-sm px-3 text-sm text-destructive hover:bg-destructive/10"
             >
               Remove model
             </button>
@@ -453,7 +453,7 @@ const UploadForms = ({
           name="file"
           accept=".blend"
           aria-label="Blender file"
-          class="text-sm file:mr-3 file:h-11 file:rounded-lg file:border file:border-input file:bg-background file:px-4 file:text-sm"
+          class="text-sm file:mr-3 file:h-11 file:rounded-lg file:border-2 file:border-input file:bg-background file:px-4 file:text-sm"
         />
         <button type="submit" class={buttonSecondary} disabled={!r2Available}>
           <i data-lucide="upload" class="h-4 w-4"></i> Upload .blend
@@ -489,7 +489,7 @@ const StandardPreview = ({
     >
       <div class={`${paletteClass(product)} grid grid-cols-2 gap-3`}>
         <figure class="space-y-1">
-          <div class="aspect-square rounded-lg bg-product-wash p-4">
+          <div class="aspect-square rounded-sm bg-product-wash p-4">
             <IsoDrawing parts={parts} />
           </div>
           <figcaption class="text-xs text-muted-foreground">
@@ -497,7 +497,7 @@ const StandardPreview = ({
           </figcaption>
         </figure>
         <figure class="space-y-1">
-          <div class="aspect-square rounded-lg bg-product-wash p-4">
+          <div class="aspect-square rounded-sm bg-product-wash p-4">
             <IsoDrawing parts={resizeParts(spec, max)} />
           </div>
           <figcaption class="text-xs text-muted-foreground">
@@ -512,7 +512,7 @@ const StandardPreview = ({
         <table class="mt-2 w-full text-xs tabular-nums">
           <tbody>
             {cutList(parts).map((r) => (
-              <tr class="border-b last:border-0">
+              <tr class="border-b-2 last:border-0">
                 <td class="py-1.5 pr-2">{r.label}</td>
                 <td class="py-1.5 pr-2 text-muted-foreground">× {r.quantity}</td>
                 <td class="py-1.5 text-right">{r.dims.join(" × ")} mm</td>
@@ -552,13 +552,13 @@ export const ProductEditorPage = ({
       }
     >
       {notice ? (
-        <p class="rounded-lg border border-success/30 bg-success/10 p-4 text-sm" role="status">
+        <p class="rounded-sm border-2 border-success/30 bg-success/10 p-4 text-sm" role="status">
           {notice}
         </p>
       ) : null}
       {hasErrors ? (
         <div
-          class="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive"
+          class="rounded-sm border-2 border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive"
           role="alert"
         >
           <p class="font-medium">Not saved — fix these first:</p>
@@ -789,7 +789,7 @@ export const ProductEditorPage = ({
             </Section>
           ) : null}
 
-          <div class="sticky bottom-0 z-10 -mx-1 flex flex-wrap items-center gap-3 border-t bg-background/95 px-1 py-4 backdrop-blur">
+          <div class="sticky bottom-0 z-10 -mx-1 flex flex-wrap items-center gap-3 border-t-2 bg-background/95 px-1 py-4 backdrop-blur">
             <button type="submit" class={buttonPrimary}>
               {isEdit ? "Save changes" : "Create product"}
             </button>
@@ -811,7 +811,7 @@ export const ProductEditorPage = ({
               <form method="post" action={`/admin/products/${product!.id}/delete`} hx-boost="false">
                 <button
                   type="submit"
-                  class="inline-flex h-11 items-center gap-2 rounded-lg border border-destructive/40 px-4 text-sm font-medium text-destructive hover:bg-destructive/10"
+                  class="inline-flex h-11 items-center gap-2 rounded-sm border-2 border-destructive/40 px-4 text-sm font-medium text-destructive hover:bg-destructive/10"
                   onclick="return confirm('Delete this product? It disappears from the shop and the admin.')"
                 >
                   <i data-lucide="trash-2" class="h-4 w-4"></i> Delete product

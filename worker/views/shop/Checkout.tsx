@@ -86,7 +86,7 @@ export const CheckoutPage = (props: CheckoutProps) => {
       {props.notice ? (
         <p
           role={props.notice.tone === "error" ? "alert" : "status"}
-          class={`mt-6 rounded-lg border p-4 text-sm ${
+          class={`mt-6 rounded-sm border-2 p-4 text-sm ${
             props.notice.tone === "error"
               ? "border-destructive/30 bg-destructive/10 text-destructive"
               : "border-border bg-muted text-foreground"
@@ -188,7 +188,7 @@ export const CheckoutPage = (props: CheckoutProps) => {
           <fieldset class="space-y-3">
             <legend class="mb-2 font-display text-xl">Delivery</legend>
             {DELIVERY_OPTIONS.map((d) => (
-              <label class="flex min-h-11 cursor-pointer items-start gap-3 rounded-lg border border-input p-4 transition-colors hover:bg-accent has-[:checked]:border-primary has-[:checked]:bg-accent/60 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
+              <label class="flex min-h-11 cursor-pointer items-start gap-3 rounded-sm border-2 border-input p-4 transition-colors hover:bg-accent has-[:checked]:border-primary has-[:checked]:bg-accent/60 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
                 <input
                   type="radio"
                   name="delivery"
@@ -223,7 +223,7 @@ export const CheckoutPage = (props: CheckoutProps) => {
           </div>
         </div>
 
-        <aside class="h-fit space-y-5 rounded-xl border bg-card p-5 text-card-foreground shadow-sm lg:sticky lg:top-8">
+        <aside class="h-fit space-y-5 rounded-sm border-2 bg-card p-5 text-card-foreground shadow-sm lg:sticky lg:top-8">
           <h2 class="font-display text-xl">Your order</h2>
           <ul class="space-y-4">
             {lines.map((line) => (
@@ -240,7 +240,7 @@ export const CheckoutPage = (props: CheckoutProps) => {
               </li>
             ))}
           </ul>
-          <dl class="space-y-2 border-t pt-4 text-sm">
+          <dl class="space-y-2 border-t-2 pt-4 text-sm">
             <div class="flex justify-between">
               <dt class="text-muted-foreground">Subtotal</dt>
               <dd>
@@ -252,7 +252,7 @@ export const CheckoutPage = (props: CheckoutProps) => {
               <dd class="text-muted-foreground">added from your choice</dd>
             </div>
           </dl>
-          <p class="flex items-start gap-2 border-t pt-4 text-sm text-muted-foreground">
+          <p class="flex items-start gap-2 border-t-2 pt-4 text-sm text-muted-foreground">
             <i data-lucide="clock" class="mt-0.5 h-4 w-4 shrink-0"></i>
             {leadTimeLabel(lead)}, then delivery as chosen. We confirm a date when it is finished.
           </p>

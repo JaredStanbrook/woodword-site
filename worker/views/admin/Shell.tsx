@@ -28,7 +28,7 @@ export const AdminShell = ({
   return (
     <div class="mx-auto max-w-7xl space-y-6 px-4 pt-8 pb-12 sm:px-6 animate-in fade-in duration-300">
       <nav
-        class="-mx-4 flex gap-1 overflow-x-auto border-b px-4 sm:mx-0 sm:px-0"
+        class="-mx-4 flex gap-1 overflow-x-auto border-b-2 px-4 sm:mx-0 sm:px-0"
         aria-label="Admin sections"
       >
         {TABS.map((t) => (

@@ -32,10 +32,12 @@ export const MadeToMeasurePage = () => (
     <h1 class="max-w-3xl text-5xl leading-[0.98] sm:text-7xl">
       The size your room needs, not the size a factory picked.
     </h1>
-    <ol class="mt-16 divide-y border-y">
+    <ol class="mt-16 divide-y-2 border-y-2">
       {steps.map((s) => (
         <li class="grid gap-3 py-8 sm:grid-cols-[5rem_1fr_2fr]">
-          <span class="font-serif text-4xl italic leading-none text-gilt">{s.n}</span>
+          <span class="font-serif text-5xl font-semibold italic leading-none text-primary">
+            {s.n}
+          </span>
           <h2 class="font-display text-2xl">{s.title}</h2>
           <p class="leading-relaxed text-muted-foreground">{s.body}</p>
         </li>

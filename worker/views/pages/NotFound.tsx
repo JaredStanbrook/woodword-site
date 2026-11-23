@@ -30,7 +30,7 @@ const NotFoundPage: FC = () => (
       </a>
       <a
         href="/orders"
-        class="inline-flex h-11 items-center justify-center rounded-lg border border-input px-5 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+        class="inline-flex h-11 items-center justify-center rounded-lg border-2 border-input px-5 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
       >
         Track an order
       </a>

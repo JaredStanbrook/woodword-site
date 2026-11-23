@@ -71,7 +71,7 @@ const DimensionControl = ({
         <button
           type="button"
           data-step-down
-          class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-input hover:bg-accent hover:text-accent-foreground disabled:opacity-40 transition-colors"
+          class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-sm border-2 border-input hover:bg-accent hover:text-accent-foreground disabled:opacity-40 transition-colors"
           aria-label={`Decrease ${label.toLowerCase()} by ${dim.step} mm`}
           disabled={fixed || value <= dim.min}
         >
@@ -90,7 +90,7 @@ const DimensionControl = ({
             readonly={fixed}
             aria-describedby={`${id}-range`}
             data-number
-            class="flex h-11 w-full rounded-lg border border-input bg-background pl-3 pr-12 text-base tabular-nums focus:outline-none focus:ring-2 focus:ring-ring"
+            class="flex h-11 w-full rounded-sm border-2 border-input bg-background pl-3 pr-12 text-base tabular-nums focus:outline-none focus:ring-2 focus:ring-ring"
           />
           <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
             mm
@@ -99,7 +99,7 @@ const DimensionControl = ({
         <button
           type="button"
           data-step-up
-          class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-input hover:bg-accent hover:text-accent-foreground disabled:opacity-40 transition-colors"
+          class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-sm border-2 border-input hover:bg-accent hover:text-accent-foreground disabled:opacity-40 transition-colors"
           aria-label={`Increase ${label.toLowerCase()} by ${dim.step} mm`}
           disabled={fixed || value >= dim.max}
         >
@@ -197,7 +197,7 @@ export const Configurator = (props: ConfiguratorProps) => {
             </legend>
             <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {group.choices.map((choice) => (
-                <label class="group/choice relative flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border border-input px-3 py-2.5 transition-colors hover:bg-accent has-[:checked]:border-product has-[:checked]:bg-product-wash has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
+                <label class="group/choice relative flex min-h-11 cursor-pointer items-center gap-3 rounded-sm border-2 border-input px-3 py-2.5 transition-colors hover:bg-accent has-[:checked]:border-foreground has-[:checked]:bg-card has-[:checked]:shadow-sm has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
                   <input
                     type="radio"
                     name={`o.${group.id}`}
@@ -209,7 +209,7 @@ export const Configurator = (props: ConfiguratorProps) => {
                   />
                   {choice.color ? (
                     <span
-                      class="h-6 w-6 shrink-0 rounded-full border border-foreground/15 shadow-xs"
+                      class="h-6 w-6 shrink-0 rounded-full border-2 border-foreground/15 shadow-xs"
                       style={`background-color: ${choice.color}`}
                       aria-hidden="true"
                     ></span>
@@ -244,12 +244,12 @@ export const Configurator = (props: ConfiguratorProps) => {
         </noscript>
 
         <section
-          class="space-y-5 rounded-xl border bg-card p-5 text-card-foreground shadow-sm"
+          class="on-night space-y-5 rounded-sm border-[3px] border-night p-6 shadow-lg"
           aria-label="Price"
         >
           <div>
             <p class="text-sm italic text-muted-foreground">Current configuration price</p>
-            <p class="mt-2 font-serif text-5xl font-medium text-gilt">
+            <p class="mt-2 font-serif text-6xl font-semibold text-gilt">
               <RollingPrice cents={quote.totalCents} locale={locale} currency={currency} />
             </p>
             <p class="mt-2 text-sm text-muted-foreground">
@@ -261,7 +261,7 @@ export const Configurator = (props: ConfiguratorProps) => {
             </p>
           </div>
 
-          <details class="group border-t pt-4">
+          <details class="group border-t-2 pt-4">
             <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between text-sm font-medium [&::-webkit-details-marker]:hidden">
               How this price is made up
               <i
@@ -274,7 +274,7 @@ export const Configurator = (props: ConfiguratorProps) => {
             </div>
           </details>
 
-          <p class="flex items-start gap-2 border-t pt-4 text-sm">
+          <p class="flex items-start gap-2 border-t-2 pt-4 text-sm">
             <i data-lucide="clock" class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"></i>
             <span>
               <span data-lead-label>{leadTimeLabel(quote.leadDays)}</span>
@@ -285,7 +285,7 @@ export const Configurator = (props: ConfiguratorProps) => {
           </p>
 
           {props.purchasable ? (
-            <div class="flex flex-col gap-3 border-t pt-5 sm:flex-row sm:items-center">
+            <div class="flex flex-col gap-3 border-t-2 pt-5 sm:flex-row sm:items-center">
               <label class="flex items-center gap-2 text-sm">
                 <span class="text-muted-foreground">Qty</span>
                 <input
@@ -295,7 +295,7 @@ export const Configurator = (props: ConfiguratorProps) => {
                   max="20"
                   value="1"
                   inputmode="numeric"
-                  class="h-11 w-20 rounded-lg border border-input bg-background px-3 text-base tabular-nums focus:outline-none focus:ring-2 focus:ring-ring"
+                  class="h-11 w-20 rounded-sm border-2 border-input bg-background px-3 text-base tabular-nums focus:outline-none focus:ring-2 focus:ring-ring"
                 />
               </label>
               <button type="submit" class={`${buttonPrimary} w-full sm:w-auto sm:flex-1`}>
@@ -304,23 +304,23 @@ export const Configurator = (props: ConfiguratorProps) => {
               </button>
             </div>
           ) : (
-            <p class="border-t pt-5 text-sm text-muted-foreground">
+            <p class="border-t-2 pt-5 text-sm text-muted-foreground">
               This piece is not available to order at the moment.
             </p>
           )}
 
-          <div class="flex flex-wrap gap-2 border-t pt-4" id="save-design">
+          <div class="flex flex-wrap gap-2 border-t-2 pt-4" id="save-design">
             <button
               type="submit"
               formaction="/designs"
               formmethod="post"
-              class="inline-flex h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+              class="inline-flex h-11 items-center gap-2 rounded-sm px-3 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
             >
               <i data-lucide="bookmark" class="h-4 w-4"></i> Save or share this design
             </button>
           </div>
           {props.savedLink ? (
-            <div class="space-y-2 rounded-lg bg-muted p-3 text-sm" role="status">
+            <div class="space-y-2 rounded-sm bg-muted p-3 text-sm" role="status">
               <p class="font-medium">
                 Design saved. Anyone with this link sees exactly this configuration:
               </p>
@@ -328,7 +328,7 @@ export const Configurator = (props: ConfiguratorProps) => {
                 readonly
                 value={props.savedLink}
                 aria-label="Link to this design"
-                class="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm"
+                class="h-11 w-full rounded-sm border-2 border-input bg-background px-3 text-sm"
                 onclick="this.select()"
               />
             </div>

@@ -9,8 +9,6 @@ import "htmx.org";
 import { renderIcons } from "./lib/icons";
 
 import "./ui/AppToaster";
-import "./ui/ThemeProvider";
-import "./ui/ThemeToggle";
 import "./ui/NavUserMenu";
 
 /**

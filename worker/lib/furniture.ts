@@ -436,6 +436,6 @@ export function isoDrawing(parts: ResolvedPart[]) {
     faces,
     viewBox: `${(minX - pad).toFixed(1)} ${(minY - pad).toFixed(1)} ${(maxX - minX + pad * 2).toFixed(1)} ${(maxY - minY + pad * 2).toFixed(1)}`,
     /** Stroke width that reads the same whatever the piece's size. */
-    stroke: (Math.max(maxX - minX, maxY - minY) / 260).toFixed(2),
+    stroke: (Math.max(maxX - minX, maxY - minY) / 120).toFixed(2),
   };
 }

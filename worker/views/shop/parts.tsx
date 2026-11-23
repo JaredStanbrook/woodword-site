@@ -40,7 +40,7 @@ export const AvailabilityBadge = ({ availability }: { availability: Availability
   const style = AVAILABILITY_STYLES[availability] ?? AVAILABILITY_STYLES.made_to_order;
   return (
     <span
-      class={`inline-flex items-center rounded-sm border px-2 py-0.5 text-sm italic ${style.class}`}
+      class={`inline-flex items-center rounded-sm border-2 px-2 py-0.5 text-sm italic ${style.class}`}
     >
       {style.label}
     </span>
@@ -148,13 +148,13 @@ export const sizeLabel = (s: { width: number; height: number; depth: number }) =
 
 /** Shared input styling. */
 export const inputClass =
-  "flex h-11 w-full rounded-sm border border-input bg-card px-3 py-2 text-base placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring";
+  "flex h-12 w-full rounded-sm border-2 border-input bg-card px-3 py-2 text-base font-medium placeholder:text-muted-foreground focus:outline-none focus:ring-[3px] focus:ring-ring";
 
 export const buttonPrimary =
-  "inline-flex h-11 items-center justify-center gap-2 rounded-sm bg-primary px-6 text-base font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50";
+  "inline-flex h-12 items-center justify-center gap-2 rounded-sm border-2 border-foreground bg-primary px-6 text-lg font-semibold text-primary-foreground shadow-sm transition-[transform,box-shadow] hover:-translate-y-px hover:shadow active:translate-y-0 active:shadow-xs focus:outline-none focus-visible:ring-[3px] focus-visible:ring-ring disabled:opacity-50";
 
 export const buttonSecondary =
-  "inline-flex h-11 items-center justify-center gap-2 rounded-sm border border-gilt/50 bg-transparent px-5 text-base font-medium hover:bg-accent hover:text-accent-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "inline-flex h-12 items-center justify-center gap-2 rounded-sm border-2 border-foreground bg-card px-5 text-lg font-semibold text-card-foreground shadow-xs hover:bg-accent transition-colors focus:outline-none focus-visible:ring-[3px] focus-visible:ring-ring";
 
 export const buttonGhost =
-  "inline-flex h-11 items-center justify-center gap-2 rounded-sm px-3 text-base font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "inline-flex h-11 items-center justify-center gap-2 rounded-sm px-3 text-base font-semibold text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring";

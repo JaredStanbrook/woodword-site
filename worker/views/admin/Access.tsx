@@ -34,10 +34,10 @@ const MODE_NOTE: Record<GateMode, { class: string; label: string }> = {
 };
 
 const FIELD_CLASS =
-  "flex h-11 w-full rounded-lg border border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring";
+  "flex h-11 w-full rounded-sm border-2 border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring";
 
 const BUTTON_CLASS =
-  "inline-flex h-11 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors";
+  "inline-flex h-11 cursor-pointer items-center gap-1.5 rounded-sm px-3 text-sm font-medium transition-colors";
 
 const durationLabel = (hours: number) =>
   ACCESS_DURATIONS.find((d) => d.hours === hours)?.label ??
@@ -55,7 +55,7 @@ export const AccessLinkRow: FC<{ link: SelectAccessLink; app: AppConfig }> = ({ 
   const url = `${app.origin}/a/${link.token}`;
 
   return (
-    <div id={`access-${link.id}`} class="border-b px-5 py-4 last:border-0">
+    <div id={`access-${link.id}`} class="border-b-2 px-5 py-4 last:border-0">
       <div class="flex flex-wrap items-center gap-3">
         <span class="min-w-0 flex-1 truncate font-medium">{link.label}</span>
         <span class={`${BADGE} ${STATE[state].class}`}>{STATE[state].label}</span>
@@ -89,7 +89,7 @@ export const AccessLinkRow: FC<{ link: SelectAccessLink; app: AppConfig }> = ({ 
             data-url={url}
             aria-label={`Copy link for ${link.label}`}
             onclick="navigator.clipboard.writeText(this.dataset.url).then(() => { const l = this.querySelector('[data-label]'); l.textContent = 'Copied'; setTimeout(() => { l.textContent = 'Copy'; }, 2000); })"
-            class={`${BUTTON_CLASS} border border-input hover:bg-accent hover:text-accent-foreground`}
+            class={`${BUTTON_CLASS} border-2 border-input hover:bg-accent hover:text-accent-foreground`}
           >
             <i data-lucide="copy" class="h-4 w-4" aria-hidden="true"></i>
             <span data-label aria-live="polite">
@@ -136,7 +136,7 @@ export const AccessPage: FC<AccessProps> = ({ links, app, mode }) => (
     <form
       method="post"
       action="/admin/access"
-      class="grid gap-4 rounded-2xl border bg-card p-5 shadow-sm sm:grid-cols-[1fr_12rem_auto]"
+      class="grid gap-4 rounded-sm border-2 bg-card p-5 shadow-sm sm:grid-cols-[1fr_12rem_auto]"
     >
       <div>
         <label for="label" class="block text-sm font-medium">
@@ -175,7 +175,7 @@ export const AccessPage: FC<AccessProps> = ({ links, app, mode }) => (
       </div>
     </form>
 
-    <div class="overflow-hidden rounded-2xl border bg-card shadow-sm">
+    <div class="overflow-hidden rounded-sm border-2 bg-card shadow-sm">
       {links.length === 0 ? (
         <div class="px-5 py-16 text-center">
           <p class="font-medium">No links yet</p>

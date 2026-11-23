@@ -41,14 +41,14 @@ export const GeneratePage = ({
         </textarea>
         {error ? (
           <p
-            class="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+            class="rounded-sm border-2 border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
             role="alert"
           >
             {error}
           </p>
         ) : null}
         {aiEnabled ? null : (
-          <p class="rounded-lg border bg-muted p-3 text-sm">
+          <p class="rounded-sm border-2 bg-muted p-3 text-sm">
             Set the <code class="font-mono">ANTHROPIC_API_KEY</code> secret in the Cloudflare
             dashboard (Settings → Variables and Secrets, type Secret) to turn this on. Until then,
             create products with the form.

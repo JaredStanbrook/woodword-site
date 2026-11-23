@@ -6,42 +6,39 @@
 
 /** A four-pointed diamond, the site's bullet and keystone. */
 export const Fleuron = ({ class: cls = "h-2 w-2" }: { class?: string }) => (
-  <span class={`inline-block shrink-0 rotate-45 bg-gilt ${cls}`} aria-hidden="true"></span>
+  <span class={`inline-block shrink-0 rotate-45 bg-current ${cls}`} aria-hidden="true"></span>
 );
 
 /** A hairline with a fleuron in the middle, between sections. */
 export const Flourish = ({ class: cls = "" }: { class?: string }) => (
-  <div class={`flex items-center gap-3 text-gilt ${cls}`} aria-hidden="true">
-    <span class="h-px flex-1 bg-gradient-to-r from-transparent to-gilt/60"></span>
-    <svg viewBox="0 0 40 12" class="h-3 w-10" fill="none" stroke="currentColor" stroke-width="1">
+  <div class={`flex items-center gap-3 text-foreground ${cls}`} aria-hidden="true">
+    <span class="h-0.5 flex-1 bg-current"></span>
+    <svg viewBox="0 0 40 12" class="h-3.5 w-11" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M0 6 H13 M27 6 H40" />
       <path d="M20 1 L25 6 L20 11 L15 6 Z" fill="currentColor" />
       <circle cx="9" cy="6" r="1.2" fill="currentColor" stroke="none" />
       <circle cx="31" cy="6" r="1.2" fill="currentColor" stroke="none" />
     </svg>
-    <span class="h-px flex-1 bg-gradient-to-l from-transparent to-gilt/60"></span>
+    <span class="h-0.5 flex-1 bg-current"></span>
   </div>
 );
 
 /**
- * The pointed arch as a path, in a box `w` wide and `h` tall, inset by `i`.
- * The same curve as #arch-clip in Layout.tsx, which is in 0–1 box units.
+ * A book-cover frame: a heavy gilt rule with a fine one inside it and a
+ * diamond at each corner, laid over a panel of aspect `ratio` (width /
+ * height). Drawn in the panel's proportions so the rules keep an even weight.
+ * With `draw`, the rules draw themselves in once, on arrival.
  */
-const archPath = (w: number, h: number, i: number) => {
-  const x = (f: number) => (i + f * (w - 2 * i)).toFixed(2);
-  const y = (f: number) => (i + f * (h - i)).toFixed(2);
-  return `M${x(0)},${h} V${y(0.34)} C${x(0)},${y(0.16)} ${x(0.28)},${y(0.05)} ${x(0.5)},${y(0)} C${x(0.72)},${y(0.05)} ${x(1)},${y(0.16)} ${x(1)},${y(0.34)} V${h}`;
-};
-
-/**
- * The arch's gilt outline, for laying over an `.arch` element of the same
- * aspect ratio (width / height). Drawn in the element's own proportions
- * rather than stretched, so the line keeps an even weight and the draw-in
- * dash measures correctly.
- */
-export const ArchLine = ({ ratio, draw = false }: { ratio: number; draw?: boolean }) => {
+export const CoverFrame = ({ ratio, draw = false }: { ratio: number; draw?: boolean }) => {
   const w = 100;
   const h = 100 / ratio;
+  const rect = (inset: number) => `M${inset},${inset} H${w - inset} V${h - inset} H${inset} Z`;
+  const corners = [
+    [4.5, 4.5],
+    [w - 4.5, 4.5],
+    [w - 4.5, h - 4.5],
+    [4.5, h - 4.5],
+  ];
   return (
     <svg
       viewBox={`0 0 ${w} ${h.toFixed(2)}`}
@@ -50,19 +47,15 @@ export const ArchLine = ({ ratio, draw = false }: { ratio: number; draw?: boolea
       stroke="currentColor"
       aria-hidden="true"
     >
-      <path
-        d={archPath(w, h, 0.4)}
-        stroke-width="0.45"
-        pathLength={1}
-        class={draw ? "draw-in" : ""}
-      />
-      <path
-        d={archPath(w, h, 3)}
-        stroke-width="0.22"
-        opacity="0.55"
-        pathLength={1}
-        class={draw ? "draw-in" : ""}
-      />
+      <path d={rect(4.5)} stroke-width="1.6" pathLength={1} class={draw ? "draw-in" : ""} />
+      <path d={rect(7.5)} stroke-width="0.5" pathLength={1} class={draw ? "draw-in" : ""} />
+      {corners.map(([x, y]) => (
+        <path
+          d={`M${x},${y - 2.6} L${x + 2.6},${y} L${x},${y + 2.6} L${x - 2.6},${y} Z`}
+          fill="currentColor"
+          stroke="none"
+        />
+      ))}
     </svg>
   );
 };

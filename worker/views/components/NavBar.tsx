@@ -61,92 +61,6 @@ export const GrainMark = () => html`
   </svg>
 `;
 
-/**
- * ThemeToggle
- * Robust logic with large touch targets for mobile.
- */
-export const ThemeToggle = () => html`
-  <button
-    type="button"
-    class="theme-toggle-btn inline-flex h-11 w-11 items-center justify-center rounded-full text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-    aria-label="Switch between night, day and your device's setting"
-  >
-    <i data-theme-icon="light" data-lucide="sun" class="hidden w-5 h-5"></i>
-    <i data-theme-icon="dark" data-lucide="moon" class="hidden w-5 h-5"></i>
-    <i data-theme-icon="system" data-lucide="laptop" class="hidden w-5 h-5"></i>
-  </button>
-
-  <script>
-    (function () {
-      // 1. GUARD: Prevent script from running twice if component is rendered multiple times
-      if (window.__theme_toggle_init) return;
-      window.__theme_toggle_init = true;
-
-      const THEMES = ["light", "dark", "system"];
-      const STORAGE_KEY = "vite-ui-theme";
-      const root = document.documentElement;
-
-      function getButtons() {
-        return document.querySelectorAll(".theme-toggle-btn");
-      }
-
-      let currentTheme = localStorage.getItem(STORAGE_KEY) || "dark";
-      if (!THEMES.includes(currentTheme)) currentTheme = "dark";
-
-      function applyTheme(theme) {
-        root.classList.remove(...THEMES);
-        if (theme === "system") {
-          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-          root.classList.toggle("dark", prefersDark);
-        } else {
-          root.classList.add(theme);
-        }
-      }
-
-      function updateIcons(theme) {
-        // 2. SYNC: Update icons on ALL buttons (Desktop & Mobile)
-        const buttons = getButtons();
-        buttons.forEach((btn) => {
-          btn.querySelectorAll("[data-theme-icon]").forEach((icon) => {
-            icon.classList.toggle("hidden", icon.dataset.themeIcon !== theme);
-          });
-        });
-
-        // Provided by the client bundle (worker/components/main.ts).
-        if (window.renderIcons) window.renderIcons();
-      }
-
-      function setTheme(theme) {
-        localStorage.setItem(STORAGE_KEY, theme);
-        currentTheme = theme;
-        applyTheme(theme);
-        updateIcons(theme);
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        setTheme(currentTheme);
-
-        // 3. EVENT DELEGATION: Listen on document to catch clicks on any toggle button
-        document.addEventListener("click", (e) => {
-          const btn = e.target.closest(".theme-toggle-btn");
-          if (!btn) return;
-
-          const nextIdx = (THEMES.indexOf(currentTheme) + 1) % THEMES.length;
-          setTheme(THEMES[nextIdx]);
-        });
-      });
-
-      // hx-boost swaps the body without a new DOMContentLoaded, so the
-      // fresh toggle buttons would otherwise show no icon at all.
-      document.addEventListener("htmx:afterSettle", () => updateIcons(currentTheme));
-
-      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-        if (currentTheme === "system") applyTheme("system");
-      });
-    })();
-  </script>
-`;
-
 // --- MAIN NAVBAR ---
 
 interface NavBarProps {
@@ -172,15 +86,15 @@ const getMenuItems = (user: PropsUser | null | undefined) => {
 /** A gilt double rule: the bands stamped across a book's spine. */
 const SpineBand = () => html`
   <div class="flex flex-col gap-[3px] px-6" aria-hidden="true">
-    <span class="h-px bg-gilt/70"></span>
-    <span class="h-px bg-gilt/35"></span>
+    <span class="h-0.5 bg-gilt/70"></span>
+    <span class="h-0.5 bg-gilt/35"></span>
   </div>
 `;
 
 const Wordmark = ({ appName, size }: { appName: string; size: "lg" | "sm" }) => html`
   <a
     href="/"
-    class="inline-flex items-center gap-2.5 font-display leading-none text-sidebar-foreground ${
+    class="inline-flex items-center gap-2.5 font-display font-bold leading-none text-sidebar-foreground ${
       size === "lg" ? "text-[2.6rem]" : "h-11 text-[1.75rem]"
     }"
   >
@@ -296,7 +210,6 @@ export const NavBar = ({ appName, user, currentPath, cartCount = 0 }: NavBarProp
                   >Sign in</a
                 >`
           }
-          ${ThemeToggle()}
         </div>
       </div>
     </aside>
@@ -331,13 +244,7 @@ export const NavBar = ({ appName, user, currentPath, cartCount = 0 }: NavBarProp
             : link({ to: "/login", name: "Sign in" }, true)
         }
       </nav>
-      <div class="mt-auto pb-8">
-        ${SpineBand()}
-        <div class="mt-3 flex items-center justify-between px-6">
-          <span class="text-base text-sidebar-foreground/70">Night or day</span>
-          ${ThemeToggle()}
-        </div>
-      </div>
+      <div class="mt-auto pb-8">${SpineBand()}</div>
     </div>
 
     <script>

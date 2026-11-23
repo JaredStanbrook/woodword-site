@@ -31,7 +31,7 @@ const STATUS_TONE: Record<OrderStatus, string> = {
 
 export const OrderStatusPill = ({ status }: { status: OrderStatus }) => (
   <span
-    class={`inline-flex items-center whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${STATUS_TONE[status]}`}
+    class={`inline-flex items-center whitespace-nowrap rounded-full border-2 px-2 py-0.5 text-xs font-medium ${STATUS_TONE[status]}`}
   >
     {STATUS_LABELS[status]}
   </span>
@@ -39,7 +39,7 @@ export const OrderStatusPill = ({ status }: { status: OrderStatus }) => (
 
 const PaymentPill = ({ status }: { status: SelectOrder["paymentStatus"] }) => (
   <span
-    class={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium capitalize ${
+    class={`inline-flex items-center rounded-full border-2 px-2 py-0.5 text-xs font-medium capitalize ${
       status === "paid"
         ? "border-success/30 bg-success/10 text-success"
         : status === "unpaid"
@@ -68,7 +68,7 @@ export interface DashboardData {
 }
 
 const Tile = ({ label, value, note }: { label: string; value: string; note?: string }) => (
-  <div class="rounded-xl border bg-card p-5 text-card-foreground">
+  <div class="rounded-sm border-2 bg-card p-5 text-card-foreground">
     <p class="text-sm italic text-muted-foreground">{label}</p>
     <p class="mt-2 font-display text-3xl tabular-nums">{value}</p>
     {note ? <p class="mt-1 text-xs text-muted-foreground">{note}</p> : null}
@@ -92,7 +92,7 @@ const RevenueChart = ({
   const plotH = H - pad.top - pad.bottom;
   const peak = months.reduce((best, m, i) => (m.cents > months[best].cents ? i : best), 0);
   return (
-    <figure class="rounded-xl border bg-card p-5 text-card-foreground">
+    <figure class="rounded-sm border-2 bg-card p-5 text-card-foreground">
       <figcaption class="mb-3 flex items-baseline justify-between">
         <span class="text-sm font-medium">Paid revenue by month</span>
         <span class="text-xs text-muted-foreground">last {months.length} months</span>
@@ -175,7 +175,7 @@ const RevenueChart = ({
         <table class="w-full text-sm tabular-nums">
           <tbody>
             {months.map((m) => (
-              <tr class="border-b last:border-0">
+              <tr class="border-b-2 last:border-0">
                 <th scope="row" class="py-1.5 text-left font-normal text-muted-foreground">
                   {m.label}
                 </th>
@@ -191,14 +191,14 @@ const RevenueChart = ({
 
 export const OrderTable = ({ orders, locale }: { orders: SelectOrder[]; locale: string }) =>
   orders.length === 0 ? (
-    <p class="rounded-xl border border-dashed px-6 py-10 text-center text-sm text-muted-foreground">
+    <p class="rounded-sm border-2 border-dashed px-6 py-10 text-center text-sm text-muted-foreground">
       No orders here.
     </p>
   ) : (
-    <div class="overflow-x-auto rounded-xl border bg-card text-card-foreground">
+    <div class="overflow-x-auto rounded-sm border-2 bg-card text-card-foreground">
       <table class="w-full text-sm">
         <thead>
-          <tr class="border-b text-left text-sm italic text-muted-foreground">
+          <tr class="border-b-2 text-left text-sm italic text-muted-foreground">
             <th class="p-3 font-medium" scope="col">
               Order
             </th>
@@ -218,7 +218,7 @@ export const OrderTable = ({ orders, locale }: { orders: SelectOrder[]; locale: 
         </thead>
         <tbody>
           {orders.map((o) => (
-            <tr class="border-b last:border-0">
+            <tr class="border-b-2 last:border-0">
               <td class="p-3">
                 <a
                   href={`/admin/orders/${o.id}`}
@@ -302,13 +302,13 @@ export const DashboardPage = ({
       <div class="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <RevenueChart months={data.months} money={money} />
         <section
-          class="rounded-xl border bg-card p-5 text-card-foreground"
+          class="rounded-sm border-2 bg-card p-5 text-card-foreground"
           aria-labelledby="pipeline-heading"
         >
           <h2 id="pipeline-heading" class="mb-3 text-sm font-medium">
             Workshop pipeline
           </h2>
-          <ul class="divide-y">
+          <ul class="divide-y-2">
             {pipeline.map((s) => (
               <li>
                 <a
@@ -400,7 +400,7 @@ export const OrderListPage = ({
           <a
             href={`/admin/orders?status=${t.id}`}
             aria-current={t.id === status ? "page" : undefined}
-            class={`inline-flex h-11 shrink-0 items-center gap-2 rounded-full border px-4 text-sm ${
+            class={`inline-flex h-11 shrink-0 items-center gap-2 rounded-full border-2 px-4 text-sm ${
               t.id === status
                 ? "border-primary bg-primary text-primary-foreground"
                 : "border-border text-muted-foreground hover:text-foreground"
@@ -463,7 +463,7 @@ export const OrderDetailPage = ({
 
       <div class="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         <div class="space-y-6">
-          <section class="rounded-xl border bg-card p-5 text-card-foreground">
+          <section class="rounded-sm border-2 bg-card p-5 text-card-foreground">
             <h2 class="mb-3 font-display text-xl">Pieces</h2>
             <OrderItems items={items} locale={locale} currency={order.currency} />
             <dl class="mt-3 space-y-1 text-sm">
@@ -475,7 +475,7 @@ export const OrderDetailPage = ({
                 <dt class="text-muted-foreground">{order.deliveryLabel}</dt>
                 <dd class="tabular-nums">{money(order.deliveryCents)}</dd>
               </div>
-              <div class="flex justify-between border-t pt-2 font-medium">
+              <div class="flex justify-between border-t-2 pt-2 font-medium">
                 <dt>Total</dt>
                 <dd class="tabular-nums">{money(order.totalCents)}</dd>
               </div>
@@ -486,7 +486,7 @@ export const OrderDetailPage = ({
             </p>
           </section>
 
-          <section class="rounded-xl border bg-card p-5 text-card-foreground">
+          <section class="rounded-sm border-2 bg-card p-5 text-card-foreground">
             <h2 class="mb-3 font-display text-xl">History</h2>
             <ol class="space-y-3 text-sm">
               {[...events].reverse().map((e) => (
@@ -510,7 +510,7 @@ export const OrderDetailPage = ({
         </div>
 
         <div class="space-y-6">
-          <section class="space-y-4 rounded-xl border bg-card p-5 text-card-foreground">
+          <section class="space-y-4 rounded-sm border-2 bg-card p-5 text-card-foreground">
             <h2 class="font-display text-xl">Update status</h2>
             {order.paymentStatus !== "paid" && order.status === "pending_payment" ? (
               <p class="text-sm text-muted-foreground">
@@ -528,7 +528,7 @@ export const OrderDetailPage = ({
             <form
               method="post"
               action={`/admin/orders/${order.id}/status`}
-              class="space-y-3 border-t pt-4"
+              class="space-y-3 border-t-2 pt-4"
             >
               <label for="status" class="text-sm font-medium">
                 Set any status
@@ -559,7 +559,7 @@ export const OrderDetailPage = ({
             </form>
           </section>
 
-          <section class="space-y-1 rounded-xl border bg-card p-5 text-sm text-card-foreground">
+          <section class="space-y-1 rounded-sm border-2 bg-card p-5 text-sm text-card-foreground">
             <h2 class="mb-2 font-display text-xl">Customer</h2>
             <p class="font-medium">{order.name}</p>
             <p>
@@ -584,7 +584,7 @@ export const OrderDetailPage = ({
                 : "First order with this email."}
             </p>
             {order.notes ? (
-              <p class="mt-3 rounded-lg bg-muted p-3 whitespace-pre-line">{order.notes}</p>
+              <p class="mt-3 rounded-sm bg-muted p-3 whitespace-pre-line">{order.notes}</p>
             ) : null}
           </section>
         </div>
@@ -607,7 +607,7 @@ export const SpecSheet = ({
   locale: string;
 }) => (
   <div class="mx-auto max-w-4xl space-y-10 px-4 py-8 sm:px-6 print:max-w-none print:p-0">
-    <header class="flex flex-wrap items-end justify-between gap-4 border-b pb-4">
+    <header class="flex flex-wrap items-end justify-between gap-4 border-b-2 pb-4">
       <div>
         <p class="text-sm italic text-muted-foreground">Manufacturing specification</p>
         <h1 class="text-3xl">Order {order.ref}</h1>
@@ -634,7 +634,7 @@ export const SpecSheet = ({
         </div>
         <table class="w-full text-sm tabular-nums">
           <thead>
-            <tr class="border-b text-left text-sm italic text-muted-foreground">
+            <tr class="border-b-2 text-left text-sm italic text-muted-foreground">
               <th class="py-2" scope="col">
                 Overall
               </th>
@@ -648,7 +648,7 @@ export const SpecSheet = ({
           </thead>
           <tbody>
             {(["width", "depth", "height"] as const).map((k) => (
-              <tr class="border-b">
+              <tr class="border-b-2">
                 <th scope="row" class="py-1.5 text-left font-medium capitalize">
                   {k}
                 </th>
@@ -673,7 +673,7 @@ export const SpecSheet = ({
           <h3 class="mb-1 text-sm font-medium">Cut list (finished sizes, per piece)</h3>
           <table class="w-full text-sm tabular-nums">
             <thead>
-              <tr class="border-b text-left text-sm italic text-muted-foreground">
+              <tr class="border-b-2 text-left text-sm italic text-muted-foreground">
                 <th class="py-2" scope="col">
                   Component
                 </th>
@@ -693,7 +693,7 @@ export const SpecSheet = ({
             </thead>
             <tbody>
               {item.spec.cutList.map((r) => (
-                <tr class="border-b">
+                <tr class="border-b-2">
                   <td class="py-1.5">
                     {r.label}
                     {r.shape === "cylinder" ? " (round)" : ""}

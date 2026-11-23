@@ -82,22 +82,6 @@ export const Layout: FC<LayoutProps> = (props) => {
         )}
 
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <!-- Night is the default. Set the class before first paint, or a
-             returning visitor sees a flash of the other theme while the
-             theme-provider module loads. -->
-        <script>
-          (function () {
-            try {
-              var t = localStorage.getItem("vite-ui-theme") || "dark";
-              var dark =
-                t === "dark" ||
-                (t === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
-              document.documentElement.classList.toggle("dark", dark);
-            } catch (e) {
-              document.documentElement.classList.add("dark");
-            }
-          })();
-        </script>
         <!-- The two faces above the fold. Without a preload the browser only
              discovers them after parsing the stylesheet, and the headline
              visibly swaps. crossorigin is required even same-origin. -->
@@ -127,11 +111,9 @@ export const Layout: FC<LayoutProps> = (props) => {
         ${props.headExtra}
       </head>
       <body class="bg-background text-foreground antialiased min-h-screen font-sans flex flex-col">
-        <theme-provider defaultTheme="dark"></theme-provider>
-
         ${
           props.meta.bare
-            ? html`<header class="border-b">
+            ? html`<header class="border-b-2">
                 <div class="flex h-14 items-center px-4 font-display text-xl tracking-tight">
                   ${props.app.name}
                 </div>
@@ -169,7 +151,7 @@ export const Layout: FC<LayoutProps> = (props) => {
         ${
           props.meta.bare
             ? ""
-            : html`<footer class="mt-28 border-t lg:ml-60">
+            : html`<footer class="mt-28 border-t-2 lg:ml-60">
                 <div
                   class="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr]"
                 >

@@ -27,7 +27,7 @@ export const OrderItems = ({
   locale: string;
   currency: string;
 }) => (
-  <ul class="divide-y border-y">
+  <ul class="divide-y-2 border-y-2">
     {items.map((i) => (
       <li class="flex flex-wrap justify-between gap-4 py-4">
         <div class="space-y-1">
@@ -58,7 +58,7 @@ const Progress = ({ order }: { order: SelectOrder }) => {
     order.status === "pending_payment"
   ) {
     return (
-      <p class="rounded-lg border bg-muted p-4 text-sm">
+      <p class="rounded-sm border-2 bg-muted p-4 text-sm">
         <strong class="font-semibold">{STATUS_LABELS[order.status]}.</strong>{" "}
         {STATUS_DESCRIPTIONS[order.status]}
       </p>
@@ -110,7 +110,7 @@ export const OrderPage = ({
       <form
         method="post"
         action={testPaymentUrl}
-        class="mt-6 rounded-lg border border-warning/40 bg-warning/15 p-4"
+        class="mt-6 rounded-sm border-2 border-warning/40 bg-warning/15 p-4"
       >
         <p class="text-sm">
           No payment provider is configured, so this development site can simulate a successful
@@ -147,7 +147,7 @@ export const OrderPage = ({
             <Price cents={order.deliveryCents} locale={locale} currency={order.currency} />
           </dd>
         </div>
-        <div class="flex justify-between border-t pt-2 text-base font-medium">
+        <div class="flex justify-between border-t-2 pt-2 text-base font-medium">
           <dt>Total</dt>
           <dd>
             <Price cents={order.totalCents} locale={locale} currency={order.currency} />

@@ -1,8 +1,8 @@
 // worker/views/shop/Gallery.tsx
 //
-// The storefront. One loud thing — the cover: a pointed gilt arch framing the
-// first piece as a foil engraving — then a quiet collection beneath it, each
-// piece in a smaller arch of its own.
+// The storefront. One loud thing — the cover: a night panel in a heavy gilt
+// frame, the first piece engraved on it in foil under a crescent moon — then
+// the collection as square jewel-toned tiles beneath it.
 
 import type { SelectProduct } from "@server/schema/product.schema";
 import { specOf } from "@server/schema/product.schema";
@@ -10,7 +10,7 @@ import type { Category } from "@server/schema/furniture.config";
 import { resizeParts, standardSelection } from "@server/lib/furniture";
 import { formatPrice } from "@server/lib/money";
 import { AVAILABILITY_STYLES, CATEGORY_LABELS, IsoDrawing, buttonPrimary, mediaUrl } from "./parts";
-import { ArchLine, Fleuron, NightSky } from "./ornaments";
+import { CoverFrame, Fleuron, NightSky } from "./ornaments";
 
 export interface GalleryItem {
   product: SelectProduct;
@@ -59,40 +59,39 @@ export const ProductCard = ({
 
   return (
     <article class={`group relative ${paletteClass(p)}`}>
-      <div class="relative">
-        <div class="arch relative aspect-[4/5] bg-product-wash">
-          {photo ? (
-            <img
-              src={mediaUrl(photo)}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-            />
-          ) : (
-            <div class="absolute inset-x-0 bottom-0 top-[22%] p-[10%] transition-transform duration-700 group-hover:-translate-y-1">
-              <IsoDrawing parts={resizeParts(spec, std)} />
-            </div>
-          )}
-        </div>
-        <ArchLine ratio={4 / 5} />
+      <div class="relative aspect-square overflow-hidden rounded-sm border-[3px] border-foreground bg-product-wash shadow">
+        {photo ? (
+          <img
+            src={mediaUrl(photo)}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+          />
+        ) : (
+          <div class="absolute inset-0 p-[11%] transition-transform duration-700 group-hover:-translate-y-1">
+            <IsoDrawing parts={resizeParts(spec, std)} />
+          </div>
+        )}
       </div>
       <div class="mt-5 space-y-1.5 text-center">
-        <h2 class="font-display text-3xl leading-none">
+        <h2 class="font-display text-[2rem] font-bold leading-none">
           <a
             href={`/furniture/${p.slug}`}
-            class="after:absolute after:inset-0 after:content-[''] focus:outline-none focus-visible:underline decoration-gilt underline-offset-4"
+            class="after:absolute after:inset-0 after:content-[''] focus:outline-none focus-visible:underline decoration-2 underline-offset-4"
           >
             {p.name}
           </a>
         </h2>
         <p class="mx-auto max-w-xs text-base leading-snug text-muted-foreground">{p.summary}</p>
         <p class="flex items-center justify-center gap-2 pt-1 text-base">
-          <span class="italic">from {formatPrice(item.fromCents, locale, currency)}</span>
+          <span class="font-semibold italic">
+            from {formatPrice(item.fromCents, locale, currency)}
+          </span>
           {ready || unavailable ? (
             <>
               <Fleuron class="h-1.5 w-1.5" />
-              <span class={unavailable ? "text-destructive" : "text-success"}>
+              <span class={`font-semibold ${unavailable ? "text-destructive" : "text-success"}`}>
                 {AVAILABILITY_STYLES[p.availability].label}
               </span>
             </>
@@ -119,7 +118,7 @@ export const GalleryGrid = ({
         </p>
         <p class="mt-3 text-muted-foreground">
           {active ? (
-            <a href="/" class="underline decoration-gilt underline-offset-4 hover:text-foreground">
+            <a href="/" class="underline decoration-2 underline-offset-4 hover:text-foreground">
               See everything in the collection
             </a>
           ) : (
@@ -145,7 +144,7 @@ const FilterLink = ({
   <a
     href={href}
     aria-current={current ? "page" : undefined}
-    class={`inline-flex h-11 shrink-0 items-center gap-2 text-lg italic transition-colors ${
+    class={`inline-flex h-11 shrink-0 items-center gap-2 text-lg font-semibold italic transition-colors ${
       current ? "text-foreground" : "text-muted-foreground hover:text-foreground"
     }`}
   >
@@ -155,9 +154,9 @@ const FilterLink = ({
 );
 
 /**
- * The cover. The first piece in the collection, drawn in gold foil inside a
- * pointed arch under a crescent moon; the arch's gilt line draws itself in
- * once, on arrival. It is the only motion on the page.
+ * The cover. The first piece in the collection, drawn in gold foil on a
+ * night panel under a crescent moon, inside a heavy gilt frame that draws
+ * itself in once, on arrival. It is the only motion on the page.
  */
 const Cover = ({
   item,
@@ -177,15 +176,15 @@ const Cover = ({
         class="group relative block focus:outline-none"
         aria-label={p.name}
       >
-        <div class="arch relative aspect-[3/4] bg-card">
-          <div class="absolute inset-x-[14%] top-[13%] h-[22%]">
+        <div class="relative aspect-[4/5] overflow-hidden rounded-sm border-[3px] border-foreground bg-night shadow-lg">
+          <div class="absolute inset-x-[18%] top-[12%] h-[24%]">
             <NightSky />
           </div>
-          <div class="absolute inset-x-[9%] bottom-[9%] top-[38%] transition-transform duration-700 group-hover:-translate-y-1">
+          <div class="absolute inset-x-[12%] bottom-[11%] top-[36%] transition-transform duration-700 group-hover:-translate-y-1">
             <IsoDrawing parts={resizeParts(spec, standardSelection(spec))} class="iso-foil" />
           </div>
+          <CoverFrame ratio={4 / 5} draw />
         </div>
-        <ArchLine ratio={3 / 4} draw />
       </a>
       <figcaption class="mt-4 text-center text-base italic text-muted-foreground">
         <a href={`/furniture/${p.slug}`} class="hover:text-foreground">
@@ -216,7 +215,7 @@ export const GalleryPage = (props: GalleryProps) => {
               </a>
               <a
                 href="/made-to-measure"
-                class="inline-flex h-11 items-center text-lg italic underline decoration-gilt/60 underline-offset-[6px] hover:decoration-gilt"
+                class="inline-flex h-11 items-center text-lg font-semibold italic underline decoration-2 underline-offset-[6px]"
               >
                 How made to measure works
               </a>
@@ -233,13 +232,13 @@ export const GalleryPage = (props: GalleryProps) => {
         class={`mx-auto max-w-6xl scroll-mt-16 px-5 sm:px-8 ${props.active ? "pt-12 lg:pt-20" : ""}`}
         aria-labelledby="collection-heading"
       >
-        <div class="mb-12 flex flex-wrap items-end justify-between gap-x-10 gap-y-4 border-b pb-4">
+        <div class="mb-12 flex flex-wrap items-end justify-between gap-x-10 gap-y-4 border-b-[3px] border-foreground pb-4">
           {props.active ? (
             <h1 id="collection-heading" class="text-6xl">
               {CATEGORY_LABELS[props.active]}
             </h1>
           ) : (
-            <h2 id="collection-heading" class="font-display text-5xl leading-none">
+            <h2 id="collection-heading" class="font-display text-5xl font-bold leading-none">
               The collection
             </h2>
           )}

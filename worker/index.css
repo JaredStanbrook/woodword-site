@@ -1,27 +1,28 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* THEME: "Night court"
-   A romantasy book cover rather than a shop template. Night is the default:
-   a wine-black room, candle-coloured text, gilt for every ornament, and one
-   blood-rose for the action on a page. By day the same book is printed on
-   rose-grey vellum in wine ink. Headings are blackletter, set the way a
-   cover sets its title; everything else is a book face.
+/* THEME: "Dusk"
+   One theme, made for this shop rather than a light or dark mode. The page
+   is heather dusk: the hour after sunset, neither day nor night. Text and
+   every rule are drawn in ink, heavy, like a woodcut or a letterpress print.
+   The furniture lives in deep jewel-toned panels, engraved in gilt; bone is
+   for text on those panels and inside fields; one blood-rose marks the
+   action on a page.
 
-   The navigation spine (sidebar tokens) stays night in both themes, so the
-   brand reads the same by day — the black column is a nod to a site the
-   owner admires, and to the spine of a book.
+   Contrast is the point of the palette, so check new colours against it:
+   ink on dusk is about 6:1; muted text on dusk about 4.6:1; bone on any
+   panel well over 7:1. Gilt is an ornament colour: use it on panels, not as
+   text on dusk.
 
-   Product pages set a palette class that recolours the --product tokens for
-   that page, light and dark:
-   palette-oak     Gilt amber
-   palette-walnut  Oxblood
-   palette-ash     Moonstone
-   palette-ebony   Obsidian
-   palette-cherry  Rose
-   palette-sage    Verdigris
-   palette-clay    Ember
-   palette-slate   Midnight */
+   Product pages set a palette class that recolours the --product tokens:
+     palette-oak     Gilt amber
+     palette-walnut  Oxblood
+     palette-ash     Moonstone
+     palette-ebony   Obsidian
+     palette-cherry  Rose
+     palette-sage    Verdigris
+     palette-clay    Ember
+     palette-slate   Midnight */
 
 /* Self-hosted (SIL OFL 1.1). Grenze Gotisch is a legible, variable
    blackletter for titles and the wordmark; EB Garamond carries everything
@@ -70,67 +71,69 @@
   font-display: swap;
 }
 
-/* DAY: vellum and wine ink. */
 :root {
   color-scheme: light;
 
-  --background: oklch(0.945 0.012 20); /* Rose-grey vellum */
-  --foreground: oklch(0.2 0.025 350); /* Wine ink */
-  --card: oklch(0.975 0.006 30);
-  --card-foreground: oklch(0.2 0.025 350);
-  --popover: oklch(0.975 0.006 30);
-  --popover-foreground: oklch(0.2 0.025 350);
+  --background: oklch(0.7 0.045 355); /* Heather dusk */
+  --foreground: oklch(0.17 0.03 345); /* Ink */
+  --card: oklch(0.84 0.03 355); /* Pale heather, for fields and panels of text */
+  --card-foreground: oklch(0.17 0.03 345);
+  --popover: oklch(0.86 0.028 355);
+  --popover-foreground: oklch(0.17 0.03 345);
 
-  --primary: oklch(0.45 0.16 18); /* Blood rose */
-  --primary-foreground: oklch(0.975 0.006 30);
+  --primary: oklch(0.4 0.16 22); /* Blood rose */
+  --primary-foreground: oklch(0.95 0.02 80);
 
-  --secondary: oklch(0.905 0.02 20);
-  --secondary-foreground: oklch(0.28 0.04 350);
+  --secondary: oklch(0.63 0.05 355);
+  --secondary-foreground: oklch(0.17 0.03 345);
 
-  --muted: oklch(0.915 0.014 20);
-  --muted-foreground: oklch(0.44 0.03 350);
+  --muted: oklch(0.64 0.045 355);
+  --muted-foreground: oklch(0.29 0.045 345);
 
-  --accent: oklch(0.9 0.03 75); /* Gilt wash */
-  --accent-foreground: oklch(0.2 0.025 350);
+  --accent: oklch(0.77 0.045 355);
+  --accent-foreground: oklch(0.17 0.03 345);
 
-  --destructive: oklch(0.5 0.19 32);
-  --destructive-foreground: oklch(0.98 0 0);
+  --destructive: oklch(0.36 0.16 28);
+  --destructive-foreground: oklch(0.95 0.02 80);
 
-  --success: oklch(0.47 0.08 160);
-  --success-foreground: oklch(0.98 0 0);
-  --warning: oklch(0.78 0.13 75);
-  --warning-foreground: oklch(0.25 0.04 60);
+  --success: oklch(0.31 0.08 160);
+  --success-foreground: oklch(0.95 0.02 80);
+  --warning: oklch(0.8 0.13 80);
+  --warning-foreground: oklch(0.17 0.03 345);
 
-  --border: oklch(0.85 0.02 20);
-  --input: oklch(0.75 0.025 20);
-  --ring: oklch(0.55 0.11 75);
+  --border: oklch(0.24 0.035 345);
+  --input: oklch(0.17 0.03 345);
+  --ring: oklch(0.95 0.02 80);
 
-  /* Gold foil: rules, ornaments, the line drawings, focus. Darker by day so
-     a hairline still reads on vellum. */
-  --gilt: oklch(0.58 0.11 75);
+  /* Gold foil, for ornament on the jewel panels and the night spine. */
+  --gilt: oklch(0.8 0.12 82);
 
-  --chart-1: oklch(0.45 0.16 18); /* Rose */
-  --chart-2: oklch(0.58 0.11 75); /* Gilt */
-  --chart-3: oklch(0.5 0.07 165); /* Verdigris */
-  --chart-4: oklch(0.5 0.06 290); /* Moonstone */
-  --chart-5: oklch(0.55 0.13 45); /* Ember */
+  /* The deep panel: the spine, the cover, a block that should read as night. */
+  --night: oklch(0.17 0.03 345);
+  --night-foreground: oklch(0.95 0.02 80);
 
-  --shadow-ink: oklch(0.2 0.03 350 / 0.12);
+  --chart-1: oklch(0.4 0.16 22);
+  --chart-2: oklch(0.3 0.07 65);
+  --chart-3: oklch(0.31 0.08 160);
+  --chart-4: oklch(0.28 0.05 290);
+  --chart-5: oklch(0.4 0.12 45);
 
-  /* The spine is night in both themes. */
-  --sidebar: oklch(0.16 0.022 350);
-  --sidebar-foreground: oklch(0.92 0.02 70);
-  --sidebar-primary: oklch(0.79 0.11 80);
-  --sidebar-primary-foreground: oklch(0.16 0.022 350);
-  --sidebar-accent: oklch(0.24 0.03 350);
-  --sidebar-accent-foreground: oklch(0.92 0.02 70);
-  --sidebar-border: oklch(0.3 0.03 350);
-  --sidebar-ring: oklch(0.79 0.11 80);
+  /* Shadows are a hard offset in ink, like a second pull of a print. */
+  --shadow-ink: oklch(0.17 0.03 345);
 
-  --product: oklch(0.6 0.11 75);
-  --product-foreground: oklch(0.2 0.025 350);
-  --product-wash: oklch(0.915 0.03 75);
-  --product-ink: oklch(0.38 0.07 60);
+  --sidebar: oklch(0.17 0.03 345);
+  --sidebar-foreground: oklch(0.95 0.02 80);
+  --sidebar-primary: oklch(0.8 0.12 82);
+  --sidebar-primary-foreground: oklch(0.17 0.03 345);
+  --sidebar-accent: oklch(0.25 0.035 345);
+  --sidebar-accent-foreground: oklch(0.95 0.02 80);
+  --sidebar-border: oklch(0.32 0.035 345);
+  --sidebar-ring: oklch(0.8 0.12 82);
+
+  --product: oklch(0.62 0.12 75);
+  --product-foreground: oklch(0.17 0.03 345);
+  --product-wash: oklch(0.24 0.04 70);
+  --product-ink: oklch(0.3 0.07 65);
 
   --font-display: "Grenze Gotisch", "UnifrakturMaguntia", ui-serif, Georgia, serif;
   --font-serif: "EB Garamond", ui-serif, Georgia, Cambria, "Times New Roman", serif;
@@ -139,180 +142,89 @@
     "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono:
     ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-  /* A product page's headings; its typeface class changes it. */
   --font-heading: var(--font-display);
 
-  --radius: 0.375rem;
-  --shadow-2xs: 0 1px 1px 0 var(--shadow-ink);
-  --shadow-xs: 0 1px 2px 0 var(--shadow-ink);
-  --shadow-sm: 0 1px 3px 0 var(--shadow-ink), 0 1px 2px -1px var(--shadow-ink);
-  --shadow: 0 2px 6px -1px var(--shadow-ink), 0 1px 3px -1px var(--shadow-ink);
-  --shadow-md: 0 6px 16px -4px var(--shadow-ink), 0 2px 6px -2px var(--shadow-ink);
-  --shadow-lg: 0 14px 32px -8px var(--shadow-ink), 0 4px 10px -4px var(--shadow-ink);
-  --shadow-xl: 0 24px 48px -12px var(--shadow-ink);
-  --shadow-2xl: 0 32px 64px -16px var(--shadow-ink);
+  --radius: 0.25rem;
+  --shadow-2xs: 1px 1px 0 0 var(--shadow-ink);
+  --shadow-xs: 2px 2px 0 0 var(--shadow-ink);
+  --shadow-sm: 3px 3px 0 0 var(--shadow-ink);
+  --shadow: 4px 4px 0 0 var(--shadow-ink);
+  --shadow-md: 4px 4px 0 0 var(--shadow-ink);
+  --shadow-lg: 6px 6px 0 0 var(--shadow-ink);
+  --shadow-xl: 8px 8px 0 0 var(--shadow-ink);
+  --shadow-2xl: 12px 12px 0 0 var(--shadow-ink);
 }
 
-/* NIGHT: the default. Wine-black, never neutral black; candlelit text. */
-.dark {
-  color-scheme: dark;
-
-  --background: oklch(0.16 0.022 350);
-  --foreground: oklch(0.92 0.02 70);
-  --card: oklch(0.195 0.026 350);
-  --card-foreground: oklch(0.92 0.02 70);
-  --popover: oklch(0.205 0.028 350);
-  --popover-foreground: oklch(0.92 0.02 70);
-
-  --primary: oklch(0.52 0.17 18);
-  --primary-foreground: oklch(0.97 0.012 70);
-
-  --secondary: oklch(0.24 0.03 345);
-  --secondary-foreground: oklch(0.9 0.02 70);
-
-  --muted: oklch(0.22 0.025 348);
-  --muted-foreground: oklch(0.74 0.025 60);
-
-  --accent: oklch(0.26 0.035 345);
-  --accent-foreground: oklch(0.94 0.02 70);
-
-  --destructive: oklch(0.68 0.18 32);
-  --destructive-foreground: oklch(0.16 0.022 350);
-
-  --success: oklch(0.75 0.1 160);
-  --success-foreground: oklch(0.16 0.022 350);
-  --warning: oklch(0.82 0.12 80);
-  --warning-foreground: oklch(0.16 0.022 350);
-
-  --border: oklch(0.31 0.03 348);
-  --input: oklch(0.4 0.035 348);
-  --ring: oklch(0.79 0.11 80);
-
-  --gilt: oklch(0.79 0.11 80);
-
-  --chart-1: oklch(0.62 0.17 18);
-  --chart-2: oklch(0.79 0.11 80);
-  --chart-3: oklch(0.72 0.08 165);
-  --chart-4: oklch(0.76 0.05 290);
-  --chart-5: oklch(0.72 0.13 45);
-
-  --shadow-ink: oklch(0.05 0.02 350 / 0.6);
-
-  --sidebar: oklch(0.13 0.02 350);
-  --sidebar-foreground: oklch(0.92 0.02 70);
-  --sidebar-primary: oklch(0.79 0.11 80);
-  --sidebar-primary-foreground: oklch(0.16 0.022 350);
-  --sidebar-accent: oklch(0.22 0.03 350);
-  --sidebar-accent-foreground: oklch(0.92 0.02 70);
-  --sidebar-border: oklch(0.27 0.03 350);
-  --sidebar-ring: oklch(0.79 0.11 80);
-
-  --product: oklch(0.79 0.11 80);
-  --product-foreground: oklch(0.16 0.022 350);
-  --product-wash: oklch(0.23 0.03 65);
-  --product-ink: oklch(0.87 0.07 80);
-}
-
-/* PRODUCT PALETTES — each sets the four --product tokens, for day and
-   night. Add one in schema/furniture.config.ts PALETTES too. */
+/* PRODUCT PALETTES — accent, panel, and text colour for one product page.
+   Add one in schema/furniture.config.ts PALETTES too. */
 .palette-oak {
-  --product: oklch(0.6 0.11 75);
-  --product-foreground: oklch(0.2 0.025 350);
-  --product-wash: oklch(0.915 0.03 75);
-  --product-ink: oklch(0.38 0.07 60);
+  --product: oklch(0.62 0.12 75);
+  --product-foreground: oklch(0.17 0.03 345);
+  --product-wash: oklch(0.24 0.04 70);
+  --product-ink: oklch(0.3 0.07 65);
 }
 .palette-walnut {
-  --product: oklch(0.4 0.1 25);
-  --product-foreground: oklch(0.975 0.006 30);
-  --product-wash: oklch(0.905 0.03 20);
-  --product-ink: oklch(0.33 0.09 20);
+  --product: oklch(0.5 0.13 25);
+  --product-foreground: oklch(0.95 0.02 80);
+  --product-wash: oklch(0.2 0.05 22);
+  --product-ink: oklch(0.3 0.1 22);
 }
 .palette-ash {
-  --product: oklch(0.56 0.045 285);
-  --product-foreground: oklch(0.2 0.025 350);
-  --product-wash: oklch(0.92 0.015 290);
-  --product-ink: oklch(0.35 0.045 285);
+  --product: oklch(0.6 0.05 290);
+  --product-foreground: oklch(0.17 0.03 345);
+  --product-wash: oklch(0.21 0.03 295);
+  --product-ink: oklch(0.28 0.05 290);
 }
 .palette-ebony {
-  --product: oklch(0.26 0.02 340);
-  --product-foreground: oklch(0.975 0.006 30);
-  --product-wash: oklch(0.88 0.01 340);
-  --product-ink: oklch(0.22 0.02 340);
+  --product: oklch(0.3 0.02 340);
+  --product-foreground: oklch(0.95 0.02 80);
+  --product-wash: oklch(0.14 0.012 340);
+  --product-ink: oklch(0.18 0.02 340);
 }
 .palette-cherry {
-  --product: oklch(0.48 0.16 10);
-  --product-foreground: oklch(0.975 0.006 30);
-  --product-wash: oklch(0.915 0.035 10);
-  --product-ink: oklch(0.37 0.13 10);
+  --product: oklch(0.5 0.17 12);
+  --product-foreground: oklch(0.95 0.02 80);
+  --product-wash: oklch(0.2 0.06 12);
+  --product-ink: oklch(0.3 0.13 12);
 }
 .palette-sage {
-  --product: oklch(0.55 0.07 165);
-  --product-foreground: oklch(0.2 0.025 350);
-  --product-wash: oklch(0.915 0.025 165);
-  --product-ink: oklch(0.32 0.05 165);
+  --product: oklch(0.5 0.08 165);
+  --product-foreground: oklch(0.95 0.02 80);
+  --product-wash: oklch(0.18 0.035 170);
+  --product-ink: oklch(0.27 0.06 165);
 }
 .palette-clay {
-  --product: oklch(0.6 0.13 45);
-  --product-foreground: oklch(0.2 0.025 350);
-  --product-wash: oklch(0.915 0.035 45);
-  --product-ink: oklch(0.38 0.09 40);
+  --product: oklch(0.6 0.14 45);
+  --product-foreground: oklch(0.17 0.03 345);
+  --product-wash: oklch(0.21 0.05 40);
+  --product-ink: oklch(0.32 0.1 42);
 }
 .palette-slate {
-  --product: oklch(0.4 0.08 272);
-  --product-foreground: oklch(0.975 0.006 30);
-  --product-wash: oklch(0.905 0.025 272);
-  --product-ink: oklch(0.3 0.07 272);
-}
-.dark .palette-oak {
-  --product: oklch(0.79 0.11 80);
-  --product-foreground: oklch(0.16 0.022 350);
-  --product-wash: oklch(0.23 0.03 65);
-  --product-ink: oklch(0.87 0.07 80);
-}
-.dark .palette-walnut {
-  --product: oklch(0.64 0.13 25);
-  --product-foreground: oklch(0.16 0.022 350);
-  --product-wash: oklch(0.22 0.045 20);
-  --product-ink: oklch(0.83 0.07 25);
-}
-.dark .palette-ash {
-  --product: oklch(0.78 0.045 290);
-  --product-foreground: oklch(0.16 0.022 350);
-  --product-wash: oklch(0.22 0.02 300);
-  --product-ink: oklch(0.88 0.03 290);
-}
-.dark .palette-ebony {
-  --product: oklch(0.84 0.03 75);
-  --product-foreground: oklch(0.16 0.022 350);
-  --product-wash: oklch(0.13 0.012 340);
-  --product-ink: oklch(0.9 0.02 70);
-}
-.dark .palette-cherry {
-  --product: oklch(0.68 0.15 10);
-  --product-foreground: oklch(0.16 0.022 350);
-  --product-wash: oklch(0.22 0.05 10);
-  --product-ink: oklch(0.85 0.08 10);
-}
-.dark .palette-sage {
-  --product: oklch(0.73 0.08 165);
-  --product-foreground: oklch(0.16 0.022 350);
-  --product-wash: oklch(0.2 0.03 170);
-  --product-ink: oklch(0.86 0.05 165);
-}
-.dark .palette-clay {
-  --product: oklch(0.73 0.13 45);
-  --product-foreground: oklch(0.16 0.022 350);
-  --product-wash: oklch(0.22 0.045 40);
-  --product-ink: oklch(0.86 0.07 50);
-}
-.dark .palette-slate {
-  --product: oklch(0.72 0.08 275);
-  --product-foreground: oklch(0.16 0.022 350);
-  --product-wash: oklch(0.19 0.04 275);
-  --product-ink: oklch(0.86 0.04 275);
+  --product: oklch(0.45 0.09 272);
+  --product-foreground: oklch(0.95 0.02 80);
+  --product-wash: oklch(0.17 0.045 272);
+  --product-ink: oklch(0.27 0.08 272);
 }
 
-/* A product page's heading face. */
+/* A night panel inside the dusk page. Remaps the tokens, so anything inside
+   — muted text, rules, fields, hovers — reads correctly without per-element
+   overrides. */
+.on-night {
+  --background: oklch(0.23 0.035 345);
+  --foreground: oklch(0.95 0.02 80);
+  --card: oklch(0.23 0.035 345);
+  --card-foreground: oklch(0.95 0.02 80);
+  --muted: oklch(0.23 0.035 345);
+  --muted-foreground: oklch(0.8 0.03 75);
+  --accent: oklch(0.28 0.04 345);
+  --accent-foreground: oklch(0.95 0.02 80);
+  --border: oklch(0.42 0.04 345);
+  --input: oklch(0.6 0.04 345);
+  --shadow-ink: oklch(0.1 0.02 345);
+  background-color: var(--night);
+  color: var(--foreground);
+}
+
 .type-serif {
   --font-heading: var(--font-serif);
 }
@@ -361,6 +273,8 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-gilt: var(--gilt);
+  --color-night: var(--night);
+  --color-night-foreground: var(--night-foreground);
   --color-product: var(--product);
   --color-product-foreground: var(--product-foreground);
   --color-product-wash: var(--product-wash);
@@ -416,7 +330,7 @@
      variable; a medium weight keeps the counters open at small sizes. */
   h1 {
     font-family: var(--font-heading);
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: 0;
     line-height: 1;
   }
@@ -426,6 +340,12 @@
   body {
     font-variant-numeric: lining-nums;
     font-size: 1.0625rem;
+    font-weight: 500;
+  }
+
+  /* Heavier icon strokes, to match the type and the rules. */
+  svg.lucide {
+    stroke-width: 2.5;
   }
 
   ::selection {
@@ -444,6 +364,7 @@
 .iso-drawing polygon {
   stroke: var(--gilt);
   stroke-linejoin: round;
+  stroke-linecap: round;
 }
 .iso-drawing .iso-top {
   fill: color-mix(in oklch, var(--product) 22%, var(--product-wash));
@@ -475,14 +396,7 @@
   fill: transparent;
 }
 
-/* THE ARCH — a pointed window, the one shape this site repeats. The path
-   is defined once in Layout.tsx (#arch-clip, in bounding-box units), so
-   whatever sits inside — a photograph, a drawing, the 3D view — takes it. */
-.arch {
-  clip-path: url(#arch-clip);
-}
-
-/* The cover's gilt line draws itself in, once, on arrival. */
+/* The cover's gilt frame draws itself in, once, on arrival. */
 @keyframes draw-in {
   from {
     stroke-dashoffset: 1;
@@ -546,41 +460,41 @@ input[type="range"].slider {
   cursor: pointer;
 }
 input[type="range"].slider::-webkit-slider-runnable-track {
-  height: 3px;
+  height: 6px;
   border-radius: 999px;
   background: linear-gradient(
     to right,
-    var(--product) 0 var(--fill, 50%),
-    var(--border) var(--fill, 50%) 100%
+    var(--foreground) 0 var(--fill, 50%),
+    color-mix(in oklch, var(--foreground) 25%, transparent) var(--fill, 50%) 100%
   );
 }
 input[type="range"].slider::-moz-range-track {
-  height: 3px;
+  height: 6px;
   border-radius: 999px;
-  background: var(--border);
+  background: color-mix(in oklch, var(--foreground) 25%, transparent);
 }
 input[type="range"].slider::-moz-range-progress {
-  height: 3px;
-  background: var(--product);
+  height: 6px;
+  background: var(--foreground);
 }
 input[type="range"].slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  margin-top: -9px;
-  height: 21px;
-  width: 21px;
+  margin-top: -8px;
+  height: 22px;
+  width: 22px;
   rotate: 45deg;
   border-radius: 2px;
   background: var(--card);
-  border: 2px solid var(--gilt);
+  border: 3px solid var(--foreground);
   box-shadow: var(--shadow-sm);
 }
 input[type="range"].slider::-moz-range-thumb {
-  height: 17px;
-  width: 17px;
+  height: 16px;
+  width: 16px;
   rotate: 45deg;
   border-radius: 2px;
   background: var(--card);
-  border: 2px solid var(--gilt);
+  border: 3px solid var(--foreground);
 }
 input[type="range"].slider:focus-visible {
   outline: 2px solid var(--ring);

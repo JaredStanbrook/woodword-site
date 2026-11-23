@@ -24,7 +24,7 @@ export const LineThumb = ({ line, small = false }: { line: CartLine; small?: boo
   const photo = line.product.images[0];
   return (
     <div
-      class={`${paletteClass(line.product)} aspect-square shrink-0 overflow-hidden rounded-lg bg-product-wash ${small ? "w-16" : "w-24 sm:w-32"}`}
+      class={`${paletteClass(line.product)} aspect-square shrink-0 overflow-hidden rounded-sm bg-product-wash ${small ? "w-16" : "w-24 sm:w-32"}`}
     >
       {photo && !line.quote.custom ? (
         <img src={mediaUrl(photo)} alt="" class="h-full w-full object-cover" loading="lazy" />
@@ -64,7 +64,7 @@ export const CartPage = ({ lines, locale, currency }: CartProps) => {
     <div class="mx-auto max-w-5xl px-4 pt-12 sm:px-6 animate-in fade-in duration-500">
       <h1 class="text-4xl">Your cart</h1>
       {lines.length === 0 ? (
-        <div class="mt-10 rounded-xl border border-dashed px-6 py-16 text-center">
+        <div class="mt-10 rounded-sm border-2 border-dashed px-6 py-16 text-center">
           <p class="font-display text-xl">Nothing here yet</p>
           <p class="mt-2 text-sm text-muted-foreground">
             Choose a piece, set it to your size, and add it here.
@@ -75,7 +75,7 @@ export const CartPage = ({ lines, locale, currency }: CartProps) => {
         </div>
       ) : (
         <div class="mt-10 grid gap-10 lg:grid-cols-[1fr_20rem]">
-          <ul class="divide-y border-y" id="cart-lines">
+          <ul class="divide-y-2 border-y-2" id="cart-lines">
             {lines.map((line) => (
               <li class="flex gap-4 py-6 sm:gap-6" id={`cart-line-${line.item.id}`}>
                 <LineThumb line={line} />
@@ -128,11 +128,11 @@ export const CartPage = ({ lines, locale, currency }: CartProps) => {
                         max={MAX_QUANTITY}
                         value={line.item.quantity}
                         inputmode="numeric"
-                        class="h-11 w-20 rounded-lg border border-input bg-background px-3 text-base tabular-nums focus:outline-none focus:ring-2 focus:ring-ring"
+                        class="h-11 w-20 rounded-sm border-2 border-input bg-background px-3 text-base tabular-nums focus:outline-none focus:ring-2 focus:ring-ring"
                       />
                       <button
                         type="submit"
-                        class="h-11 rounded-lg px-3 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                        class="h-11 rounded-sm px-3 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                       >
                         Update
                       </button>
@@ -140,7 +140,7 @@ export const CartPage = ({ lines, locale, currency }: CartProps) => {
                     {line.available ? (
                       <a
                         href={`/furniture/${line.product.slug}?${selectionToQuery(line.item.selection)}&item=${line.item.id}`}
-                        class="inline-flex h-11 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                        class="inline-flex h-11 items-center gap-1.5 rounded-sm px-3 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                       >
                         <i data-lucide="pencil" class="h-3.5 w-3.5"></i> Edit
                       </a>
@@ -148,7 +148,7 @@ export const CartPage = ({ lines, locale, currency }: CartProps) => {
                     <form method="post" action={`/cart/${line.item.id}/remove`}>
                       <button
                         type="submit"
-                        class="inline-flex h-11 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                        class="inline-flex h-11 items-center gap-1.5 rounded-sm px-3 text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                       >
                         <i data-lucide="trash-2" class="h-3.5 w-3.5"></i> Remove
                       </button>
@@ -159,7 +159,7 @@ export const CartPage = ({ lines, locale, currency }: CartProps) => {
             ))}
           </ul>
 
-          <aside class="h-fit space-y-4 rounded-xl border bg-card p-5 text-card-foreground shadow-sm lg:sticky lg:top-8">
+          <aside class="h-fit space-y-4 rounded-sm border-2 bg-card p-5 text-card-foreground shadow-sm lg:sticky lg:top-8">
             <div class="flex justify-between">
               <span class="text-muted-foreground">Subtotal</span>
               <Price cents={subtotal} locale={locale} currency={currency} />
