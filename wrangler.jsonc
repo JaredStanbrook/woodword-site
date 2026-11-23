@@ -68,7 +68,7 @@
   // a custom_domain on a zone in the same account resolves without it.
   "routes": [
     {
-      "pattern": "change-me.example.com",
+      "pattern": "mooihout.stanbrook.me",
       "custom_domain": true,
     },
   ],
@@ -83,7 +83,7 @@
     {
       "binding": "DB",
       "database_name": "mooihout-db",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "2ac578bd-b3a9-4744-a591-8cda44d3cca7",
       "migrations_dir": "drizzle",
     },
   ],
@@ -92,7 +92,7 @@
   "kv_namespaces": [
     {
       "binding": "KV",
-      "id": "00000000000000000000000000000000",
+      "id": "b429ff1efff1488d85c5ed66533ba75d",
     },
   ],
 
@@ -188,7 +188,7 @@
     // normally with this exact email and that account becomes an admin — but
     // ONLY while no admin exists yet, so it disarms itself the moment it
     // works. Safe to leave set; tidier to clear afterwards.
-    "BOOTSTRAP_ADMIN_EMAIL": "",
+    "BOOTSTRAP_ADMIN_EMAIL": "Jared@stanbrook.me",
 
     // --- ROLES & PERMISSIONS ---
     // CHANGE_ME — model your own resources here. Convention:
@@ -210,8 +210,8 @@
     // with no useful error. RP_ID is the bare hostname (no scheme, no
     // port); ORIGIN is the full origin users load the site from.
     "RP_NAME": "Mooihout",
-    "RP_ID": "change-me.example.com",
-    "ORIGIN": "https://change-me.example.com",
+    "RP_ID": "mooihout.stanbrook.me",
+    "ORIGIN": "https://mooihout.stanbrook.me",
 
     // --- PASSWORD CONFIG ---
     // These are enforced on registration, password change and reset. They used
