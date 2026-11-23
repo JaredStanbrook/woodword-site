@@ -17,14 +17,24 @@ import { Layout } from "@views/Layout";
 const NotFoundPage: FC = () => (
   <div class="mx-auto max-w-xl px-4 py-24 text-center">
     <p class="text-sm font-semibold text-muted-foreground">404</p>
-    <h1 class="mt-2 text-3xl font-bold tracking-tight">That page isn't here</h1>
-    <p class="mt-4 text-muted-foreground">The link may be old, or the address mistyped.</p>
-    <a
-      href="/"
-      class="mt-8 inline-flex h-11 items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground no-underline hover:bg-primary/90"
-    >
-      Back to the home page
-    </a>
+    <h1 class="mt-2 text-4xl">That page isn't here</h1>
+    <p class="mt-4 text-muted-foreground">
+      The link may be old, the piece may have left the collection, or the address was mistyped.
+    </p>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <a
+        href="/"
+        class="inline-flex h-11 items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground no-underline hover:bg-primary/90"
+      >
+        See the collection
+      </a>
+      <a
+        href="/orders"
+        class="inline-flex h-11 items-center justify-center rounded-lg border border-input px-5 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+      >
+        Track an order
+      </a>
+    </div>
   </div>
 );
 

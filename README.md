@@ -1,3 +1,27 @@
+# Heartwood
+
+A shop for handmade, made-to-measure furniture. Every piece has its own
+product page, an interactive 3D model customers can turn and resize within the
+workshop's limits, a price that rolls as they change it, and a checkout that
+records exactly the configuration to build.
+
+- **Customers** browse the collection, set width / height / depth with
+  sliders or exact millimetres, choose timber and finish, save or share a
+  design, buy through Stripe, and follow their order through the workshop.
+- **The owner** drafts new pieces from a written brief (Claude), checks the
+  component model and prices, uploads the Blender GLB and photos, publishes,
+  and runs orders from received to delivered with a printable cut list per
+  piece.
+
+Start here: **[docs/shop.md](docs/shop.md)** (running the shop and the setup
+only the owner can do) and **[docs/blender.md](docs/blender.md)** (modelling
+conventions and the export / order scripts).
+
+Built on the Frugal template (`frugal.json` records the release); everything
+below is the template's own documentation.
+
+---
+
 # frug-template
 
 A production-shaped starter for Cloudflare Workers websites: Hono on the edge,

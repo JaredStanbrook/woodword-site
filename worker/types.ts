@@ -49,6 +49,22 @@ export type Vars = {
    * Unset or empty: the whole site.
    */
   ACCESS_GATE_PATHS?: string;
+
+  // --- Shop: all optional, each feature explains itself when unset ---
+  /** Secret. Stripe API key (sk_live_… / sk_test_…). Unset: checkout cannot take payment. */
+  STRIPE_SECRET_KEY?: string;
+  /** Secret. Signing secret of the Stripe webhook endpoint (whsec_…). */
+  STRIPE_WEBHOOK_SECRET?: string;
+  /** Secret. Claude API key for AI-assisted product creation. */
+  ANTHROPIC_API_KEY?: string;
+  /** Claude model for product generation. Defaults to claude-sonnet-5-5. */
+  AI_MODEL?: string;
+  /** Secret. Resend API key for order emails. Unset: no emails are sent. */
+  RESEND_API_KEY?: string;
+  /** Sender for order emails, e.g. "Heartwood <orders@example.com>". */
+  EMAIL_FROM?: string;
+  /** Where new-order notifications go. */
+  ORDERS_EMAIL?: string;
 };
 
 /**

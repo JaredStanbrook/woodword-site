@@ -151,7 +151,7 @@ describe("link mode", () => {
 describe("the gate", () => {
   for (const gate of ["session", "link"]) {
     it(`${gate}: sends a visitor without a link to /gone, keeps sign-in open`, async () => {
-      for (const path of ["/", "/notes", "/profile"]) {
+      for (const path of ["/", "/account", "/profile"]) {
         const res = await fetchAs(path, { gate });
         expect(res.headers.get("location"), path).toBe("/gone");
       }
@@ -207,14 +207,14 @@ describe("the gate", () => {
 });
 
 describe("ACCESS_GATE_PATHS", () => {
-  const paths = "/notes";
+  const paths = "/account";
 
   it("guards only the listed section and leaves the rest public", async () => {
     expect((await fetchAs("/", { paths })).status).toBe(200);
-    expect((await fetchAs("/notes", { paths })).headers.get("location")).toBe("/gone");
-    expect((await fetchAs("/notes/new", { paths })).headers.get("location")).toBe("/gone");
-    // A prefix match is on whole segments: /notesy is not /notes.
-    expect((await fetchAs("/notesy", { paths })).headers.get("location")).not.toBe("/gone");
+    expect((await fetchAs("/account", { paths })).headers.get("location")).toBe("/gone");
+    expect((await fetchAs("/account/designs", { paths })).headers.get("location")).toBe("/gone");
+    // A prefix match is on whole segments: /accounty is not /account.
+    expect((await fetchAs("/accounty", { paths })).headers.get("location")).not.toBe("/gone");
   });
 
   it("keeps the public pages dressed, and crawlable", async () => {
@@ -228,9 +228,9 @@ describe("ACCESS_GATE_PATHS", () => {
   it("lands an opened link on the guarded section, and lets it in", async () => {
     await addLink("good");
     const open = await openAsBrowser("good", "session", paths);
-    expect(open.headers.get("location")).toBe("/notes");
+    expect(open.headers.get("location")).toBe("/account");
     const cookie = cookieFrom(open);
-    // Past the gate; the notes route itself then wants a signed-in user.
-    expect((await fetchAs("/notes", { paths, cookie })).headers.get("location")).toBe("/login");
+    // Past the gate; the account page itself then wants a signed-in user.
+    expect((await fetchAs("/account", { paths, cookie })).headers.get("location")).toBe("/login");
   });
 });

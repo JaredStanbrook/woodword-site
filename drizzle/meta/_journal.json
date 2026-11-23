@@ -29,6 +29,13 @@
       "when": 1794730441611,
       "tag": "0003_access_links",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1795464818340,
+      "tag": "0004_furniture_shop",
+      "breakpoints": true
     }
   ]
 }

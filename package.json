@@ -1,5 +1,5 @@
 {
-  "name": "frug-template",
+  "name": "heartwood",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -19,6 +19,9 @@
     "create-admin:local": "tsx scripts/create-admin.ts --local",
     "create-admin:remote": "tsx scripts/create-admin.ts --remote",
     "configure": "tsx scripts/configure.ts",
+    "// seed": "Loads the example designs in worker/config/catalogue.ts. `seed:local` for development; `seed -- --remote` loads them into production as drafts.",
+    "seed": "tsx scripts/seed.ts",
+    "seed:local": "tsx scripts/seed.ts --local",
     "// template": "Template versions: `npm run template` shows what changed since frugal.json's version; `-- upgrade` applies it. See docs/template-versions.md.",
     "template": "tsx scripts/template.ts",
     "lint": "eslint .",
@@ -28,6 +31,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.13.0",
     "@hono/vite-dev-server": "^0.23.0",
     "@hono/zod-validator": "^0.9.0",
     "@simplewebauthn/browser": "^13.2.2",
@@ -44,6 +48,7 @@
     "otpauth": "^9.4.1",
     "qrcode": "^1.5.4",
     "tailwindcss": "^4.1.11",
+    "three": "^0.181.2",
     "wrangler": "^4.61.1",
     "zod": "^4.1.5"
   },
@@ -52,6 +57,7 @@
     "@hono/vite-build": "^1.8.0",
     "@types/node": "^24.10.2",
     "@types/qrcode": "^1.5.6",
+    "@types/three": "^0.181.0",
     "drizzle-kit": "^0.31.4",
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.1.8",

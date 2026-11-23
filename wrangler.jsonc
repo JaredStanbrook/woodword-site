@@ -13,7 +13,7 @@
   // CHANGE_ME — the Worker script name. This is the identity Cloudflare
   // stores secrets, routes and deployments against, so renaming it later
   // creates a *new* worker and orphans the old one's secrets.
-  "name": "frug-app",
+  "name": "heartwood",
 
   "compatibility_date": "2025-01-01",
   "main": "worker/index.ts",
@@ -68,7 +68,7 @@
   // a custom_domain on a zone in the same account resolves without it.
   "routes": [
     {
-      "pattern": "frugal.stanbrook.me",
+      "pattern": "change-me.example.com",
       "custom_domain": true,
     },
   ],
@@ -82,8 +82,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "frugal-template-db",
-      "database_id": "0d98fddd-9199-4c3f-81c1-d5180446c0b2",
+      "database_name": "heartwood-db",
+      "database_id": "00000000-0000-0000-0000-000000000000",
       "migrations_dir": "drizzle",
     },
   ],
@@ -92,7 +92,7 @@
   "kv_namespaces": [
     {
       "binding": "KV",
-      "id": "70192fe342234452b5bf9e741f89d368",
+      "id": "00000000000000000000000000000000",
     },
   ],
 
@@ -102,7 +102,7 @@
   "r2_buckets": [
     {
       "binding": "R2",
-      "bucket_name": "change-me-files",
+      "bucket_name": "heartwood-files",
     },
   ],
 
@@ -138,10 +138,10 @@
 
     // --- BRANDING ---
     // CHANGE_ME — how the site names itself in the title, nav and footer.
-    "APP_NAME": "Frug",
-    "APP_TAGLINE": "A Cloudflare Workers starter with batteries included.",
-    "APP_LOCALE": "en-AU",
-    "APP_CURRENCY": "AUD",
+    "APP_NAME": "Heartwood",
+    "APP_TAGLINE": "Handmade furniture, made to your measurements. Turn it, resize it, see the price, and we build exactly that.",
+    "APP_LOCALE": "en-IE",
+    "APP_CURRENCY": "EUR",
     // IANA zone, e.g. "Australia/Perth". Decides what "today" means when a
     // page asks (`today(c.var.app.timezone)` in worker/lib/dates.ts). UTC is
     // right for storage and wrong for "what's due today" in Perth before 8am.
@@ -149,7 +149,7 @@
     // Default link-preview image for pages that set none, e.g. "/og.png"
     // (1200×630, in public/). Empty means none. Generate one from the site's
     // own name and colours with `node scripts/og-image.mjs`.
-    "APP_OG_IMAGE": "",
+    "APP_OG_IMAGE": "/og.png",
 
     // --- CORE AUTH ---
     // Enabled methods: passkey, password, pin, totp, email, sms
@@ -202,16 +202,16 @@
     // Roles that cannot be self-assigned at registration. Get your first
     // admin with BOOTSTRAP_ADMIN_EMAIL below — no terminal needed.
     "ROLES_RESTRICTED": "admin",
-    "PERMISSIONS_AVAILABLE": "notes.read,notes.create,notes.update,notes.delete,notes.update.any,notes.delete.any,access.read,access.create,access.update",
-    "ROLES_INHERENT": "user:notes.read,notes.create,notes.update,notes.delete;admin:*",
+    "PERMISSIONS_AVAILABLE": "products.read.any,products.create.any,products.update.any,products.delete.any,orders.read,orders.read.any,orders.update.any,designs.read,designs.create,designs.delete,designs.read.any,designs.delete.any,access.read,access.create,access.update",
+    "ROLES_INHERENT": "user:orders.read,designs.read,designs.create,designs.delete;admin:*",
 
     // --- PASSKEY / WEBAUTHN ---
     // CHANGE_ME — these MUST match the deployed domain or passkeys fail
     // with no useful error. RP_ID is the bare hostname (no scheme, no
     // port); ORIGIN is the full origin users load the site from.
-    "RP_NAME": "Frug",
-    "RP_ID": "frugal.stanbrook.me",
-    "ORIGIN": "https://frugal.stanbrook.me",
+    "RP_NAME": "Heartwood",
+    "RP_ID": "change-me.example.com",
+    "ORIGIN": "https://change-me.example.com",
 
     // --- PASSWORD CONFIG ---
     // These are enforced on registration, password change and reset. They used
@@ -242,9 +242,25 @@
 
     // --- TOTP CONFIG ---
     // TOTP_ISSUER is the name shown in the user's authenticator app.
-    "TOTP_ISSUER": "Frug",
+    "TOTP_ISSUER": "Heartwood",
     "TOTP_ALGORITHM": "SHA1",
     "TOTP_DIGITS": "6",
     "TOTP_PERIOD": "30",
+
+    // --- SHOP ---
+    // Secrets (Settings -> Variables and Secrets, type Secret), all optional:
+    //   STRIPE_SECRET_KEY      takes payment. Without it a production site
+    //                          refuses orders; a non-production one simulates.
+    //   STRIPE_WEBHOOK_SECRET  the signing secret of the webhook pointed at
+    //                          https://<domain>/api/stripe/webhook
+    //   ANTHROPIC_API_KEY      AI-assisted product creation in the admin
+    //   RESEND_API_KEY         order confirmation emails
+    // Claude model for product generation.
+    "AI_MODEL": "claude-opus-5-5",
+    // Sender for order emails, e.g. "Heartwood <orders@your-domain>". Needs
+    // RESEND_API_KEY and a domain verified with Resend.
+    "EMAIL_FROM": "",
+    // Where a "new paid order" email goes. Empty: none.
+    "ORDERS_EMAIL": "",
   },
 }

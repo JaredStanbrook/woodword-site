@@ -9,36 +9,54 @@ import { PropsUser } from "@server/schema/auth.schema";
  * This is the main thing to edit when you add a feature area to a new site.
  */
 const menuConfig: Record<string, Array<{ to: string; name: string }>> = {
-  default: [],
-  user: [{ to: "/notes", name: "Notes" }],
+  default: [
+    { to: "/", name: "Collection" },
+    { to: "/made-to-measure", name: "Made to measure" },
+  ],
+  user: [
+    { to: "/", name: "Collection" },
+    { to: "/made-to-measure", name: "Made to measure" },
+    { to: "/account", name: "Your account" },
+  ],
   admin: [
-    { to: "/notes", name: "Notes" },
+    { to: "/", name: "Collection" },
+    { to: "/admin", name: "Dashboard" },
+    { to: "/admin/products", name: "Products" },
+    { to: "/admin/orders", name: "Orders" },
     { to: "/admin/access", name: "Access links" },
-    { to: "/admin/logs", name: "System Logs" },
+    { to: "/admin/logs", name: "System logs" },
   ],
 };
 
 // --- COMPONENTS ---
 
 /**
- * OrbitMark
- * A planet with a tilted ring: the brand mark. Drawn in currentColor and
- * theme tokens so it follows light and dark without its own colours.
+ * GrainMark
+ * Growth rings around an off-centre heart: the brand mark. Drawn in
+ * currentColor and the product token so it follows light and dark.
  */
-export const OrbitMark = () => html`
-  <svg viewBox="0 0 32 32" class="h-7 w-7 shrink-0" aria-hidden="true">
-    <circle cx="16" cy="16" r="7" class="fill-primary" />
+export const GrainMark = () => html`
+  <svg viewBox="0 0 32 32" class="h-7 w-7 shrink-0" aria-hidden="true" fill="none">
+    <ellipse cx="16" cy="16" rx="14" ry="13" stroke="currentColor" stroke-width="1.5" />
     <ellipse
-      cx="16"
-      cy="16"
-      rx="14"
-      ry="5"
-      transform="rotate(-20 16 16)"
-      fill="none"
+      cx="15"
+      cy="16.5"
+      rx="9.5"
+      ry="9"
       stroke="currentColor"
-      stroke-width="2"
+      stroke-width="1.25"
+      opacity="0.7"
     />
-    <circle cx="28.5" cy="11.5" r="2" class="fill-chart-2" />
+    <ellipse
+      cx="14.2"
+      cy="17"
+      rx="5.2"
+      ry="5"
+      stroke="currentColor"
+      stroke-width="1"
+      opacity="0.5"
+    />
+    <circle cx="13.6" cy="17.4" r="2" class="fill-product" />
   </svg>
 `;
 
@@ -117,6 +135,10 @@ export const ThemeToggle = () => html`
         });
       });
 
+      // hx-boost swaps the body without a new DOMContentLoaded, so the
+      // fresh toggle buttons would otherwise show no icon at all.
+      document.addEventListener("htmx:afterSettle", () => updateIcons(currentTheme));
+
       window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
         if (currentTheme === "system") applyTheme("system");
       });
@@ -178,7 +200,28 @@ interface NavBarProps {
   appName: string;
   user?: PropsUser | null;
   currentPath?: string;
+  cartCount?: number;
 }
+
+/** The cart, on every page. The count is the number of pieces, not lines. */
+const CartLink = ({ count }: { count: number }) => html`
+  <a
+    href="/cart"
+    class="relative inline-flex h-11 w-11 items-center justify-center rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors"
+    aria-label="${count > 0 ? `Cart, ${count} item${count === 1 ? "" : "s"}` : "Cart, empty"}"
+  >
+    <i data-lucide="shopping-bag" class="h-5 w-5"></i>
+    ${
+      count > 0
+        ? html`<span
+            class="absolute right-1 top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-product px-1 text-[0.625rem] font-semibold leading-none text-product-foreground tabular-nums"
+            aria-hidden="true"
+            >${count > 99 ? "99+" : count}</span
+          >`
+        : ""
+    }
+  </a>
+`;
 
 const getMenuItems = (user: PropsUser | null | undefined) => {
   const items: { to: string; name: string }[] = [];
@@ -196,26 +239,25 @@ const getMenuItems = (user: PropsUser | null | undefined) => {
   return items.length > 0 ? items : menuConfig.default;
 };
 
-export const NavBar = ({ appName, user, currentPath }: NavBarProps) => {
+export const NavBar = ({ appName, user, currentPath, cartCount = 0 }: NavBarProps) => {
   const menuItems = getMenuItems(user);
 
   const isActive = (to: string) => {
-    if (to === "/") return currentPath === to;
+    if (to === "/" || to === "/admin") return currentPath === to;
     return currentPath?.startsWith(to);
   };
 
   return html`
     <header
-      class="fixed top-0 left-0 right-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/75"
+      class="fixed top-0 left-0 right-0 z-40 w-full border-b border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/75"
     >
-      <!-- h-14 minus the 9px stripe band, so the header stays 3.5rem and main's pt-14 still clears it. -->
-      <div class="flex h-[calc(3.5rem-9px)] items-center justify-between px-4">
+      <div class="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
         <div class="flex items-center gap-6">
           <a
             href="/"
-            class="flex h-11 items-center gap-2.5 font-display text-base tracking-wide mr-4"
+            class="flex h-11 items-center gap-2.5 font-display text-xl tracking-tight mr-4"
           >
-            ${OrbitMark()} ${appName}
+            ${GrainMark()} ${appName}
           </a>
 
           <nav class="hidden lg:flex items-center gap-6">
@@ -234,7 +276,8 @@ export const NavBar = ({ appName, user, currentPath }: NavBarProps) => {
           </nav>
         </div>
 
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2">
+          ${CartLink({ count: cartCount })}
           <div class="hidden lg:block">${ThemeToggle()}</div>
 
           <div class="hidden lg:block">
@@ -245,12 +288,7 @@ export const NavBar = ({ appName, user, currentPath }: NavBarProps) => {
                       <a
                         href="/login"
                         class="text-sm font-medium text-muted-foreground hover:text-primary"
-                        >Login</a
-                      >
-                      <a
-                        href="/register"
-                        class="inline-flex items-center justify-center rounded-full text-sm font-medium bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-11 px-5 transition-colors"
-                        >Get Started</a
+                        >Sign in</a
                       >
                     </div>
                   `
@@ -267,7 +305,6 @@ export const NavBar = ({ appName, user, currentPath }: NavBarProps) => {
           </button>
         </div>
       </div>
-      <div class="retro-stripes h-[9px]" aria-hidden="true"></div>
     </header>
 
     <div
@@ -275,12 +312,12 @@ export const NavBar = ({ appName, user, currentPath }: NavBarProps) => {
       class="hidden fixed inset-0 z-[100] bg-background text-foreground lg:hidden flex flex-col animate-in slide-in-from-right-10 duration-200"
     >
       <div class="flex items-center justify-between px-4 h-14 border-b">
-        <span class="font-display text-base tracking-wide flex items-center gap-2.5">
-          ${OrbitMark()} Menu
+        <span class="font-display text-xl tracking-tight flex items-center gap-2.5">
+          ${GrainMark()} Menu
         </span>
         <button
           id="mobile-menu-close"
-          class="p-2 rounded-md hover:bg-accent focus:outline-none"
+          class="inline-flex h-11 w-11 items-center justify-center rounded-md hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
           aria-label="Close menu"
         >
           <i data-lucide="x" class="h-6 w-6"></i>
@@ -324,13 +361,13 @@ export const NavBar = ({ appName, user, currentPath }: NavBarProps) => {
                       href="/login"
                       class="inline-flex items-center justify-center rounded-lg h-12 border border-input bg-background px-4 py-2 text-base font-medium hover:bg-accent hover:text-accent-foreground"
                     >
-                      Login
+                      Sign in
                     </a>
                     <a
                       href="/register"
-                      class="inline-flex items-center justify-center rounded-full h-12 bg-primary px-4 py-2 text-base font-medium text-primary-foreground shadow-xs hover:bg-primary/90"
+                      class="inline-flex items-center justify-center rounded-lg h-12 bg-primary px-4 py-2 text-base font-medium text-primary-foreground hover:bg-primary/90"
                     >
-                      Get Started
+                      Create account
                     </a>
                   </div>
                 `

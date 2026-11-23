@@ -3,6 +3,8 @@ import { Hono } from "hono";
 import type { AppEnv } from "@server/types";
 import { robotsTxt, sitemapXml, type SitemapEntry } from "@server/lib/seo";
 import { gatesWholeSite } from "@server/services/access-gate.service";
+import { and, eq, isNull } from "drizzle-orm";
+import { product } from "@server/schema/product.schema";
 
 export const seoRoute = new Hono<AppEnv>();
 
@@ -17,7 +19,10 @@ export const seoRoute = new Hono<AppEnv>();
  * query it in the handler below and concatenate. Keep the list under ~50,000
  * URLs; past that, sitemaps have to be split and indexed.
  */
-const STATIC_ROUTES: SitemapEntry[] = [{ loc: "/", changefreq: "weekly", priority: 1.0 }];
+const STATIC_ROUTES: SitemapEntry[] = [
+  { loc: "/", changefreq: "weekly", priority: 1.0 },
+  { loc: "/made-to-measure", changefreq: "monthly", priority: 0.6 },
+];
 
 seoRoute.get("/robots.txt", (c) =>
   // A locked site gets the same "disallow everything, no sitemap" answer as
@@ -35,17 +40,20 @@ seoRoute.get("/sitemap.xml", async (c) => {
 
   const entries: SitemapEntry[] = [...STATIC_ROUTES];
 
-  // Example of adding database-backed URLs — delete with the notes feature.
-  // Only ever list rows a signed-out visitor can actually load.
-  //
-  //   const posts = await c.var.db
-  //     .select({ slug: post.slug, updatedAt: post.updatedAt })
-  //     .from(post)
-  //     .where(and(eq(post.published, true), isNull(post.deletedAt)));
-  //
-  //   entries.push(
-  //     ...posts.map((p) => ({ loc: `/posts/${p.slug}`, lastmod: p.updatedAt })),
-  //   );
+  // Every published product. Drafts and archived pieces 404 for visitors, so
+  // they stay out.
+  const products = await c.var.db
+    .select({ slug: product.slug, updatedAt: product.updatedAt })
+    .from(product)
+    .where(and(eq(product.status, "published"), isNull(product.deletedAt)));
+  entries.push(
+    ...products.map((p) => ({
+      loc: `/furniture/${p.slug}`,
+      lastmod: p.updatedAt.slice(0, 10),
+      changefreq: "monthly" as const,
+      priority: 0.8,
+    })),
+  );
 
   return c.body(sitemapXml(entries, c.var.app), 200, {
     "Content-Type": "application/xml; charset=utf-8",

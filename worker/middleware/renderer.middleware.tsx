@@ -3,6 +3,7 @@ import { Layout } from "../views/Layout";
 import { resolveMeta, type PageMeta } from "../lib/seo";
 import { assetVersion } from "../lib/asset-version";
 import { isGateEnabled, isGatedPath } from "../services/access-gate.service";
+import { cartCount } from "../services/cart.service";
 
 declare module "hono" {
   interface ContextRenderer {
@@ -40,8 +41,12 @@ export const globalRenderer = jsxRenderer(
       meta.jsonLd = [];
     }
 
+    // One indexed sum per page, and only for visitors who have a cart cookie.
+    const pieces = meta.bare ? 0 : await cartCount(c).catch(() => 0);
+
     return (
       <Layout
+        cartCount={pieces}
         meta={meta}
         app={app}
         user={user}

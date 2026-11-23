@@ -12,7 +12,10 @@ import { logsRoute } from "./routes/admin/logs";
 import { accessAdminRoute } from "./routes/admin/access.tsx";
 import { accessRoute } from "./routes/access.tsx";
 import { accessGate } from "./middleware/access-gate.middleware.ts";
-import { notesRoute } from "./routes/notes.tsx";
+import { shopRoute } from "./routes/shop.tsx";
+import { checkoutRoute, stripeWebhook } from "./routes/checkout.tsx";
+import { productsAdminRoute } from "./routes/admin/products.tsx";
+import { dashboardRoute, ordersAdminRoute } from "./routes/admin/orders.tsx";
 import { seoRoute } from "./routes/seo";
 import devRouter from "./routes/dev.tsx";
 
@@ -25,6 +28,9 @@ import type { AppEnv } from "./types";
 // than re-declaring the role check on each one.
 const admin = new Hono<AppEnv>();
 admin.use("*", requireRole("admin"));
+admin.route("/", dashboardRoute);
+admin.route("/products", productsAdminRoute);
+admin.route("/orders", ordersAdminRoute);
 admin.route("/logs", logsRoute);
 admin.route("/access", accessAdminRoute);
 
@@ -51,11 +57,14 @@ const app = new Hono<AppEnv>()
 
   .route("/admin", admin)
 
-  // Public pages: home, login, register, logout.
-  .route("/", webAuth)
+  // The shop: gallery (home), product pages, saved designs, cart, media.
+  .route("/", shopRoute)
 
-  // Example feature. Delete once you have a real one.
-  .route("/notes", notesRoute)
+  // Checkout, order pages and the customer's account.
+  .route("/", checkoutRoute)
+
+  // Login, register, logout.
+  .route("/", webAuth)
 
   // Any signed-in user can view their own profile.
   .get("/profile", requireUser, (c) => {
@@ -75,7 +84,9 @@ const app = new Hono<AppEnv>()
   // 3. JSON API
   // ==========================================
   .basePath("/api")
-  .route("/auth", apiAuth);
+  .route("/auth", apiAuth)
+  // Stripe posts payment events here: /api/stripe/webhook.
+  .route("/stripe", stripeWebhook);
 
 export type AppType = typeof app;
 export default app;

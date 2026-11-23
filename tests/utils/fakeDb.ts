@@ -1,5 +1,13 @@
 import { users, authLogs } from "../../worker/schema/auth.schema";
-import { note } from "../../worker/schema/note.schema";
+import { product } from "../../worker/schema/product.schema";
+import {
+  cartItem,
+  orderEvent,
+  orderItem,
+  orders,
+  savedDesign,
+} from "../../worker/schema/shop.schema";
+import { CATALOGUE } from "../../worker/config/catalogue";
 
 /**
  * A hand-rolled stand-in for a Drizzle D1 client.
@@ -12,7 +20,11 @@ import { note } from "../../worker/schema/note.schema";
 
 export type MockData = {
   users: any[];
-  notes: any[];
+  products: any[];
+  orders: any[];
+  orderItems: any[];
+  orderEvents: any[];
+  cartItems: any[];
   authLogs: any[];
 };
 
@@ -29,15 +41,32 @@ const resolveSelect = (data: MockData, state: QueryState) => {
     return data.authLogs.map((log) => ({ log, user: data.users[0] ?? null }));
   }
 
-  if ("count" in fields) {
-    return [{ count: data.notes.length }];
+  // Aggregates (cart count, dashboard totals): one plausible row.
+  if ("count" in fields || "n" in fields || "cents" in fields) {
+    return [{ count: 1, n: 1, cents: 0, status: "published", month: "2026-01" }];
   }
+
+  // Joined selections keyed by alias.
+  if ("item" in fields && "product" in fields) {
+    return data.cartItems.map((item) => ({ item, product: data.products[0] }));
+  }
+  if ("design" in fields && "product" in fields) return [];
 
   switch (state.fromTable) {
     case users:
       return data.users;
-    case note:
-      return data.notes;
+    case product:
+      return data.products;
+    case orders:
+      return data.orders;
+    case orderItem:
+      return data.orderItems;
+    case orderEvent:
+      return data.orderEvents;
+    case cartItem:
+      return data.cartItems;
+    case savedDesign:
+      return [];
     case authLogs:
       return data.authLogs;
     default:
@@ -136,17 +165,66 @@ export const createMockData = (): MockData => {
         createdAt: now,
         updatedAt: now,
         roles: ["admin"],
-        permissions: ["notes.read", "notes.create", "notes.update", "notes.delete"],
+        permissions: ["orders.read", "designs.read", "designs.create", "designs.delete"],
       },
     ],
-    notes: [
+    products: CATALOGUE.map((p, i) => ({
+      ...p,
+      id: i + 1,
+      images: [],
+      modelKey: null,
+      blendKey: null,
+      modelVersion: 1,
+      publishedAt: now,
+      deletedAt: null,
+      createdAt: now,
+      updatedAt: now,
+    })),
+    orders: [
       {
         id: 1,
-        title: "First note",
-        body: "Body text",
-        pinned: true,
-        deletedAt: null,
+        ref: "HW-TEST01",
+        accessToken: "token",
         userId,
+        status: "in_production",
+        paymentStatus: "paid",
+        name: "Test User",
+        email: "test@example.com",
+        phone: null,
+        address: { line1: "1 Bench Lane", city: "Perth", postcode: "6000", country: "Australia" },
+        deliveryMethod: "standard",
+        deliveryLabel: "Delivered to your door",
+        notes: null,
+        currency: "AUD",
+        subtotalCents: 129000,
+        deliveryCents: 9500,
+        totalCents: 138500,
+        leadDays: 21,
+        stripeSessionId: null,
+        stripePaymentIntent: null,
+        paidAt: now,
+        createdAt: now,
+        updatedAt: now,
+      },
+    ],
+    orderItems: [],
+    orderEvents: [
+      {
+        id: 1,
+        orderId: 1,
+        status: "received",
+        note: "Payment confirmed",
+        actorId: null,
+        createdAt: now,
+      },
+    ],
+    cartItems: [
+      {
+        id: 1,
+        cartId: "cart-cart-cart-cart-cart-1",
+        productId: 1,
+        selection: { width: 2000, height: 750, depth: 900, options: { timber: "walnut" } },
+        quantity: 2,
         createdAt: now,
         updatedAt: now,
       },

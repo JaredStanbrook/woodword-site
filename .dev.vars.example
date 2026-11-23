@@ -32,3 +32,11 @@ REQUIRE_EMAIL_VERIFICATION="false"
 # SMTP_USER=""
 # SMTP_PASS=""
 # SMS_PROVIDER_API_KEY=""
+
+# --- Shop -----------------------------------------------------------------
+# "development" lets checkout simulate payment when no Stripe key is set.
+ENVIRONMENT="development"
+# STRIPE_SECRET_KEY="sk_test_..."
+# STRIPE_WEBHOOK_SECRET="whsec_..."   # from `stripe listen --forward-to localhost:3000/api/stripe/webhook`
+# ANTHROPIC_API_KEY="sk-ant-..."
+# RESEND_API_KEY="re_..."

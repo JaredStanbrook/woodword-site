@@ -11,6 +11,8 @@ interface LayoutProps {
   app: AppConfig;
   user?: PropsUser | null;
   currentPath?: string;
+  /** Pieces in the visitor's cart, for the badge in the nav. */
+  cartCount?: number;
   headExtra?: Child;
   /**
    * Appended to the stylesheet URL so each deploy gets a new one. Its file
@@ -85,7 +87,7 @@ export const Layout: FC<LayoutProps> = (props) => {
              visibly swaps. crossorigin is required even same-origin. -->
         <link
           rel="preload"
-          href="/fonts/michroma-400.woff2"
+          href="/fonts/fraunces-var.woff2"
           as="font"
           type="font/woff2"
           crossorigin
@@ -114,15 +116,15 @@ export const Layout: FC<LayoutProps> = (props) => {
         ${
           props.meta.bare
             ? html`<header class="border-b">
-                <div class="flex h-14 items-center px-4 font-display text-base tracking-wide">
+                <div class="flex h-14 items-center px-4 font-display text-xl tracking-tight">
                   ${props.app.name}
                 </div>
-                <div class="retro-stripes h-[9px]" aria-hidden="true"></div>
               </header>`
             : NavBar({
                 appName: props.app.name,
                 user: props.user,
                 currentPath: props.currentPath,
+                cartCount: props.cartCount,
               })
         }
 
@@ -143,17 +145,39 @@ export const Layout: FC<LayoutProps> = (props) => {
         ${
           props.meta.bare
             ? ""
-            : html`<footer class="mt-16">
-                <div class="retro-stripes h-[9px]" aria-hidden="true"></div>
+            : html`<footer class="mt-24 border-t">
                 <div
-                  class="flex flex-col items-center justify-between gap-2 px-4 py-6 md:h-24 md:flex-row md:px-8 md:py-0"
+                  class="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr]"
                 >
-                  <p class="font-display text-xs tracking-wide text-foreground">
-                    ${props.app.name}
-                  </p>
-                  <p class="text-center text-sm leading-loose text-muted-foreground md:text-right">
-                    ${props.app.tagline || props.app.name}
-                  </p>
+                  <div class="space-y-3">
+                    <p class="font-display text-2xl tracking-tight">${props.app.name}</p>
+                    <p class="max-w-sm text-sm leading-relaxed text-muted-foreground">
+                      ${props.app.tagline || props.app.name}
+                    </p>
+                  </div>
+                  <nav class="space-y-2 text-sm" aria-label="Shop">
+                    <p class="font-medium">Shop</p>
+                    <a href="/" class="block text-muted-foreground hover:text-foreground"
+                      >The collection</a
+                    >
+                    <a
+                      href="/made-to-measure"
+                      class="block text-muted-foreground hover:text-foreground"
+                      >How made to measure works</a
+                    >
+                    <a href="/cart" class="block text-muted-foreground hover:text-foreground"
+                      >Your cart</a
+                    >
+                  </nav>
+                  <nav class="space-y-2 text-sm" aria-label="Orders">
+                    <p class="font-medium">Orders</p>
+                    <a href="/orders" class="block text-muted-foreground hover:text-foreground"
+                      >Track an order</a
+                    >
+                    <a href="/account" class="block text-muted-foreground hover:text-foreground"
+                      >Your account</a
+                    >
+                  </nav>
                 </div>
               </footer>`
         }

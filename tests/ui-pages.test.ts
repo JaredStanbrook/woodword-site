@@ -95,7 +95,18 @@ describe("UI pages load", () => {
   it("serves public pages to signed-out visitors", async () => {
     const testApp = createTestApp(null);
 
-    for (const path of ["/", "/login", "/register"]) {
+    for (const path of [
+      "/",
+      "/?category=tables",
+      "/made-to-measure",
+      "/furniture/nord-dining-table",
+      "/furniture/nord-dining-table?w=2000&h=760&d=1000&o.timber=walnut&o.finish=soap",
+      "/furniture/nord-dining-table?w=99999&h=-4&d=abc&o.timber=nope",
+      "/cart",
+      "/orders",
+      "/login",
+      "/register",
+    ]) {
       const res = await get(testApp, path);
       expect(res.status, `GET ${path}`).toBe(200);
     }
@@ -126,7 +137,15 @@ describe("UI pages load", () => {
   it("redirects signed-out visitors away from protected pages", async () => {
     const testApp = createTestApp(null);
 
-    for (const path of ["/profile", "/notes", "/admin/logs"]) {
+    for (const path of [
+      "/profile",
+      "/account",
+      "/admin",
+      "/admin/products",
+      "/admin/products/new",
+      "/admin/orders",
+      "/admin/logs",
+    ]) {
       const res = await get(testApp, path);
       expect(res.status, `GET ${path}`).toBe(302);
       expect(res.headers.get("location"), `GET ${path}`).toBe("/login");
@@ -136,26 +155,45 @@ describe("UI pages load", () => {
   it("serves protected pages to a signed-in admin", async () => {
     const testApp = createTestApp(createMockData().users[0]);
 
-    for (const path of ["/", "/profile", "/notes", "/notes/new", "/notes/1/edit", "/admin/logs"]) {
+    for (const path of [
+      "/",
+      "/profile",
+      "/account",
+      "/furniture/nord-dining-table",
+      "/orders/HW-TEST01?t=token",
+      "/admin",
+      "/admin/products",
+      "/admin/products/new",
+      "/admin/products/generate",
+      "/admin/products/1",
+      "/admin/orders",
+      "/admin/orders?status=all",
+      "/admin/orders/1",
+      "/admin/orders/1/spec",
+      "/admin/orders/1/spec.json",
+      "/admin/logs",
+    ]) {
       const res = await get(testApp, path);
       expect(res.status, `GET ${path}`).toBe(200);
     }
   });
 
-  it("serves the notes list with search and filter params", async () => {
-    const testApp = createTestApp(createMockData().users[0]);
-
-    // A literal % must not be treated as a LIKE wildcard, and an unknown
-    // accent must not break rendering — both are easy to regress.
-    for (const path of [
-      "/notes?q=first",
-      "/notes?q=100%25",
-      "/notes?pinned=1",
-      "/notes?q=x&pinned=1",
-    ]) {
-      const res = await get(testApp, path);
+  it("serves the cart and checkout to a visitor with a cart", async () => {
+    const testApp = createTestApp(null);
+    for (const path of ["/cart", "/checkout"]) {
+      const res = await testApp.fetch(
+        new Request(`http://localhost${path}`, {
+          headers: { Cookie: "cart=cart-cart-cart-cart-cart-1" },
+        }),
+        env,
+      );
       expect(res.status, `GET ${path}`).toBe(200);
     }
+  });
+
+  it("hides an order from someone without its link", async () => {
+    const res = await get(createTestApp(null), "/orders/HW-TEST01?t=wrong");
+    expect(res.status).toBe(404);
   });
 
   /**
@@ -185,8 +223,11 @@ describe("UI pages load", () => {
       [multiMethod, "/login"],
       [multiMethod, "/register"],
       [signedIn, "/profile"],
-      [signedIn, "/notes"],
-      [signedIn, "/notes/new"],
+      [signedOut, "/furniture/nord-dining-table"],
+      [signedOut, "/made-to-measure"],
+      [signedIn, "/admin"],
+      [signedIn, "/admin/products/1"],
+      [signedIn, "/admin/orders/1"],
       [signedIn, "/admin/logs"],
     ];
 
@@ -227,23 +268,5 @@ describe("UI pages load", () => {
       expect(one.tabs, `${path} with one real method`).toBe(0);
       expect(one.strip, `${path} with one real method`).toBeUndefined();
     }
-  });
-
-  it("returns only the grid fragment when HTMX targets it", async () => {
-    const testApp = createTestApp(createMockData().users[0]);
-
-    const res = await testApp.fetch(
-      new Request("http://localhost/notes?q=first", {
-        headers: { "HX-Request": "true", "HX-Target": "note-grid" },
-      }),
-      env,
-    );
-    const html = await res.text();
-
-    expect(res.status).toBe(200);
-    expect(html).toContain('id="note-grid"');
-    // A fragment, not a page — hx-boost navigations still get the full layout.
-    expect(html).not.toContain("<!DOCTYPE html>");
-    expect(html).not.toContain("<title>");
   });
 });

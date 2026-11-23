@@ -34,6 +34,10 @@ const ISLANDS: Record<string, () => Promise<unknown>> = {
   "profile-editable-name": () => import("./ui/ProfileIslands"),
   "profile-password-modal": () => import("./ui/ProfileIslands"),
   "profile-delete-modal": () => import("./ui/ProfileIslands"),
+  // Product pages. The viewer pulls in three.js (~600 KB before gzip), so it
+  // must never be a top-level import.
+  "furniture-configurator": () => import("./shop/FurnitureConfigurator"),
+  "furniture-viewer": () => import("./shop/FurnitureViewer"),
 };
 
 const loadIslands = (root: ParentNode = document) => {

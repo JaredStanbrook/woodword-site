@@ -26,3 +26,8 @@
 
 /favicon.svg
   Cache-Control: public, max-age=86400
+
+# Draco decoder for compressed GLB models (copied from three/examples/jsm/libs/draco/gltf).
+# Refresh it with three: the file names do not change, so keep this to a day.
+/draco/*
+  Cache-Control: public, max-age=86400
