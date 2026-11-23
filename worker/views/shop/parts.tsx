@@ -28,15 +28,20 @@ export const AVAILABILITY_STYLES: Record<Availability, { label: string; class: s
     label: "Made to order",
     class: "border-border bg-muted text-muted-foreground",
   },
-  in_stock: { label: "Ready to ship", class: "border-success/30 bg-success/10 text-success" },
-  limited: { label: "Limited run", class: "border-warning/40 bg-warning/15 text-foreground" },
+  in_stock: { label: "Ready to ship", class: "border-success bg-success text-success-foreground" },
+  limited: { label: "Limited run", class: "border-warning bg-warning text-warning-foreground" },
   sold_out: {
     label: "Not available",
-    class: "border-destructive/30 bg-destructive/10 text-destructive",
+    class: "border-destructive bg-destructive text-destructive-foreground",
   },
 };
 
+/**
+ * Says something only when it is news. Every piece is made to order unless
+ * marked otherwise, so that one is never shown.
+ */
 export const AvailabilityBadge = ({ availability }: { availability: Availability }) => {
+  if (availability === "made_to_order") return null;
   const style = AVAILABILITY_STYLES[availability] ?? AVAILABILITY_STYLES.made_to_order;
   return (
     <span

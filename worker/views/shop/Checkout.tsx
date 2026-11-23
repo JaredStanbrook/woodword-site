@@ -223,7 +223,7 @@ export const CheckoutPage = (props: CheckoutProps) => {
           </div>
         </div>
 
-        <aside class="h-fit space-y-5 rounded-sm border-2 bg-card p-5 text-card-foreground shadow-sm lg:sticky lg:top-8">
+        <aside class="h-fit space-y-5 rounded-sm border-2 bg-card p-5 text-card-foreground lg:sticky lg:top-8">
           <h2 class="font-display text-xl">Your order</h2>
           <ul class="space-y-4">
             {lines.map((line) => (

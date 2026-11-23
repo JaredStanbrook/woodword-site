@@ -52,7 +52,7 @@ export const ProfilePage: FC<ProfileProps> = (props) => {
         </div>
 
         {/* 1. PERSONAL INFORMATION */}
-        <div class="rounded-2xl border-2 bg-gradient-to-b from-card to-card/70 text-card-foreground p-6 shadow-sm md:p-8">
+        <div class="rounded-2xl border-2 bg-gradient-to-b from-card to-card/70 text-card-foreground p-6 md:p-8">
           <div class="flex flex-col space-y-1.5 p-6">
             <div class="flex items-center gap-2">
               <i data-lucide="user" class="h-5 w-5 text-primary"></i>
@@ -122,7 +122,7 @@ export const ProfilePage: FC<ProfileProps> = (props) => {
         </div>
 
         {/* 2. SECURITY SETTINGS */}
-        <div class="rounded-2xl border-2 bg-gradient-to-b from-card to-card/70 text-card-foreground p-6 shadow-sm md:p-8">
+        <div class="rounded-2xl border-2 bg-gradient-to-b from-card to-card/70 text-card-foreground p-6 md:p-8">
           <div class="flex flex-col space-y-1.5 p-6">
             <div class="flex items-center gap-2">
               <svg
@@ -147,7 +147,7 @@ export const ProfilePage: FC<ProfileProps> = (props) => {
           <div class="p-6 pt-0 space-y-4">
             {/* TOTP Section (Example of static conditional rendering) */}
             {methods.includes("totp") && (
-              <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 border-2 rounded-lg bg-card text-card-foreground shadow-sm">
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 border-2 rounded-lg bg-card text-card-foreground">
                 <div class="flex items-center gap-4">
                   <div
                     class={`p-2.5 rounded-full ${
@@ -238,7 +238,7 @@ export const ProfilePage: FC<ProfileProps> = (props) => {
         </div>
 
         {/* 3. DANGER ZONE */}
-        <div class="rounded-2xl border-2 border-destructive/50 bg-destructive/5 text-card-foreground p-6 shadow-sm md:p-8">
+        <div class="rounded-2xl border-2 border-destructive/50 bg-destructive/5 text-card-foreground p-6 md:p-8">
           <div class="flex flex-col space-y-1.5 p-6">
             <div class="flex items-center gap-2 text-destructive">
               <svg

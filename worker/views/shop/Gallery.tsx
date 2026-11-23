@@ -119,7 +119,7 @@ export const ProductCard = ({
   if (wide) {
     return (
       <article class={`group relative sm:col-span-2 ${paletteClass(p)}`}>
-        <div class="relative overflow-hidden rounded-sm border-[3px] border-foreground bg-product-wash text-night-foreground shadow sm:grid sm:aspect-[2/1] sm:grid-cols-[1.4fr_1fr]">
+        <div class="relative overflow-hidden rounded-sm border-[3px] border-foreground bg-product-wash text-night-foreground shadow transition-[transform,box-shadow] duration-300 group-hover:-translate-y-0.5 group-hover:shadow-lg sm:grid sm:aspect-[2/1] sm:grid-cols-[1.4fr_1fr]">
           <div class="relative aspect-square sm:aspect-auto">
             <Picture item={item} std={std} />
           </div>
@@ -142,7 +142,7 @@ export const ProductCard = ({
 
   return (
     <article class={`group relative ${paletteClass(p)}`}>
-      <div class="relative aspect-square overflow-hidden rounded-sm border-[3px] border-foreground bg-product-wash shadow">
+      <div class="relative aspect-square overflow-hidden rounded-sm border-[3px] border-foreground bg-product-wash shadow transition-[transform,box-shadow] duration-300 group-hover:-translate-y-0.5 group-hover:shadow-lg">
         <Picture item={item} std={std} />
       </div>
       <div class="mt-3 flex items-baseline justify-between gap-4">
@@ -235,7 +235,7 @@ const Cover = ({
         class="group relative block focus:outline-none"
         aria-label={p.name}
       >
-        <div class="relative aspect-[4/5] overflow-hidden rounded-sm border-[3px] border-foreground bg-night shadow-lg">
+        <div class="relative aspect-[4/5] overflow-hidden rounded-sm border-[3px] border-foreground bg-night shadow transition-[transform,box-shadow] duration-300 group-hover:-translate-y-0.5 group-hover:shadow-lg">
           <div class="absolute inset-x-[18%] top-[12%] h-[24%]">
             <NightSky />
           </div>
@@ -306,10 +306,7 @@ export const GalleryPage = (props: GalleryProps) => {
               The collection
             </h2>
           )}
-          <nav
-            class="-mb-1 flex max-w-full flex-wrap gap-x-6"
-            aria-label="Filter by kind of piece"
-          >
+          <nav class="-mb-1 flex max-w-full flex-wrap gap-x-6" aria-label="Filter by kind of piece">
             <FilterLink href="/" label="Everything" current={props.active === null} />
             {props.categories.map((cat) => (
               <FilterLink

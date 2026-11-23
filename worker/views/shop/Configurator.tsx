@@ -13,14 +13,7 @@
 import type { SelectProduct } from "@server/schema/product.schema";
 import { specOf } from "@server/schema/product.schema";
 import type { DimensionKey, Selection } from "@server/schema/furniture.config";
-import {
-  AXES,
-  chosenOptions,
-  drawingLabel,
-  isoSvg,
-  resizeParts,
-  type Quote,
-} from "@server/lib/furniture";
+import { AXES, drawingLabel, isoSvg, resizeParts, type Quote } from "@server/lib/furniture";
 import { formatPrice } from "@server/lib/money";
 import { RollingPrice, buttonPrimary, buttonSecondary, leadTimeLabel } from "./parts";
 
@@ -152,7 +145,6 @@ export const Breakdown = ({
 export const Configurator = (props: ConfiguratorProps) => {
   const { product, selection, quote, locale, currency } = props;
   const spec = specOf(product);
-  const chosen = chosenOptions(spec, selection);
   const clientData = {
     ...spec,
     selection,
@@ -177,16 +169,18 @@ export const Configurator = (props: ConfiguratorProps) => {
         ) : null}
 
         <fieldset class="space-y-5">
-          <legend class="mb-4 flex w-full items-baseline justify-between text-sm italic text-muted-foreground">
-            <span>Size</span>
+          {/* The legend names the group for screen readers; on screen the three
+              labelled controls say it already. */}
+          <legend class="sr-only">Size</legend>
+          <div class="-mb-2 flex justify-end">
             <button
               type="button"
               data-reset-size
               class="inline-flex h-11 items-center gap-1.5 normal-case tracking-normal text-sm text-muted-foreground hover:text-foreground"
             >
-              <i data-lucide="rotate-ccw" class="h-3.5 w-3.5"></i> Standard size
+              <i data-lucide="rotate-ccw" class="h-3.5 w-3.5"></i> Back to the standard size
             </button>
-          </legend>
+          </div>
           {AXES.map((axis) => (
             <DimensionControl axis={axis} product={product} value={selection[axis]} />
           ))}
@@ -194,18 +188,10 @@ export const Configurator = (props: ConfiguratorProps) => {
 
         {spec.options.map((group) => (
           <fieldset class="space-y-3">
-            <legend class="mb-3 flex w-full items-baseline justify-between gap-3 text-sm italic text-muted-foreground">
-              <span>{group.label}</span>
-              <span
-                class="normal-case tracking-normal text-sm text-foreground"
-                data-option-label={group.id}
-              >
-                {chosen.find((c) => c.groupId === group.id)?.choice.label}
-              </span>
-            </legend>
+            <legend class="mb-3 text-base font-semibold">{group.label}</legend>
             <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {group.choices.map((choice) => (
-                <label class="group/choice relative flex min-h-11 cursor-pointer items-center gap-3 rounded-sm border-2 border-input px-3 py-2.5 transition-colors hover:bg-accent has-[:checked]:border-foreground has-[:checked]:bg-card has-[:checked]:shadow-sm has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
+                <label class="group/choice relative flex min-h-11 cursor-pointer items-center gap-3 rounded-sm border-2 border-foreground/25 px-3 py-2.5 transition-colors hover:border-foreground/60 has-[:checked]:border-foreground has-[:checked]:bg-card has-[:checked]:shadow-sm has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
                   <input
                     type="radio"
                     name={`o.${group.id}`}
@@ -217,7 +203,7 @@ export const Configurator = (props: ConfiguratorProps) => {
                   />
                   {choice.color ? (
                     <span
-                      class="h-6 w-6 shrink-0 rounded-full border-2 border-foreground/15 shadow-xs"
+                      class="h-6 w-6 shrink-0 rounded-full border-2 border-foreground/20"
                       style={`background-color: ${choice.color}`}
                       aria-hidden="true"
                     ></span>
@@ -252,7 +238,7 @@ export const Configurator = (props: ConfiguratorProps) => {
         </noscript>
 
         <section
-          class="on-night space-y-5 rounded-sm border-[3px] border-night p-6 shadow-lg"
+          class="on-night space-y-5 rounded-sm border-[3px] border-night p-6"
           aria-label="Price"
         >
           {/* The workshop drawing of exactly this configuration, redrawn by
@@ -269,16 +255,11 @@ export const Configurator = (props: ConfiguratorProps) => {
             }}
           ></div>
           <div>
-            <p class="text-sm italic text-muted-foreground">Current configuration price</p>
-            <p class="mt-2 font-serif text-6xl font-semibold text-gilt">
+            <p class="font-serif text-6xl font-semibold text-gilt">
               <RollingPrice cents={quote.totalCents} locale={locale} currency={currency} />
             </p>
-            <p class="mt-2 text-sm text-muted-foreground">
-              <span data-size-label>
-                {selection.width} × {selection.depth} × {selection.height} mm
-              </span>
-              {", "}
-              <span data-custom-label>{quote.custom ? "made to your size" : "standard size"}</span>
+            <p class="mt-2 text-sm text-muted-foreground" data-custom-label>
+              {quote.custom ? "Made to your size" : "The standard size"}
             </p>
           </div>
 

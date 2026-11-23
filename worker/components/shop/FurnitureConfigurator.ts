@@ -153,7 +153,7 @@ class FurnitureConfigurator extends HTMLElement {
     const size = this.querySelector("[data-size-label]");
     if (size) size.textContent = `${s.width} × ${s.depth} × ${s.height} mm`;
     const custom = this.querySelector("[data-custom-label]");
-    if (custom) custom.textContent = q.custom ? "made to your size" : "standard size";
+    if (custom) custom.textContent = q.custom ? "Made to your size" : "The standard size";
     const lead = this.querySelector("[data-lead-label]");
     if (lead) lead.textContent = leadTimeLabel(q.leadDays);
 

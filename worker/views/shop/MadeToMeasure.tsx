@@ -19,7 +19,7 @@ const Resized = ({ product }: { product: SelectProduct }) => {
   if (widest.width === standard.width) return null;
   const panel = (sel: typeof standard, caption: string) => (
     <figure class="space-y-3">
-      <div class="aspect-[4/3] rounded-sm border-[3px] border-foreground bg-product-wash p-[5%] shadow">
+      <div class="aspect-[4/3] rounded-sm border-[3px] border-foreground bg-product-wash p-[5%]">
         <IsoDrawing
           parts={resizeParts(spec, sel)}
           size={sel}

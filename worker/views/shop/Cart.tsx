@@ -159,7 +159,7 @@ export const CartPage = ({ lines, locale, currency }: CartProps) => {
             ))}
           </ul>
 
-          <aside class="h-fit space-y-4 rounded-sm border-2 bg-card p-5 text-card-foreground shadow-sm lg:sticky lg:top-8">
+          <aside class="h-fit space-y-4 rounded-sm border-2 bg-card p-5 text-card-foreground lg:sticky lg:top-8">
             <div class="flex justify-between">
               <span class="text-muted-foreground">Subtotal</span>
               <Price cents={subtotal} locale={locale} currency={currency} />

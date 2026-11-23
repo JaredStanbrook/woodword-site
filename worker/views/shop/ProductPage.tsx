@@ -15,7 +15,7 @@ import type { Layout, Selection } from "@server/schema/furniture.config";
 import { resizeParts, type Quote } from "@server/lib/furniture";
 import { Configurator, type ConfiguratorProps } from "./Configurator";
 import { paletteClass } from "./Gallery";
-import { AvailabilityBadge, CATEGORY_LABELS, IsoDrawing, mediaUrl } from "./parts";
+import { AvailabilityBadge, IsoDrawing, mediaUrl } from "./parts";
 import { Flourish } from "./ornaments";
 
 export interface ProductPageProps extends ConfiguratorProps {
@@ -175,22 +175,10 @@ const Architectural: FC<ProductPageProps> = (props) => {
             selection={props.selection}
             class="aspect-[4/3] rounded-sm border-2"
           />
-          <div class="mt-3 grid grid-cols-3 border-y-2 text-xs tabular-nums">
-            {(["width", "depth", "height"] as const).map((k) => (
-              <div class="border-r-2 px-3 py-2 last:border-r-0">
-                <span class="block italic text-muted-foreground">{k}</span>
-                <span data-axis-readout={k}>{props.selection[k]}</span> mm
-              </div>
-            ))}
-          </div>
         </div>
         <div class="space-y-8">
           <header class="space-y-4 border-b-2 pb-8">
-            <div class="flex flex-wrap items-center gap-3 text-sm italic text-muted-foreground">
-              <span>{CATEGORY_LABELS[p.category]}</span>
-              <span class="h-0.5 w-8 bg-product"></span>
-              <AvailabilityBadge availability={p.availability} />
-            </div>
+            <AvailabilityBadge availability={p.availability} />
             <h1 class="text-4xl leading-none sm:text-5xl">{p.name}</h1>
             {d.headline ? <p class="text-lg leading-snug text-product-ink">{d.headline}</p> : null}
             <p class="leading-relaxed text-muted-foreground">{d.intro || p.summary}</p>
@@ -250,7 +238,6 @@ const Heritage: FC<ProductPageProps> = (props) => {
   return (
     <div>
       <header class="mx-auto max-w-3xl space-y-6 px-4 pt-14 pb-12 text-center sm:px-6 sm:pt-20">
-        <p class="font-heading text-lg italic text-product-ink">{CATEGORY_LABELS[p.category]}</p>
         <h1 class="text-5xl leading-[1.02] sm:text-7xl">{p.name}</h1>
         <Ornament />
         {d.headline ? <p class="font-heading text-xl italic leading-snug">{d.headline}</p> : null}
@@ -268,10 +255,10 @@ const Heritage: FC<ProductPageProps> = (props) => {
             <Viewer
               product={p}
               selection={props.selection}
-              class="aspect-square rounded-sm border-[3px] border-foreground shadow-lg sm:aspect-[5/4]"
+              class="aspect-square rounded-sm border-[3px] border-foreground sm:aspect-[5/4]"
             />
           </div>
-          <div class="rounded-sm bg-background p-5 shadow-sm sm:p-8">
+          <div class="rounded-sm bg-background p-5 sm:p-8">
             <Configurator {...props} />
           </div>
         </div>
@@ -338,12 +325,7 @@ const Geometric: FC<ProductPageProps> = (props) => {
     <div>
       <section class="border-b-[3px] border-foreground bg-product-wash text-night-foreground">
         <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
-          <div class="flex flex-wrap items-center gap-3">
-            <span class="inline-flex h-7 items-center bg-product px-3 text-sm italic text-product-foreground">
-              {CATEGORY_LABELS[p.category]}
-            </span>
-            <AvailabilityBadge availability={p.availability} />
-          </div>
+          <AvailabilityBadge availability={p.availability} />
           <h1 class="mt-6 max-w-4xl break-words text-5xl leading-[1.02] sm:text-7xl">{p.name}</h1>
           {d.headline ? (
             <p class="mt-6 max-w-2xl text-lg text-night-foreground/85">{d.headline}</p>
@@ -356,16 +338,6 @@ const Geometric: FC<ProductPageProps> = (props) => {
           <div class="border-b-2 lg:border-b-0 lg:border-r-2">
             <div class="lg:sticky lg:top-0">
               <Viewer product={p} selection={props.selection} class="aspect-square" />
-              <div class="grid grid-cols-3 border-t-2">
-                {(["width", "depth", "height"] as const).map((k) => (
-                  <div class="border-r-2 p-4 last:border-r-0">
-                    <span class="block font-heading text-sm italic text-muted-foreground">{k}</span>
-                    <span class="font-heading text-lg tabular-nums" data-axis-readout={k}>
-                      {props.selection[k]}
-                    </span>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
           <div class="space-y-8 p-5 sm:p-8">
@@ -440,9 +412,8 @@ const Editorial: FC<ProductPageProps> = (props) => {
         )}
       </section>
       <div class="mx-auto max-w-6xl px-4 sm:px-6">
-        <header class="-mt-16 relative rounded-t-2xl bg-background px-2 pt-10 sm:-mt-24 sm:px-10">
-          <p class="text-sm italic text-product-ink">{CATEGORY_LABELS[p.category]}</p>
-          <h1 class="mt-4 text-5xl leading-[0.98] sm:text-7xl">{p.name}</h1>
+        <header class="-mt-16 relative bg-background px-2 pt-10 sm:-mt-24 sm:px-10">
+          <h1 class="text-5xl leading-[0.98] sm:text-7xl">{p.name}</h1>
           {d.headline ? (
             <p class="mt-6 max-w-3xl font-heading text-2xl leading-snug text-muted-foreground">
               {d.headline}

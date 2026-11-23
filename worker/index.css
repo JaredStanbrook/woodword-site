@@ -118,7 +118,10 @@
   --chart-4: oklch(0.4 0.06 290);
   --chart-5: oklch(0.5 0.13 45);
 
-  /* Shadows are a hard offset in ink, like a second pull of a print. */
+  /* Shadows are a hard offset in ink, like a second pull of a print. They
+     mean one thing: you can press this (a button, a piece in the collection,
+     the option you chose), or it floats above the page (a dialog, a toast).
+     Panels that only hold content get a border, never a shadow. */
   --shadow-ink: oklch(0.22 0.04 35);
 
   --sidebar: oklch(0.25 0.045 32);

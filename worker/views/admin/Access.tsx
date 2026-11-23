@@ -136,7 +136,7 @@ export const AccessPage: FC<AccessProps> = ({ links, app, mode }) => (
     <form
       method="post"
       action="/admin/access"
-      class="grid gap-4 rounded-sm border-2 bg-card p-5 shadow-sm sm:grid-cols-[1fr_12rem_auto]"
+      class="grid gap-4 rounded-sm border-2 bg-card p-5 sm:grid-cols-[1fr_12rem_auto]"
     >
       <div>
         <label for="label" class="block text-sm font-medium">
@@ -175,7 +175,7 @@ export const AccessPage: FC<AccessProps> = ({ links, app, mode }) => (
       </div>
     </form>
 
-    <div class="overflow-hidden rounded-sm border-2 bg-card shadow-sm">
+    <div class="overflow-hidden rounded-sm border-2 bg-card">
       {links.length === 0 ? (
         <div class="px-5 py-16 text-center">
           <p class="font-medium">No links yet</p>
