@@ -237,7 +237,11 @@ class FurnitureViewer extends HTMLElement {
     this.renderNow();
     canvas.classList.remove("opacity-0");
     const fallback = this.querySelector<HTMLElement>("[data-viewer-fallback]");
-    if (fallback) fallback.style.opacity = "0";
+    if (fallback) {
+      fallback.style.opacity = "0";
+      // Out of the way entirely once faded, for touch and screen readers alike.
+      fallback.addEventListener("transitionend", () => (fallback.hidden = true), { once: true });
+    }
     for (const el of this.querySelectorAll<HTMLElement>(
       "[data-viewer-hint], [data-viewer-reset]",
     )) {

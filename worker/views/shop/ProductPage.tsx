@@ -43,7 +43,12 @@ export const Viewer = ({
   class?: string;
 }) => (
   <furniture-viewer class={`relative block overflow-hidden bg-product-wash ${cls}`} data-viewer>
-    <div class="absolute inset-0 p-[8%] transition-opacity duration-500" data-viewer-fallback>
+    {/* Never catches a pointer: once the 3D view loads underneath, a drag
+        has to reach its canvas, and an invisible element still takes touches. */}
+    <div
+      class="pointer-events-none absolute inset-0 p-[8%] transition-opacity duration-500"
+      data-viewer-fallback
+    >
       <IsoDrawing parts={resizeParts(specOf(product), selection)} />
     </div>
     <div class="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3">
