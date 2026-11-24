@@ -3,7 +3,8 @@
 // Loads the example designs in worker/config/catalogue.ts into D1.
 //
 //   npm run seed:local                 local database, published
-//   npm run seed -- --remote --drafts  production database, as drafts
+//   npm run seed -- --remote               production database, as drafts
+//   npm run seed -- --remote --published   production database, live in the shop
 //
 // Skips any product whose slug already exists, so it is safe to run twice
 // and never overwrites a product someone has edited.
@@ -17,7 +18,9 @@ import { CATALOGUE } from "../worker/config/catalogue";
 
 const args = process.argv.slice(2);
 const remote = args.includes("--remote");
-const drafts = args.includes("--drafts") || remote;
+// Remote seeding makes drafts unless asked to publish: a production shop
+// should not grow pieces with placeholder prices by accident.
+const drafts = args.includes("--drafts") || (remote && !args.includes("--published"));
 
 const q = (v: unknown) =>
   v === null || v === undefined
