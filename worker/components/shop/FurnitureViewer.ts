@@ -214,9 +214,10 @@ class FurnitureViewer extends HTMLElement {
     controls.minPolarAngle = 0.12;
     controls.maxPolarAngle = Math.PI / 2 - 0.04;
     controls.addEventListener("change", () => this.requestRender());
-    // Vertical drags keep scrolling the page on a phone; sideways ones turn
-    // the piece, and two fingers zoom.
-    canvas.style.touchAction = "pan-y";
+    // Every touch on the model turns or zooms it; none scrolls the page, so
+    // the page holds still while the piece is being turned. Scrolling past
+    // the viewer is done from the page around it.
+    canvas.style.touchAction = "none";
 
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(this);
