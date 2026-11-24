@@ -120,7 +120,7 @@ PRICING (integer cents, the shop's currency): baseCents is fixed making cost; ti
 
 OPTIONS: up to four groups. A timber group should paint "body" with a colour per species and use timberMultiplier for dearer species (walnut ~1.6–1.8). Finishes usually paint "none". The first choice is the default. Use "" for colour when there is none.
 
-PAGE DESIGN: choose the layout that suits the brief — "architectural" (minimal, technical spec-sheet), "heritage" (warm, traditional, centred serif), "geometric" (contemporary, blocky, bold), "editorial" (magazine-like, image-led). Pick palette and typeface ("serif", "sans", or "display" = extended geometric) to match. Write in plain, specific British English about how it is made — no superlatives, no claims the brief does not support, no invented certifications. Story: two to four short sections. Highlights: three or four short label/value facts.`;
+PAGE DESIGN: choose the layout that suits the brief — "architectural" (minimal, technical spec-sheet), "heritage" (warm, traditional, centred serif), "geometric" (contemporary, blocky, bold), "editorial" (magazine-like, image-led). Pick a palette, and a typeface for the section headings ("serif", "sans", or "display" = blackletter) to match; the product name is always set in the shop's blackletter. Write in plain, specific British English about how it is made — no superlatives, no claims the brief does not support, no invented certifications. Story: two to four short sections. Highlights: three or four short label/value facts.`;
 
 function toProductData(g: Generated, prompt: string): ProductData {
   const t = (v: { x: number; y: number; z: number }) => [v.x, v.y, v.z] as [number, number, number];

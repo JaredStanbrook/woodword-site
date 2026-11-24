@@ -332,8 +332,11 @@
 
   /* Blackletter titles everywhere, the way a cover sets one. Grenze is
      variable; a medium weight keeps the counters open at small sizes. */
+  /* Every page title, product pages included, is set in the blackletter:
+     it is the shop's signature. A product's typeface choice (--font-heading)
+     applies to its section headings, not its name. */
   h1 {
-    font-family: var(--font-heading);
+    font-family: var(--font-display);
     font-weight: 700;
     letter-spacing: 0;
     line-height: 1;

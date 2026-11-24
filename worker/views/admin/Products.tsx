@@ -759,7 +759,12 @@ export const ProductEditorPage = ({
             <div class="grid gap-4 sm:grid-cols-3">
               <Select name="layout" label="Layout" values={values} options={LAYOUTS} />
               <Select name="palette" label="Palette" values={values} options={PALETTES} />
-              <Select name="typeface" label="Headings" values={values} options={TYPEFACES} />
+              <Select
+                name="typeface"
+                label="Section headings"
+                values={values}
+                options={TYPEFACES}
+              />
             </div>
             <Text name="headline" label="Headline" values={values} errors={errors} />
             <Area name="intro" label="Introduction" values={values} errors={errors} rows={3} />
