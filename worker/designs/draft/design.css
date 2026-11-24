@@ -1,0 +1,4 @@
+/* worker/designs/draft/design.css — the shop's own colours, nothing more. */
+.design-draft {
+  --font-heading: var(--font-serif);
+}

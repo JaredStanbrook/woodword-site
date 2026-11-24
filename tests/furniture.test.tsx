@@ -24,7 +24,7 @@ import { parseProductForm, productToForm } from "../worker/services/product-form
 import { verifyWebhook } from "../worker/lib/stripe";
 import { priceGlyphs, formatPrice } from "../worker/lib/money";
 import { ProductPage } from "../worker/views/shop/ProductPage";
-import { LAYOUTS } from "../worker/schema/furniture.config";
+import { DESIGNS } from "../worker/designs";
 
 const specOf = (p: (typeof CATALOGUE)[number]): FurnitureSpec => ({
   dimensions: p.dimensions,
@@ -50,8 +50,10 @@ describe("catalogue", () => {
     }
   });
 
-  it("uses every layout, so each one is exercised", () => {
-    expect(new Set(CATALOGUE.map((p) => p.design.layout))).toEqual(new Set(LAYOUTS));
+  it("gives each example its own registered design", () => {
+    const ids = CATALOGUE.map((p) => p.design.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const id of ids) expect(DESIGNS[id], id).toBeDefined();
   });
 
   it("stays inside its size at the largest and smallest size", () => {
@@ -244,8 +246,8 @@ describe("admin product form", () => {
   });
 });
 
-describe("product page layouts", () => {
-  it("renders every layout with the configurator, the viewer and the rolling price", async () => {
+describe("product page designs", () => {
+  it("renders every example with the configurator, the viewer and the rolling price", async () => {
     for (const [i, p] of CATALOGUE.entries()) {
       const full = {
         ...p,
@@ -276,7 +278,7 @@ describe("product page layouts", () => {
       expect(html, p.name).toContain("<furniture-configurator");
       expect(html, p.name).toContain("<furniture-viewer");
       expect(html, p.name).toContain("data-price-roll");
-      expect(html, p.name).toContain(`palette-${p.design.palette}`);
+      expect(html, p.name).toContain(`design-${p.design.id}`);
       expect(html.match(/<h1/g)?.length, `${p.name} has one h1`).toBe(1);
       expect(html, p.name).not.toMatch(/\$\{[^}]{0,60}\}/);
     }

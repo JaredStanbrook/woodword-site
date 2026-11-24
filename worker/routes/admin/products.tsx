@@ -20,7 +20,7 @@ import {
   type ProductFormValues,
 } from "@server/services/product-form";
 import { GenerationError, generateProduct } from "@server/services/ai-product";
-import { ProductEditorPage, ProductListPage } from "@views/admin/Products";
+import { DesignFields, ProductEditorPage, ProductListPage } from "@views/admin/Products";
 import { GeneratePage } from "@views/admin/Generate";
 
 export const productsAdminRoute = new Hono<AppEnv>();
@@ -109,6 +109,15 @@ productsAdminRoute.get("/", async (c) => {
 // ==========================================
 
 productsAdminRoute.get("/new", (c) => editor(c, productToForm(blankProduct()), {}));
+
+// The design part of the form, redrawn for the design just picked, keeping
+// what has been typed. Posted by the Design dropdown (hx-post).
+productsAdminRoute.post("/design-fields", async (c) => {
+  const values = (await c.req.parseBody()) as ProductFormValues;
+  const id = Number(c.req.query("id"));
+  const p = Number.isInteger(id) && id > 0 ? await load(c, id) : undefined;
+  return c.html(<DesignFields values={values} errors={{}} product={p} />);
+});
 
 productsAdminRoute.post("/", async (c) => {
   const values = (await c.req.parseBody()) as ProductFormValues;
@@ -214,7 +223,7 @@ productsAdminRoute.post("/:id", async (c) => {
   const p = await load(c, Number(c.req.param("id")));
   if (!p) return c.notFound();
   const values = (await c.req.parseBody()) as ProductFormValues;
-  const parsed = parseProductForm(values);
+  const parsed = parseProductForm(values, p);
   if (!parsed.ok) {
     c.status(422);
     return editor(c, values, parsed.errors, p);
@@ -339,9 +348,17 @@ productsAdminRoute.post("/:id/images/remove", async (c) => {
       .where(eq(product.id, p.id));
     flashToast(c, "Gallery photo changed");
   } else {
+    // A photo slot pointing at it falls back to the design's drawing.
+    const photos = Object.fromEntries(
+      Object.entries(p.design.photos ?? {}).filter(([, v]) => v !== key),
+    );
     await c.var.db
       .update(product)
-      .set({ images: p.images.filter((k) => k !== key), updatedAt: new Date().toISOString() })
+      .set({
+        images: p.images.filter((k) => k !== key),
+        design: { ...p.design, photos },
+        updatedAt: new Date().toISOString(),
+      })
       .where(eq(product.id, p.id));
     // Past orders do not reference images, so the file can go.
     await c.env.R2?.delete(key);

@@ -8,8 +8,10 @@
 
 import { z } from "zod";
 
+import { DESIGNS } from "../designs";
 import {
   AVAILABILITY,
+  BLUEPRINTS,
   CATEGORIES,
   PRODUCT_STATUSES,
   designSchema,
@@ -52,7 +54,7 @@ export const storyToText = (story: Design["story"]) =>
 export const textToStory = (text: string): Design["story"] => {
   const sections: Design["story"] = [];
   let current: { heading: string; body: string[] } | null = null;
-  for (const line of text.split("\n")) {
+  for (const line of text.replace(/\r\n?/g, "\n").split("\n")) {
     const m = line.match(/^#\s+(.+)$/);
     if (m) {
       if (current)
@@ -99,9 +101,7 @@ export function productToForm(
     sortOrder: String(p.sortOrder ?? 0),
     prompt: p.prompt ?? "",
 
-    layout: p.design.layout,
-    palette: p.design.palette,
-    typeface: p.design.typeface,
+    design: p.design.id,
     headline: p.design.headline,
     intro: p.design.intro,
     care: p.design.care,
@@ -118,6 +118,8 @@ export function productToForm(
     parts: JSON.stringify(p.model.parts, null, 2),
     options: JSON.stringify(p.options, null, 2),
   };
+  for (const [k, text] of Object.entries(p.design.extra ?? {})) v[`extra.${k}`] = text;
+  for (const [k, src] of Object.entries(p.design.photos ?? {})) v[`photo.${k}`] = src;
   for (const k of ["width", "height", "depth"] as const) {
     v[`${k}Standard`] = String(p.dimensions[k].standard);
     v[`${k}Min`] = String(p.dimensions[k].min);
@@ -156,11 +158,57 @@ const firstIssue = (e: z.ZodError) => {
 
 export type ProductData = Omit<InsertProduct, "id" | "createdAt" | "updatedAt" | "images">;
 
-/** Validates the whole form. Returns the product to save, or field errors. */
+/**
+ * A design's own text and photo choices, from `extra.<key>` and
+ * `photo.<slot>` fields. Text from another design the piece once used is kept,
+ * so switching designs and back loses nothing. A photo must be one of the
+ * piece's images; an empty choice means the design's own drawing.
+ */
+function parseDesignExtras(
+  values: ProductFormValues,
+  existing: Pick<SelectProduct, "design" | "images"> | undefined,
+  errors: Record<string, string>,
+) {
+  const extra: Record<string, string> = { ...(existing?.design.extra ?? {}) };
+  const photos: Record<string, string> = { ...(existing?.design.photos ?? {}) };
+  const images = existing?.images ?? [];
+  for (const [name, raw] of Object.entries(values)) {
+    if (typeof raw !== "string") continue;
+    if (name.startsWith("extra.")) {
+      const text = raw.trim();
+      if (text) extra[name.slice(6)] = text;
+      else delete extra[name.slice(6)];
+    } else if (name.startsWith("photo.")) {
+      const slot = name.slice(6);
+      const kind = raw.startsWith("blueprint:") ? raw.slice(10) : null;
+      if (!raw) delete photos[slot];
+      else if (
+        kind !== null ? (BLUEPRINTS as readonly string[]).includes(kind) : images.includes(raw)
+      )
+        photos[slot] = raw;
+      else errors.design ??= `${slot}: that photo is no longer on this piece`;
+    }
+  }
+  return { extra, photos };
+}
+
+/**
+ * Validates the whole form. Returns the product to save, or field errors.
+ * `existing` is the saved piece when editing: its images are what photo slots
+ * may point at, and its design text is merged with what was posted.
+ */
 export function parseProductForm(
   values: ProductFormValues,
+  existing?: Pick<SelectProduct, "design" | "images">,
 ): { ok: true; data: ProductData } | { ok: false; errors: Record<string, string> } {
   const errors: Record<string, string> = {};
+  // Browsers post textarea line breaks as \r\n; paragraphs split on \n\n.
+  values = Object.fromEntries(
+    Object.entries(values).map(([k, x]) => [
+      k,
+      typeof x === "string" ? x.replace(/\r\n?/g, "\n") : x,
+    ]),
+  );
   const v: ProductFormValues = {
     ...values,
     slug: values.slug?.trim() || slugify(values.name ?? ""),
@@ -230,10 +278,15 @@ export function parseProductForm(
   }
 
   let design: Design | undefined;
+  const designId = v.design || "draft";
+  const def = DESIGNS[designId];
+  if (!def) errors.design = `There is no design called "${designId}"`;
+  else if (def.draft && v.status === "published") {
+    errors.design = "Choose this piece's own design before publishing it";
+  }
   const d = designSchema.safeParse({
-    layout: v.layout,
-    palette: v.palette,
-    typeface: v.typeface,
+    id: designId,
+    ...parseDesignExtras(v, existing, errors),
     headline: v.headline ?? "",
     intro: v.intro ?? "",
     care: v.care ?? "",
@@ -241,7 +294,7 @@ export function parseProductForm(
     highlights: textToHighlights(v.highlights ?? ""),
   });
   if (d.success) design = d.data;
-  else errors.design = firstIssue(d.error);
+  else errors.design ??= firstIssue(d.error);
 
   if (
     Object.keys(errors).length ||

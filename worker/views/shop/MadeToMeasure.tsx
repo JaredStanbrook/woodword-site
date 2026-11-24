@@ -5,7 +5,7 @@
 import type { SelectProduct } from "@server/schema/product.schema";
 import { specOf } from "@server/schema/product.schema";
 import { drawingLabel, normaliseSelection, resizeParts } from "@server/lib/furniture";
-import { paletteClass } from "./Gallery";
+import { designClass } from "@server/designs/blocks";
 import { IsoDrawing, buttonPrimary } from "./parts";
 
 /**
@@ -32,7 +32,7 @@ const Resized = ({ product }: { product: SelectProduct }) => {
   );
   return (
     <section
-      class={`${paletteClass(product)} mt-14 space-y-5`}
+      class={`${designClass(product)} mt-14 space-y-5`}
       aria-label="The same piece at two sizes"
     >
       <div class="grid gap-6 sm:grid-cols-2">

@@ -36,6 +36,7 @@ const ISLANDS: Record<string, () => Promise<unknown>> = {
   // must never be a top-level import.
   "furniture-configurator": () => import("./shop/FurnitureConfigurator"),
   "furniture-viewer": () => import("./shop/FurnitureViewer"),
+  "photo-cycle": () => import("./shop/PhotoCycle"),
 };
 
 const loadIslands = (root: ParentNode = document) => {

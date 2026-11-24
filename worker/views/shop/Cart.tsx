@@ -4,7 +4,7 @@ import type { CartLine } from "@server/services/cart.service";
 import { chosenOptions, resizeParts, selectionToQuery } from "@server/lib/furniture";
 import { specOf } from "@server/schema/product.schema";
 import { MAX_QUANTITY } from "@server/config/shop.config";
-import { paletteClass } from "./Gallery";
+import { designClass } from "@server/designs/blocks";
 import {
   IsoDrawing,
   Price,
@@ -24,7 +24,7 @@ export const LineThumb = ({ line, small = false }: { line: CartLine; small?: boo
   const photo = line.product.images[0];
   return (
     <div
-      class={`${paletteClass(line.product)} aspect-square shrink-0 overflow-hidden rounded-sm bg-product-wash ${small ? "w-16" : "w-24 sm:w-32"}`}
+      class={`${designClass(line.product)} aspect-square shrink-0 overflow-hidden rounded-sm bg-product-wash ${small ? "w-16" : "w-24 sm:w-32"}`}
     >
       {photo && !line.quote.custom ? (
         <img src={mediaUrl(photo)} alt="" class="h-full w-full object-cover" loading="lazy" />

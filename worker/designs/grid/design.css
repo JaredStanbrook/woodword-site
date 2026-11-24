@@ -1,0 +1,10 @@
+/* worker/designs/grid/design.css — Midnight. Every rule stays under .design-grid:
+   the class is also on this piece's collection card and cart line, so the
+   colours follow it there. */
+.design-grid {
+  --product: oklch(0.45 0.09 272);
+  --product-foreground: oklch(0.95 0.02 80);
+  --product-wash: oklch(0.22 0.045 272);
+  --product-ink: oklch(0.27 0.08 272);
+  --font-heading: var(--font-display);
+}

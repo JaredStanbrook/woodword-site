@@ -3,8 +3,7 @@
 // Drafts a product from a written brief with Claude.
 //
 // The model returns a configuration — copy, dimensions, components with
-// their resize rules, pricing, options, and a page design picked from the
-// fixed set of layouts and palettes — never code. Structured outputs hold it
+// their resize rules, pricing, options and page copy — never code. Structured outputs hold it
 // to the schema below; the result then goes through the same validation as
 // the admin form (parseProductForm), so a generated piece is checked exactly
 // like a hand-entered one, and is saved as a draft for a person to review.
@@ -13,14 +12,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import * as z from "zod/v4";
 
-import {
-  CATEGORIES,
-  LAYOUTS,
-  MATERIAL_SLOTS,
-  PALETTES,
-  RESIZE_MODES,
-  TYPEFACES,
-} from "../schema/furniture.config";
+import { CATEGORIES, MATERIAL_SLOTS, RESIZE_MODES } from "../schema/furniture.config";
 import type { ProductData } from "./product-form";
 
 export const DEFAULT_AI_MODEL = "claude-opus-5-5";
@@ -86,9 +78,6 @@ const GeneratedProduct = z.object({
     }),
   ),
   design: z.object({
-    layout: z.enum(LAYOUTS),
-    palette: z.enum(PALETTES),
-    typeface: z.enum(TYPEFACES),
     headline: z.string(),
     intro: z.string(),
     story: z.array(z.object({ heading: z.string(), body: z.string() })),
@@ -99,7 +88,7 @@ const GeneratedProduct = z.object({
 
 type Generated = z.infer<typeof GeneratedProduct>;
 
-const SYSTEM = `You design pieces for a handmade-furniture workshop's online shop. From the owner's brief you produce one product configuration: copy, dimensions, a component model, pricing and the product page's design. The shop renders it with fixed, shared components, so you only choose values.
+const SYSTEM = `You design pieces for a handmade-furniture workshop's online shop. From the owner's brief you produce one product configuration: copy, dimensions, a component model, pricing and the page copy. The shop renders it with fixed, shared components, so you only choose values.
 
 COMPONENT MODEL — this is the most important part; it drives the 3D view, the price and the workshop cut list.
 - Units are millimetres. y is up, the floor is y = 0. x is width and z is depth, both centred on 0. Positions are component centres.
@@ -120,7 +109,7 @@ PRICING (integer cents, the shop's currency): baseCents is fixed making cost; ti
 
 OPTIONS: up to four groups. A timber group should paint "body" with a colour per species and use timberMultiplier for dearer species (walnut ~1.6–1.8). Finishes usually paint "none". The first choice is the default. Use "" for colour when there is none.
 
-PAGE DESIGN: choose the layout that suits the brief — "architectural" (minimal, technical spec-sheet), "heritage" (warm, traditional, centred serif), "geometric" (contemporary, blocky, bold), "editorial" (magazine-like, image-led). Pick a palette, and a typeface for the section headings ("serif", "sans", or "display" = blackletter) to match; the product name is always set in the shop's blackletter. Write in plain, specific British English about how it is made — no superlatives, no claims the brief does not support, no invented certifications. Story: two to four short sections. Highlights: three or four short label/value facts.`;
+PAGE COPY: each piece's page is designed for it by hand later, so you only write the copy. Write in plain, specific British English about how it is made — no superlatives, no claims the brief does not support, no invented certifications. Story: two to four short sections. Highlights: three or four short label/value facts.`;
 
 function toProductData(g: Generated, prompt: string): ProductData {
   const t = (v: { x: number; y: number; z: number }) => [v.x, v.y, v.z] as [number, number, number];
@@ -163,7 +152,8 @@ function toProductData(g: Generated, prompt: string): ProductData {
         color: /^#[0-9a-fA-F]{6}$/.test(c.color) ? c.color : undefined,
       })),
     })),
-    design: g.design,
+    // Starts on the draft design until its own page is made.
+    design: { ...g.design, id: "draft", extra: {}, photos: {} },
   };
 }
 

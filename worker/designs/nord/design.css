@@ -1,0 +1,10 @@
+/* worker/designs/nord/design.css — Gilt amber. Every rule stays under .design-nord:
+   the class is also on this piece's collection card and cart line, so the
+   colours follow it there. */
+.design-nord {
+  --product: oklch(0.62 0.12 75);
+  --product-foreground: oklch(0.17 0.03 345);
+  --product-wash: oklch(0.29 0.04 70);
+  --product-ink: oklch(0.3 0.07 65);
+  --font-heading: var(--font-serif);
+}

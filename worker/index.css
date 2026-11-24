@@ -1,6 +1,16 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Product page designs, one stylesheet per piece (worker/designs/). Each is
+   scoped to .design-<id> and sits in the components layer, so a utility class
+   on an element still wins over a design's own rule. */
+@import "./designs/draft/design.css" layer(components);
+@import "./designs/nord/design.css" layer(components);
+@import "./designs/hearth/design.css" layer(components);
+@import "./designs/grid/design.css" layer(components);
+@import "./designs/settle/design.css" layer(components);
+@import "./designs/splay/design.css" layer(components);
+
 /* THEME: "Candlelight"
    One theme, made for this shop rather than a light or dark mode: a room lit
    by candles. The page is warm honey, text and every rule are drawn in
@@ -14,15 +24,8 @@
    panel well over 7:1. Gilt is an ornament colour for the dark panels; it
    does not read as text on honey.
 
-   Product pages set a palette class that recolours the --product tokens:
-     palette-oak     Gilt amber
-     palette-walnut  Oxblood
-     palette-ash     Moonstone
-     palette-ebony   Obsidian
-     palette-cherry  Rose
-     palette-sage    Verdigris
-     palette-clay    Ember
-     palette-slate   Midnight */
+   Each product page brings its own --product colours in its design
+   stylesheet (worker/designs/<id>/design.css). */
 
 /* Self-hosted (SIL OFL 1.1). Grenze Gotisch is a legible, variable
    blackletter for titles and the wordmark; EB Garamond carries everything
@@ -158,57 +161,6 @@
   --shadow-2xl: 12px 12px 0 0 var(--shadow-ink);
 }
 
-/* PRODUCT PALETTES — accent, panel, and text colour for one product page.
-   Add one in schema/furniture.config.ts PALETTES too. */
-.palette-oak {
-  --product: oklch(0.62 0.12 75);
-  --product-foreground: oklch(0.17 0.03 345);
-  --product-wash: oklch(0.29 0.04 70);
-  --product-ink: oklch(0.3 0.07 65);
-}
-.palette-walnut {
-  --product: oklch(0.5 0.13 25);
-  --product-foreground: oklch(0.95 0.02 80);
-  --product-wash: oklch(0.25 0.05 22);
-  --product-ink: oklch(0.3 0.1 22);
-}
-.palette-ash {
-  --product: oklch(0.6 0.05 290);
-  --product-foreground: oklch(0.17 0.03 345);
-  --product-wash: oklch(0.26 0.03 295);
-  --product-ink: oklch(0.28 0.05 290);
-}
-.palette-ebony {
-  --product: oklch(0.3 0.02 340);
-  --product-foreground: oklch(0.95 0.02 80);
-  --product-wash: oklch(0.19 0.012 340);
-  --product-ink: oklch(0.18 0.02 340);
-}
-.palette-cherry {
-  --product: oklch(0.5 0.17 12);
-  --product-foreground: oklch(0.95 0.02 80);
-  --product-wash: oklch(0.25 0.06 12);
-  --product-ink: oklch(0.3 0.13 12);
-}
-.palette-sage {
-  --product: oklch(0.5 0.08 165);
-  --product-foreground: oklch(0.95 0.02 80);
-  --product-wash: oklch(0.23 0.035 170);
-  --product-ink: oklch(0.27 0.06 165);
-}
-.palette-clay {
-  --product: oklch(0.6 0.14 45);
-  --product-foreground: oklch(0.17 0.03 345);
-  --product-wash: oklch(0.26 0.05 40);
-  --product-ink: oklch(0.32 0.1 42);
-}
-.palette-slate {
-  --product: oklch(0.45 0.09 272);
-  --product-foreground: oklch(0.95 0.02 80);
-  --product-wash: oklch(0.22 0.045 272);
-  --product-ink: oklch(0.27 0.08 272);
-}
-
 /* A night panel inside the dusk page. Remaps the tokens, so anything inside
    — muted text, rules, fields, hovers — reads correctly without per-element
    overrides. */
@@ -227,16 +179,6 @@
   --shadow-ink: oklch(0.15 0.03 32);
   background-color: var(--night);
   color: var(--foreground);
-}
-
-.type-serif {
-  --font-heading: var(--font-serif);
-}
-.type-sans {
-  --font-heading: var(--font-modern);
-}
-.type-display {
-  --font-heading: var(--font-display);
 }
 
 @theme inline {
@@ -333,8 +275,8 @@
   /* Blackletter titles everywhere, the way a cover sets one. Grenze is
      variable; a medium weight keeps the counters open at small sizes. */
   /* Every page title, product pages included, is set in the blackletter:
-     it is the shop's signature. A product's typeface choice (--font-heading)
-     applies to its section headings, not its name. */
+     it is the shop's signature. A design's --font-heading applies to its section
+     headings, not its name. */
   h1 {
     font-family: var(--font-display);
     font-weight: 700;

@@ -1,0 +1,10 @@
+/* worker/designs/settle/design.css — Verdigris. Every rule stays under .design-settle:
+   the class is also on this piece's collection card and cart line, so the
+   colours follow it there. */
+.design-settle {
+  --product: oklch(0.5 0.08 165);
+  --product-foreground: oklch(0.95 0.02 80);
+  --product-wash: oklch(0.23 0.035 170);
+  --product-ink: oklch(0.27 0.06 165);
+  --font-heading: var(--font-serif);
+}

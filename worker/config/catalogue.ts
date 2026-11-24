@@ -1,6 +1,6 @@
 // worker/config/catalogue.ts
 //
-// Four example designs, one per page layout. `npm run seed:local` loads them
+// The example pieces, each with its own page design (worker/designs/). `npm run seed:local` loads them
 // into the local database so the shop has something in it while you build;
 // `scripts/seed.ts` can load them remotely too, as drafts, for the owner to
 // edit or delete. The first one is also the starting point for a new product
@@ -317,6 +317,74 @@ const benchParts: Part[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// A console: a narrow top on four legs, aprons under the top, and a low shelf
+// on two rails that runs past the legs at each end. The real piece's legs
+// splay outward both ways; boxes cannot lean, so this model stands them
+// straight until a Blender GLB is uploaded.
+// ---------------------------------------------------------------------------
+const consoleParts: Part[] = [
+  {
+    name: "top",
+    label: "Top",
+    shape: "box",
+    size: [1100, 25, 300],
+    position: [0, 787.5, 0],
+    material: "body",
+    resize: {},
+  },
+  ...[
+    [440, 110],
+    [-440, 110],
+    [440, -110],
+    [-440, -110],
+  ].map(([x, z], i): Part => ({
+    name: `leg_${i + 1}`,
+    label: "Leg",
+    shape: "box",
+    size: [40, 775, 40],
+    position: [x, 387.5, z],
+    material: "body",
+    resize: {},
+  })),
+  ...[105, -105].map((z, i): Part => ({
+    name: `apron_long_${i + 1}`,
+    label: "Long apron",
+    shape: "box",
+    size: [840, 70, 20],
+    position: [0, 740, z],
+    material: "body",
+    resize: {},
+  })),
+  ...[440, -440].map((x, i): Part => ({
+    name: `apron_short_${i + 1}`,
+    label: "Short apron",
+    shape: "box",
+    size: [20, 70, 180],
+    position: [x, 740, 0],
+    material: "body",
+    resize: {},
+  })),
+  ...[105, -105].map((z, i): Part => ({
+    name: `shelf_rail_${i + 1}`,
+    label: "Shelf rail",
+    shape: "box",
+    size: [840, 50, 20],
+    position: [0, 185, z],
+    material: "body",
+    resize: {},
+  })),
+  {
+    name: "shelf",
+    label: "Lower shelf",
+    shape: "box",
+    size: [1000, 20, 260],
+    position: [0, 220, 0],
+    material: "body",
+    resize: {},
+  },
+];
+
 export const CATALOGUE: ProductData[] = [
   {
     name: "Nord Dining Table",
@@ -347,9 +415,9 @@ export const CATALOGUE: ProductData[] = [
     },
     options: [TIMBERS, FINISHES],
     design: {
-      layout: "architectural",
-      palette: "oak",
-      typeface: "serif",
+      id: "nord",
+      extra: {},
+      photos: {},
       headline: "A table built like a building: one thick slab, four posts, nothing extra.",
       intro:
         "Drawn around a 30 mm solid top and square legs set in from the corners. Make it as long as your room allows — the legs move out to carry it and stay the same section.",
@@ -431,9 +499,9 @@ export const CATALOGUE: ProductData[] = [
       FINISHES,
     ],
     design: {
-      layout: "heritage",
-      palette: "walnut",
-      typeface: "serif",
+      id: "hearth",
+      extra: {},
+      photos: {},
       headline: "For the good plates, the board games, and the bottle saved for later.",
       intro:
         "A sideboard in the old way: dovetailed at the corners, a shelf inside, two doors that meet in the middle on brass hinges. It sits on a dark plinth, so it seems to hover.",
@@ -511,9 +579,9 @@ export const CATALOGUE: ProductData[] = [
       },
     ],
     design: {
-      layout: "geometric",
-      palette: "slate",
-      typeface: "display",
+      id: "grid",
+      extra: {},
+      photos: {},
       headline: "Five planes, two posts. A grid you can stretch to the wall you have.",
       intro:
         "Housed joints and two hidden rails hold it square. Change the height and the middle shelves spread evenly; change the width and the shelves lengthen while the uprights stay put.",
@@ -593,9 +661,9 @@ export const CATALOGUE: ProductData[] = [
       },
     ],
     design: {
-      layout: "editorial",
-      palette: "sage",
-      typeface: "serif",
+      id: "settle",
+      extra: {},
+      photos: {},
       headline: "Somewhere to sit and take your boots off.",
       intro:
         "Three boards and a stretcher. The ends go right through the seat and are wedged from above, the oldest way to make a bench that does not wobble.",
@@ -616,6 +684,70 @@ export const CATALOGUE: ProductData[] = [
       care: "Oil it when it looks dry. It is meant to be sat on, stood on, and to get better for it.",
     },
   },
+  {
+    name: "Splay Console",
+    slug: "splay-console",
+    category: "tables",
+    status: "draft",
+    availability: "made_to_order",
+    summary:
+      "A solid oak console with legs that lean out both ways and a low shelf running past them.",
+    description: "",
+    leadDaysStandard: 21,
+    leadDaysCustom: 35,
+    sortOrder: 0,
+    prompt: null,
+    dimensions: {
+      width: { standard: 1100, min: 800, max: 1600, step: 10 },
+      height: { standard: 800, min: 700, max: 900, step: 5 },
+      depth: { standard: 300, min: 250, max: 400, step: 10 },
+    },
+    model: { parts: consoleParts },
+    // Placeholder prices, to be set in the admin.
+    pricing: {
+      baseCents: 38_000,
+      timberPerCubicMetreCents: 650_000,
+      areaPerSquareMetreCents: 8_000,
+      labourPerCentimetreCents: 300,
+      customSurchargeCents: 12_000,
+      roundToCents: 1000,
+    },
+    options: [TIMBERS, FINISHES],
+    design: {
+      id: "splay",
+      headline: "Narrow at the top, wide at the floor, so it stands steady against a wall.",
+      intro:
+        "Solid oak, with the four legs splayed outward in both directions and a lower shelf that runs past them at each end. Made to the width and height of your hallway.",
+      story: [
+        {
+          heading: "The splay",
+          body: "Each leg leans out from the top to the floor, front to back and side to side. The base ends up wider than the top, which is what keeps a narrow table from rocking.",
+        },
+        {
+          heading: "The shelf",
+          body: "The lower shelf sits on two rails between the legs and carries on past them at the ends, a place for books, a basket, or the things that collect by the door.",
+        },
+        {
+          heading: "Your size",
+          body: "From 800 mm for a narrow hall to 1600 mm under a window. The legs keep their section; the top, aprons and shelf are cut to the length you choose.",
+        },
+      ],
+      highlights: [
+        { label: "Timber", value: "Solid oak" },
+        { label: "Legs", value: "Splayed both ways" },
+        { label: "Shelf", value: "Runs past the legs" },
+        { label: "Standard size", value: "1100 × 800 × 300 mm" },
+      ],
+      care: "Dust with a dry cloth and wipe spills straight away. Oil the top again when it starts to look dry.",
+      extra: {
+        splay_note: "Legs splayed outward, both ways",
+        shed_heading: "From the shed",
+        shed_note:
+          "Made in a tin shed with the door open to the lawn. These are the first one, before it went home.",
+      },
+      photos: {},
+    },
+  },
 ];
 
 /** The admin's blank form: the first example, as a draft, with its copy cleared. */
@@ -627,5 +759,14 @@ export const blankProduct = (): ProductData => ({
   summary: "",
   description: "",
   sortOrder: 0,
-  design: { ...CATALOGUE[0].design, headline: "", intro: "", story: [], highlights: [], care: "" },
+  design: {
+    id: "draft",
+    headline: "",
+    intro: "",
+    story: [],
+    highlights: [],
+    care: "",
+    extra: {},
+    photos: {},
+  },
 });

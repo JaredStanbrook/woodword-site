@@ -19,17 +19,24 @@ What the site does, and the few things only the owner can set up.
 1. **Products → Create from a prompt** (needs `ANTHROPIC_API_KEY`), or **New
    product** to start from a form.
 2. A generated product is saved as a **draft**: copy, dimensions, components
-   with resize rules, prices, options, and a page layout/palette/typeface. It
-   is checked exactly like a hand-made one. Read it, fix the prices to yours.
+   with resize rules, prices, options and the page copy. It is checked exactly
+   like a hand-made one. Read it, fix the prices to yours.
 3. Model it in Blender to match the components — see [blender.md](blender.md)
    — then paste the exported components, upload the GLB, the `.blend`, and
    photographs.
-4. **View page** shows the draft as customers will see it (only admins can).
-   Set Status to **published** when it is right.
+4. Its page is designed for it: send the photos and a description, and a new
+   design is built in code ([designing-a-piece.md](designing-a-piece.md)).
+   Until then the piece uses the plain **Draft** design, which cannot be
+   published.
+5. Under **Page design**, pick the piece's design, edit its text, and choose
+   which uploaded photo goes in each of its photo slots (an empty slot shows
+   the workshop drawing).
+6. **View page** shows it as customers will see it (only admins can). Set
+   Status to **published** when it is right.
 
-Each page's look comes from its **layout** (architectural, heritage,
-geometric, editorial), **palette** and **headings** face. Buying, sizing and
-the 3D view are identical on all of them.
+Buying, sizing and the 3D view work the same on every design. On the
+collection page, a piece's card turns slowly through all its photos, starting
+with the first ("Make first" under Images).
 
 ## Prices
 

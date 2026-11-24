@@ -1,0 +1,100 @@
+/* worker/designs/splay/design.css — Splay.
+   Sampled from the photos: oiled oak, the hallway's warm plaster, the blue-
+   grey of the shed's pavers. The motif is the console's outline: narrow at
+   the top, wider at the floor, the legs leaning out at about seven degrees.
+   Every rule stays under .design-splay. */
+.design-splay {
+  --product: oklch(0.6 0.11 62);
+  --product-foreground: oklch(0.2 0.04 40);
+  --product-wash: oklch(0.3 0.045 52);
+  --product-ink: oklch(0.36 0.08 55);
+  --font-heading: var(--font-modern);
+
+  --splay-plaster: oklch(0.95 0.014 85);
+  --splay-paver: oklch(0.83 0.016 235);
+  --splay-joint: oklch(0.72 0.02 235);
+  --splay-print: oklch(0.985 0.006 85);
+  /* How far each side leans in over the height of a photo. */
+  --splay-in: 6%;
+}
+
+.design-splay .splay-plaster {
+  background-color: var(--splay-plaster);
+}
+
+/* The console's silhouette: narrower at the top, wider at the foot. */
+.design-splay .splay-outline {
+  clip-path: polygon(var(--splay-in) 0, calc(100% - var(--splay-in)) 0, 100% 100%, 0 100%);
+}
+
+/* The shed floor: pavers laid in a grid, joints in a darker grey. */
+.design-splay .splay-pavers {
+  background-color: var(--splay-paver);
+  background-image:
+    linear-gradient(var(--splay-joint) 2px, transparent 2px),
+    linear-gradient(90deg, var(--splay-joint) 2px, transparent 2px);
+  background-size: 9rem 6rem;
+  background-position: -1px -1px;
+}
+
+/* Workshop photos as prints, taped down slightly askew. */
+.design-splay .splay-print {
+  position: relative;
+  background: var(--splay-print);
+  border: 2px solid var(--foreground);
+  padding: 0.75rem 0.75rem 2.75rem;
+  box-shadow: var(--shadow-md);
+}
+.design-splay .splay-print::before {
+  content: "";
+  position: absolute;
+  top: -0.8rem;
+  left: 50%;
+  width: 5.5rem;
+  height: 1.6rem;
+  translate: -50% 0;
+  background: oklch(0.92 0.035 85 / 0.85);
+  border: 1px solid oklch(0.8 0.03 80);
+  rotate: -3deg;
+}
+.design-splay .splay-print-a {
+  rotate: -1.6deg;
+}
+.design-splay .splay-print-b {
+  rotate: 1.2deg;
+}
+
+/* A leg set at the splay, before a heading or a story section. */
+.design-splay .splay-leg,
+.design-splay .splay-step {
+  position: relative;
+  padding-left: 1.75rem;
+}
+.design-splay .splay-leg::before,
+.design-splay .splay-step::before {
+  content: "";
+  position: absolute;
+  left: 0.35rem;
+  top: 0.2em;
+  width: 4px;
+  height: 1.6em;
+  background: var(--foreground);
+  rotate: 7deg;
+  transform-origin: top;
+}
+.design-splay .splay-step::before {
+  height: 2.2rem;
+  background: var(--product-ink);
+}
+
+/* Highlights read like a tally: a short leaning tick before each value. */
+.design-splay .splay-tally dd::before {
+  content: "";
+  display: inline-block;
+  width: 3px;
+  height: 0.9em;
+  margin-right: 0.6rem;
+  background: var(--product-ink);
+  rotate: 7deg;
+  vertical-align: -0.05em;
+}

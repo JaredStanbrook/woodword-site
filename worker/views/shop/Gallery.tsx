@@ -11,6 +11,7 @@ import { resizeParts, standardSelection } from "@server/lib/furniture";
 import { formatPrice } from "@server/lib/money";
 import { CATEGORY_LABELS, IsoDrawing, buttonPrimary, mediaUrl } from "./parts";
 import { CoverFrame, Fleuron, NightSky } from "./ornaments";
+import { designClass } from "@server/designs/blocks";
 
 export interface GalleryItem {
   product: SelectProduct;
@@ -26,20 +27,6 @@ interface GalleryProps {
   appName: string;
   tagline: string;
 }
-
-const PALETTE_CLASS: Record<string, string> = {
-  oak: "palette-oak",
-  walnut: "palette-walnut",
-  ash: "palette-ash",
-  ebony: "palette-ebony",
-  cherry: "palette-cherry",
-  sage: "palette-sage",
-  clay: "palette-clay",
-  slate: "palette-slate",
-};
-
-export const paletteClass = (p: SelectProduct) =>
-  PALETTE_CLASS[p.design?.palette ?? "oak"] ?? "palette-oak";
 
 /**
  * How the collection is laid out, in rows of three on wide screens: a row is
@@ -76,20 +63,53 @@ const priceLine = (item: GalleryItem, locale: string, currency: string) => {
   return `from ${formatPrice(item.fromCents, locale, currency)}${note}`;
 };
 
+const photoClass = "h-full w-full object-cover group-hover:scale-[1.03]";
+
+/**
+ * A card's picture: the drawing with no photos, the photo with one, and with
+ * more a stack that <photo-cycle> turns through (components/shop/PhotoCycle.ts).
+ * Only the first loads with the page; the island loads each next one just
+ * before it is shown.
+ */
 const Picture = ({ item, std }: { item: GalleryItem; std: Selection }) => {
   const p = item.product;
-  return p.images[0] ? (
-    <img
-      src={mediaUrl(p.images[0])}
-      alt=""
-      loading="lazy"
-      decoding="async"
-      class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-    />
-  ) : (
-    <div class="absolute inset-0 p-[7%] transition-transform duration-700 group-hover:-translate-y-1">
-      <IsoDrawing parts={resizeParts(specOf(p), std)} size={std} dims />
-    </div>
+  const [first, ...rest] = p.images;
+  if (!first) {
+    return (
+      <div class="absolute inset-0 p-[7%] transition-transform duration-700 group-hover:-translate-y-1">
+        <IsoDrawing parts={resizeParts(specOf(p), std)} size={std} dims />
+      </div>
+    );
+  }
+  if (!rest.length) {
+    return (
+      <img
+        src={mediaUrl(first)}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        class={`${photoClass} transition-transform duration-700`}
+      />
+    );
+  }
+  return (
+    <photo-cycle class="absolute inset-0 block">
+      <img
+        src={mediaUrl(first)}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        class={`absolute inset-0 opacity-100 transition-[opacity,scale] duration-1000 ${photoClass}`}
+      />
+      {rest.map((key) => (
+        <img
+          data-src={mediaUrl(key)}
+          alt=""
+          decoding="async"
+          class={`absolute inset-0 opacity-0 transition-[opacity,scale] duration-1000 ${photoClass}`}
+        />
+      ))}
+    </photo-cycle>
   );
 };
 
@@ -118,7 +138,7 @@ export const ProductCard = ({
 
   if (wide) {
     return (
-      <article class={`group relative sm:col-span-2 ${paletteClass(p)}`}>
+      <article class={`group relative sm:col-span-2 ${designClass(p)}`}>
         <div class="relative overflow-hidden rounded-sm border-[3px] border-foreground bg-product-wash text-night-foreground shadow transition-[transform,box-shadow] duration-300 group-hover:-translate-y-0.5 group-hover:shadow-lg sm:grid sm:aspect-[2/1] sm:grid-cols-[1.4fr_1fr]">
           <div class="relative aspect-square sm:aspect-auto">
             <Picture item={item} std={std} />
@@ -141,7 +161,7 @@ export const ProductCard = ({
   }
 
   return (
-    <article class={`group relative ${paletteClass(p)}`}>
+    <article class={`group relative ${designClass(p)}`}>
       <div class="relative aspect-square overflow-hidden rounded-sm border-[3px] border-foreground bg-product-wash shadow transition-[transform,box-shadow] duration-300 group-hover:-translate-y-0.5 group-hover:shadow-lg">
         <Picture item={item} std={std} />
       </div>
@@ -229,7 +249,7 @@ const Cover = ({
   const p = item.product;
   const spec = specOf(p);
   return (
-    <figure class={`${paletteClass(p)} mx-auto w-full max-w-md`}>
+    <figure class={`${designClass(p)} mx-auto w-full max-w-md`}>
       <a
         href={`/furniture/${p.slug}`}
         class="group relative block focus:outline-none"

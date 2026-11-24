@@ -177,28 +177,21 @@ export const optionsSchema = z.array(optionGroupSchema).max(8);
 // PAGE DESIGN: what makes each product page its own
 // ==========================================
 
-export const LAYOUTS = ["architectural", "heritage", "geometric", "editorial"] as const;
-export type Layout = (typeof LAYOUTS)[number];
+/** What an empty photo slot shows instead: the workshop drawing, plain, with
+ * its measurements, or engraved in gilt on a night panel. */
+export const BLUEPRINTS = ["line", "measured", "foil"] as const;
+export type Blueprint = (typeof BLUEPRINTS)[number];
 
-export const PALETTES = [
-  "oak",
-  "walnut",
-  "ash",
-  "ebony",
-  "cherry",
-  "sage",
-  "clay",
-  "slate",
-] as const;
-export type Palette = (typeof PALETTES)[number];
-
-export const TYPEFACES = ["serif", "sans", "display"] as const;
-export type Typeface = (typeof TYPEFACES)[number];
-
+/**
+ * A product page's design. `id` names one of the bespoke designs in
+ * worker/designs/, each made for one piece; the copy below is what every
+ * design shows, and `extra` holds any text a design adds of its own.
+ */
 export const designSchema = z.object({
-  layout: z.enum(LAYOUTS).default("architectural"),
-  palette: z.enum(PALETTES).default("oak"),
-  typeface: z.enum(TYPEFACES).default("serif"),
+  id: z
+    .string()
+    .regex(/^[a-z][a-z0-9-]{0,39}$/)
+    .default("draft"),
   /** A short line set large above the configurator. */
   headline: z.string().max(140).default(""),
   /** One paragraph under the headline. */
@@ -212,6 +205,11 @@ export const designSchema = z.object({
     .max(6)
     .default([]),
   care: z.string().max(600).default(""),
+  /** Text fields a design declares for itself, by key. */
+  extra: z.record(z.string(), z.string().max(1200)).default({}),
+  /** Photo slot ("photo1"…) → an image key from `product.images`, or
+   * "blueprint:<kind>". A missing slot shows the design's own fallback. */
+  photos: z.record(z.string(), z.string().max(300)).default({}),
 });
 
 // ==========================================
