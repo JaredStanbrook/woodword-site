@@ -1,7 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" rx="8" fill="#2b2420" />
-  <ellipse cx="16" cy="16" rx="11.5" ry="10.5" fill="none" stroke="#efe6d8" stroke-width="1.6" />
-  <ellipse cx="15.2" cy="16.5" rx="7.4" ry="7" fill="none" stroke="#efe6d8" stroke-width="1.3" opacity="0.7" />
-  <ellipse cx="14.6" cy="16.9" rx="3.8" ry="3.6" fill="none" stroke="#efe6d8" stroke-width="1.1" opacity="0.5" />
-  <circle cx="14.2" cy="17.2" r="1.6" fill="#c49a6c" />
+  <rect width="32" height="32" rx="6" fill="#2b1a14" />
+  <!-- The Mooihout mark: a table drawn as an M, over a dimension line. -->
+  <g transform="translate(3.6 2.6) scale(0.248)" fill="#e2b04d">
+    <rect x="12" y="12" width="76" height="15" />
+    <rect x="17" y="26.4" width="15" height="52.6" />
+    <rect x="68" y="26.4" width="15" height="52.6" />
+    <polygon points="31.4,26.4 43.5,26.4 50,37.4 56.5,26.4 68.6,26.4 68.6,43 50,72 31.4,43" />
+    <path d="M17 84V99M83 84V99M17 91.5H83" fill="none" stroke="#e2b04d" stroke-width="5" stroke-linecap="round" />
+  </g>
 </svg>

@@ -32,32 +32,23 @@ const menuConfig: Record<string, Array<{ to: string; name: string }>> = {
 // --- COMPONENTS ---
 
 /**
- * GrainMark
- * Growth rings around an off-centre heart: the brand mark. Drawn in
- * currentColor and the product token so it follows light and dark.
+ * The Mooihout mark: a table seen square-on, its legs and V-brace forming
+ * an M, over a dimension line with architect's ticks. The same drawing as
+ * public/brand/; drawn in currentColor so it follows its surroundings.
  */
-export const GrainMark = () => html`
-  <svg viewBox="0 0 32 32" class="h-7 w-7 shrink-0" aria-hidden="true" fill="none">
-    <ellipse cx="16" cy="16" rx="14" ry="13" stroke="currentColor" stroke-width="1.5" />
-    <ellipse
-      cx="15"
-      cy="16.5"
-      rx="9.5"
-      ry="9"
+export const GrainMark = (cls = "h-8 w-7") => html`
+  <svg viewBox="10 10 80 91" class="${cls} shrink-0" aria-hidden="true" fill="currentColor">
+    <rect x="12" y="12" width="76" height="15" />
+    <rect x="17" y="26.4" width="15" height="52.6" />
+    <rect x="68" y="26.4" width="15" height="52.6" />
+    <polygon points="31.4,26.4 43.5,26.4 50,37.4 56.5,26.4 68.6,26.4 68.6,43 50,72 31.4,43" />
+    <path
+      d="M17 84V99M83 84V99M17 91.5H83M13.5 95L20.5 88M79.5 95L86.5 88"
+      fill="none"
       stroke="currentColor"
-      stroke-width="1.25"
-      opacity="0.7"
+      stroke-width="4"
+      stroke-linecap="round"
     />
-    <ellipse
-      cx="14.2"
-      cy="17"
-      rx="5.2"
-      ry="5"
-      stroke="currentColor"
-      stroke-width="1"
-      opacity="0.5"
-    />
-    <circle cx="13.6" cy="17.4" r="2" class="fill-gilt" />
   </svg>
 `;
 
@@ -98,7 +89,8 @@ const Wordmark = ({ appName, size }: { appName: string; size: "lg" | "sm" }) => 
       size === "lg" ? "text-[2.6rem]" : "h-11 text-[1.75rem]"
     }"
   >
-    ${size === "sm" ? GrainMark() : ""}<span>${appName}</span>
+    <span class="text-gilt">${size === "sm" ? GrainMark() : GrainMark("h-11 w-10")}</span
+    ><span>${appName}</span>
   </a>
 `;
 

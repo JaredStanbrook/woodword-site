@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-5.68 -0.18 111.36 111.36" role="img" aria-label="Mooihout"><rect x="-5.68" y="-0.18" width="111.36" height="111.36" fill="#f1d6b4"/><g transform="translate(0 0) scale(1)" fill="#2b1a14">
+  <rect x="12" y="12" width="76" height="15"/>
+  <rect x="17" y="26.4" width="15" height="52.6"/>
+  <rect x="68" y="26.4" width="15" height="52.6"/>
+  <polygon points="31.4,26.4 43.5,26.4 50,37.4 56.5,26.4 68.6,26.4 68.6,43 50,72 31.4,43"/>
+  <g fill="none" stroke="#2b1a14" stroke-width="3" stroke-linecap="round">
+    <path d="M17 84V99M83 84V99M17 91.5H83M13.5 95L20.5 88M79.5 95L86.5 88"/>
+  </g></g></svg>
