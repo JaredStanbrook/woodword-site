@@ -61,7 +61,7 @@ export const CartPage = ({ lines, locale, currency }: CartProps) => {
   const lead = Math.max(0, ...lines.map((l) => l.quote.leadDays));
 
   return (
-    <div class="mx-auto max-w-5xl px-4 pt-12 sm:px-6 animate-in fade-in duration-500">
+    <div class="mx-auto max-w-5xl px-4 pt-12 pb-16 sm:px-6 animate-in fade-in duration-500">
       <h1 class="text-4xl">Your cart</h1>
       {lines.length === 0 ? (
         <div class="mt-10 rounded-sm border-2 border-dashed px-6 py-16 text-center">
@@ -165,7 +165,8 @@ export const CartPage = ({ lines, locale, currency }: CartProps) => {
               <Price cents={subtotal} locale={locale} currency={currency} />
             </div>
             <p class="text-sm text-muted-foreground">
-              Delivery is chosen at checkout. {leadTimeLabel(lead)} before it leaves us.
+              Delivery within Perth and Peel, or collect anywhere in WA: chosen at checkout.{" "}
+              {leadTimeLabel(lead)} before it leaves us.
             </p>
             {blocked ? (
               <p class="text-sm text-destructive">Remove the unavailable piece to continue.</p>

@@ -25,7 +25,7 @@ import { createCheckoutSession, retrieveCheckoutSession, verifyWebhook } from "@
 import { requireUser } from "@server/middleware/guard.middleware";
 import { cartLines, readCartId } from "@server/services/cart.service";
 import { createOrder, markPaid, orderUrl } from "@server/services/order.service";
-import { deliveryOption } from "@server/config/shop.config";
+import { DELIVERY_AREA, deliveryOption, deliversTo } from "@server/config/shop.config";
 import { CheckoutPage, type CheckoutValues } from "@views/shop/Checkout";
 import { OrderLookupPage, OrderPage } from "@views/shop/Order";
 import { AccountPage } from "@views/shop/Account";
@@ -105,13 +105,19 @@ checkoutRoute.post("/checkout", async (c) => {
 
   const parsed = checkoutFormSchema.safeParse(body);
   const delivery = deliveryOption(String(body.delivery ?? ""));
-  if (!parsed.success || !delivery) {
+  // Delivery goes to Perth and Peel only; elsewhere in WA, collection.
+  const outOfArea =
+    parsed.success && delivery?.needsDeliveryArea && !deliversTo(parsed.data.postcode);
+  if (!parsed.success || !delivery || outOfArea) {
     const errors: Record<string, string> = {};
     for (const issue of parsed.success ? [] : parsed.error.issues) {
       const key = String(issue.path[0]);
       errors[key] ??= issue.message;
     }
     if (!delivery) errors.delivery = "Choose how you would like it delivered";
+    if (outOfArea) {
+      errors.delivery = `We deliver within ${DELIVERY_AREA} only, and ${parsed.data.postcode} is outside it. Choose collection from the workshop, or a delivery address in ${DELIVERY_AREA}.`;
+    }
     c.status(422);
     return rerender(errors, { tone: "error", text: "A few details need another look." });
   }

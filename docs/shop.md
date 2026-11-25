@@ -93,7 +93,15 @@ Secrets, type **Secret**:
 
 **Delivery options** and the order reference prefix are in
 `worker/config/shop.config.ts`. **Currency and locale** are `APP_CURRENCY`
-and `APP_LOCALE` in `wrangler.jsonc`.
+and `APP_LOCALE` in `wrangler.jsonc`: Australian dollars, `en-AU`, and
+`Australia/Perth` time.
+
+**Where we sell and deliver** is in `shop.config.ts` too. Orders are taken
+from Western Australia only (postcodes starting with 6). Delivery goes to
+Perth and Peel only, by postcode (`DELIVERY_RANGES`); elsewhere in WA the
+customer collects from the workshop. Checkout switches the delivery options
+off as soon as a postcode outside the area is typed, and the server refuses
+it either way. Edit the postcode ranges if the delivery area changes.
 
 ## Local development
 

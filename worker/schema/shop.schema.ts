@@ -212,10 +212,18 @@ export const checkoutFormSchema = z.object({
   phone: trimmed(40).optional().default(""),
   line1: trimmed(200).min(1, "Street address is required"),
   line2: trimmed(200).optional().default(""),
-  city: trimmed(120).min(1, "Town or city is required"),
-  region: trimmed(120).optional().default(""),
-  postcode: trimmed(20).min(1, "Postcode is required"),
-  country: trimmed(80).min(1, "Country is required"),
+  city: trimmed(120).min(1, "Suburb or town is required"),
+  // We sell within Western Australia only (config/shop.config.ts), so the
+  // state and country are not asked for: they are always these.
+  region: z.literal("WA").catch("WA"),
+  postcode: trimmed(20)
+    .min(1, "Postcode is required")
+    .regex(/^\d{4}$/, "A postcode is four digits")
+    .refine(
+      (p) => /^6/.test(p),
+      "We sell within Western Australia only: WA postcodes start with 6",
+    ),
+  country: z.literal("Australia").catch("Australia"),
   delivery: trimmed(40).min(1),
   notes: trimmed(1000).optional().default(""),
 });

@@ -72,7 +72,7 @@ const steps = [
 ];
 
 export const MadeToMeasurePage = ({ example }: { example?: SelectProduct }) => (
-  <div class="mx-auto max-w-5xl px-4 pt-8 sm:px-6 lg:pt-12 animate-in fade-in duration-500">
+  <div class="mx-auto max-w-5xl px-4 pt-8 pb-16 sm:px-6 lg:pt-12 animate-in fade-in duration-500">
     <h1 class="font-display text-3xl font-bold leading-none">Made to measure</h1>
     {example ? <Resized product={example} /> : null}
     <ol class="mt-16 divide-y-2 border-y-2">

@@ -99,7 +99,7 @@ export const OrderPage = ({
   justPaid,
   testPaymentUrl,
 }: OrderProps) => (
-  <div class="mx-auto max-w-3xl px-4 pt-12 sm:px-6 animate-in fade-in duration-500">
+  <div class="mx-auto max-w-3xl px-4 pt-12 pb-16 sm:px-6 animate-in fade-in duration-500">
     <p class="text-sm italic text-muted-foreground">Order {order.ref}</p>
     <h1 class="mt-3 text-4xl">
       {order.paymentStatus === "paid" && justPaid
@@ -191,7 +191,7 @@ export const OrderPage = ({
 );
 
 export const OrderLookupPage = ({ error, ref }: { error?: string; ref?: string }) => (
-  <div class="mx-auto max-w-md px-4 pt-16 sm:px-6">
+  <div class="mx-auto max-w-md px-4 pt-16 pb-16 sm:px-6">
     <h1 class="text-4xl">Track an order</h1>
     <p class="mt-3 text-muted-foreground">
       Your order reference is in your confirmation email, and starts with MH.

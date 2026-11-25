@@ -15,7 +15,7 @@ interface AccountProps {
 }
 
 export const AccountPage = ({ name, orders, designs, locale }: AccountProps) => (
-  <div class="mx-auto max-w-5xl px-4 pt-12 sm:px-6 animate-in fade-in duration-500">
+  <div class="mx-auto max-w-5xl px-4 pt-12 pb-16 sm:px-6 animate-in fade-in duration-500">
     <div class="flex flex-wrap items-end justify-between gap-4">
       <h1 class="text-4xl">Hello{name ? `, ${name}` : ""}</h1>
       <a href="/profile" class={buttonSecondary}>

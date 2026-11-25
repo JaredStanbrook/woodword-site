@@ -1,7 +1,13 @@
 // worker/views/shop/Checkout.tsx
 
 import type { CartLine } from "@server/services/cart.service";
-import { DELIVERY_OPTIONS } from "@server/config/shop.config";
+import {
+  DELIVERY_AREA,
+  DELIVERY_OPTIONS,
+  DELIVERY_RANGES,
+  NO_ROAD,
+  SELLS_IN,
+} from "@server/config/shop.config";
 import { LineDetails, LineThumb } from "./Cart";
 import { Price, buttonPrimary, inputClass, leadTimeLabel } from "./parts";
 
@@ -81,7 +87,7 @@ export const CheckoutPage = (props: CheckoutProps) => {
   const chosen = values.delivery ?? DELIVERY_OPTIONS[0].id;
 
   return (
-    <div class="mx-auto max-w-6xl px-4 pt-12 sm:px-6 animate-in fade-in duration-500">
+    <div class="mx-auto max-w-6xl px-4 pt-12 pb-16 sm:px-6 animate-in fade-in duration-500">
       <h1 class="text-4xl">Checkout</h1>
       {props.notice ? (
         <p
@@ -155,18 +161,10 @@ export const CheckoutPage = (props: CheckoutProps) => {
               />
               <Field
                 name="city"
-                label="Town or city"
+                label="Suburb or town"
                 values={values}
                 errors={errors}
                 autocomplete="address-level2"
-              />
-              <Field
-                name="region"
-                label="County, state or region"
-                values={values}
-                errors={errors}
-                autocomplete="address-level1"
-                required={false}
               />
               <Field
                 name="postcode"
@@ -175,25 +173,34 @@ export const CheckoutPage = (props: CheckoutProps) => {
                 errors={errors}
                 autocomplete="postal-code"
               />
-              <Field
-                name="country"
-                label="Country"
-                values={values}
-                errors={errors}
-                autocomplete="country-name"
-              />
+              {/* We sell within WA only: the state and country are fixed. */}
+              <input type="hidden" name="region" value={SELLS_IN.state} />
+              <input type="hidden" name="country" value={SELLS_IN.country} />
+              <p class="text-sm text-muted-foreground sm:col-span-2">
+                {SELLS_IN.stateName}, {SELLS_IN.country}. We sell within WA only.
+              </p>
             </div>
           </fieldset>
 
-          <fieldset class="space-y-3">
+          <fieldset
+            class="space-y-3"
+            data-delivery-area={JSON.stringify({ ranges: DELIVERY_RANGES, noRoad: NO_ROAD })}
+          >
             <legend class="mb-2 font-display text-xl">Delivery</legend>
+            <p class="text-sm text-muted-foreground">
+              We deliver within {DELIVERY_AREA}. Elsewhere in WA, collect from the workshop.
+            </p>
+            <p class="hidden text-sm font-medium" data-out-of-area role="status">
+              That postcode is outside {DELIVERY_AREA}, so collection is the only option.
+            </p>
             {DELIVERY_OPTIONS.map((d) => (
-              <label class="flex min-h-11 cursor-pointer items-start gap-3 rounded-sm border-2 border-input p-4 transition-colors hover:bg-accent has-[:checked]:border-primary has-[:checked]:bg-accent/60 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
+              <label class="flex min-h-11 cursor-pointer items-start gap-3 rounded-sm border-2 border-input p-4 transition-colors hover:bg-accent has-[:checked]:border-primary has-[:checked]:bg-accent/60 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50">
                 <input
                   type="radio"
                   name="delivery"
                   value={d.id}
                   checked={chosen === d.id}
+                  data-needs-area={d.needsDeliveryArea ? "" : undefined}
                   class="mt-1 h-4 w-4 accent-primary"
                 />
                 <span class="flex-1">
@@ -211,6 +218,39 @@ export const CheckoutPage = (props: CheckoutProps) => {
             ))}
             {errors.delivery ? <p class="text-sm text-destructive">{errors.delivery}</p> : null}
           </fieldset>
+          {/* As soon as a postcode outside the delivery area is typed, only
+              collection stays open. The server checks the same rule. */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `(function () {
+  var area = document.querySelector("[data-delivery-area]");
+  var postcode = document.getElementById("f-postcode");
+  if (!area || !postcode) return;
+  var rule = JSON.parse(area.dataset.deliveryArea);
+  var note = area.querySelector("[data-out-of-area]");
+  function delivers(p) {
+    if (!/^\\d{4}$/.test(p)) return true;
+    var n = Number(p);
+    if (rule.noRoad.indexOf(n) >= 0) return false;
+    return rule.ranges.some(function (r) { return n >= r[0] && n <= r[1]; });
+  }
+  function update() {
+    var ok = delivers(postcode.value.trim());
+    note.classList.toggle("hidden", ok);
+    area.querySelectorAll("[data-needs-area]").forEach(function (input) {
+      input.disabled = !ok;
+      if (!ok && input.checked) {
+        input.checked = false;
+        var collect = area.querySelector('input[name="delivery"]:not([data-needs-area])');
+        if (collect) collect.checked = true;
+      }
+    });
+  }
+  postcode.addEventListener("input", update);
+  update();
+})();`,
+            }}
+          ></script>
 
           <div class="space-y-1.5">
             <label for="f-notes" class="text-sm font-medium">

@@ -148,12 +148,12 @@
     // CHANGE_ME — how the site names itself in the title, nav and footer.
     "APP_NAME": "Mooihout",
     "APP_TAGLINE": "Handmade furniture, made to your measurements. Turn it, resize it, see the price, and we build exactly that.",
-    "APP_LOCALE": "en-IE",
-    "APP_CURRENCY": "EUR",
+    "APP_LOCALE": "en-AU",
+    "APP_CURRENCY": "AUD",
     // IANA zone, e.g. "Australia/Perth". Decides what "today" means when a
     // page asks (`today(c.var.app.timezone)` in worker/lib/dates.ts). UTC is
     // right for storage and wrong for "what's due today" in Perth before 8am.
-    "APP_TIMEZONE": "UTC",
+    "APP_TIMEZONE": "Australia/Perth",
     // Default link-preview image for pages that set none, e.g. "/og.png"
     // (1200×630, in public/). Empty means none. Generate one from the site's
     // own name and colours with `node scripts/og-image.mjs`.
