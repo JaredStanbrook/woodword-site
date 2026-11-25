@@ -35,8 +35,8 @@ What the site does, and the few things only the owner can set up.
    Status to **published** when it is right.
 
 Buying, sizing and the 3D view work the same on every design. The 3D view
-stands the piece in a living room at real size (2.6 m walls, a standard
-door, a 2 m sofa, windows, a plant; `worker/components/shop/room.ts`), so a
+stands the piece in a square living room at real size (4.4 m a side, 2.6 m walls, a standard
+door, a 2 m sofa, windows, a 1.6 m floor lamp, a shelf of books, a plant; `worker/components/shop/room.ts`), so a
 customer can judge its size. A shallow piece stands against the back wall,
 a deep one in the middle of the room, and the room grows if the piece needs
 more space. The view turns only through the 90° between the room's two open

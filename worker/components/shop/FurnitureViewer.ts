@@ -175,7 +175,7 @@ class FurnitureViewer extends HTMLElement {
     this.renderer = renderer;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.toneMapping = ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.85;
+    renderer.toneMappingExposure = 0.9;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = PCFSoftShadowMap;
     const canvas = renderer.domElement;
@@ -191,8 +191,8 @@ class FurnitureViewer extends HTMLElement {
 
     this.camera = new PerspectiveCamera(32, 1, 0.05, 60);
 
-    scene.add(new HemisphereLight(0xfff6ea, 0x6b5a4a, 0.6));
-    const light = (this.light = new DirectionalLight(0xffffff, 1.6));
+    scene.add(new HemisphereLight(0xfff1dc, 0xb9a58c, 0.75));
+    const light = (this.light = new DirectionalLight(0xfff2df, 1.5));
     light.position.set(2.2, 4, 3);
     light.castShadow = true;
     light.shadow.mapSize.set(2048, 2048);
@@ -204,7 +204,7 @@ class FurnitureViewer extends HTMLElement {
     const groundMat = new ShadowMaterial({ opacity: 0.18 });
     const ground = new Mesh(groundGeo, groundMat);
     ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -0.061; // under the room's floor slab
+    ground.position.y = -0.101; // under the room's floor slab
     ground.receiveShadow = true;
     scene.add(ground);
     this.disposables.push(groundGeo, groundMat);
@@ -456,7 +456,7 @@ class FurnitureViewer extends HTMLElement {
     const camera = this.camera!;
     const target = this.roomTarget();
     // A narrow view stands further back, so the open corners stay in frame.
-    const radius = this.layout!.radius * (camera.aspect < 1.2 ? 0.86 : 0.76);
+    const radius = this.layout!.radius * (camera.aspect < 1.2 ? 0.9 : 0.8);
     const fov = (camera.fov * Math.PI) / 180;
     const fitHeight = radius / Math.sin(fov / 2);
     const distance = fitHeight / Math.min(1, camera.aspect);
