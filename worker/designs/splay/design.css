@@ -386,9 +386,15 @@
   box-shadow: 10px 10px 0 var(--sp-cobalt);
 }
 .design-splay .sp-viewer {
-  aspect-ratio: 4 / 3;
+  /* Square on a phone, so the room around the piece is not tiny. */
+  aspect-ratio: 1;
   border-radius: 1.25rem;
   border: 4px solid var(--sp-ink);
+}
+@media (min-width: 40rem) {
+  .design-splay .sp-viewer {
+    aspect-ratio: 4 / 3;
+  }
 }
 .design-splay [data-viewer-hint],
 .design-splay [data-viewer-reset] {

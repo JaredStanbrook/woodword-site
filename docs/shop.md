@@ -34,7 +34,13 @@ What the site does, and the few things only the owner can set up.
 6. **View page** shows it as customers will see it (only admins can). Set
    Status to **published** when it is right.
 
-Buying, sizing and the 3D view work the same on every design. On the
+Buying, sizing and the 3D view work the same on every design. The 3D view
+stands the piece in a living room at real size (2.6 m walls, a standard
+door, a 2 m sofa, windows, a plant; `worker/components/shop/room.ts`), so a
+customer can judge its size. A shallow piece stands against the back wall,
+a deep one in the middle of the room, and the room grows if the piece needs
+more space. The view turns only through the 90° between the room's two open
+sides. On the
 collection page, a piece's card turns slowly through all its photos, starting
 with the first ("Make first" under Images).
 

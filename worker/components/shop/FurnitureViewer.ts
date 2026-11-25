@@ -15,6 +15,11 @@
 // price the piece and write the cut list — so the model never stretches as a
 // whole and what is shown is what is built.
 //
+// The piece stands in a living room at real size (room.ts), so its size reads
+// against a sofa, a door and a window. The view turns only through the 90°
+// between the room's two open sides, so the walls never come between the
+// camera and the piece.
+//
 // It renders on demand rather than every frame: nothing is drawn while
 // nothing moves, which matters on a phone.
 
@@ -50,6 +55,7 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import { normaliseSelection, resizeParts, chosenOptions } from "@server/lib/furniture";
 import type { MaterialSlot, Selection } from "@server/schema/furniture.config";
 import { furnitureStore, readFurnitureData, type FurnitureData } from "./store";
+import { Room, type RoomLayout } from "./room";
 
 const DEFAULT_COLORS: Record<MaterialSlot, string> = {
   body: "#b98a5a",
@@ -117,6 +123,8 @@ class FurnitureViewer extends HTMLElement {
   private unsubscribe?: () => void;
   private abort = new AbortController();
   private fitted = false;
+  private room?: Room;
+  private layout?: RoomLayout;
 
   connectedCallback() {
     this.data = readFurnitureData();
@@ -167,6 +175,7 @@ class FurnitureViewer extends HTMLElement {
     this.renderer = renderer;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.toneMapping = ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.85;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = PCFSoftShadowMap;
     const canvas = renderer.domElement;
@@ -186,7 +195,7 @@ class FurnitureViewer extends HTMLElement {
     const light = (this.light = new DirectionalLight(0xffffff, 1.6));
     light.position.set(2.2, 4, 3);
     light.castShadow = true;
-    light.shadow.mapSize.set(1024, 1024);
+    light.shadow.mapSize.set(2048, 2048);
     light.shadow.bias = -0.0004;
     light.shadow.radius = 6;
     scene.add(light, light.target);
@@ -195,12 +204,16 @@ class FurnitureViewer extends HTMLElement {
     const groundMat = new ShadowMaterial({ opacity: 0.18 });
     const ground = new Mesh(groundGeo, groundMat);
     ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.061; // under the room's floor slab
     ground.receiveShadow = true;
     scene.add(ground);
     this.disposables.push(groundGeo, groundMat);
 
     this.createMaterials();
     scene.add(this.piece);
+    this.room = new Room();
+    this.disposables.push(this.room);
+    scene.add(this.room.group);
 
     let usedGlb = false;
     if (data.modelUrl) usedGlb = await this.loadGlb(data.modelUrl).catch(() => false);
@@ -211,8 +224,12 @@ class FurnitureViewer extends HTMLElement {
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
     controls.enablePan = false;
-    controls.minPolarAngle = 0.12;
-    controls.maxPolarAngle = Math.PI / 2 - 0.04;
+    // From straight at the back wall to straight at the left wall, and from
+    // well above to a little above the floor: always into the open corner.
+    controls.minAzimuthAngle = 0.02;
+    controls.maxAzimuthAngle = Math.PI / 2 - 0.02;
+    controls.minPolarAngle = 0.45;
+    controls.maxPolarAngle = 1.4;
     controls.addEventListener("change", () => this.requestRender());
     // Every touch on the model turns or zooms it; none scrolls the page, so
     // the page holds still while the piece is being turned. Scrolling past
@@ -229,7 +246,7 @@ class FurnitureViewer extends HTMLElement {
     this.querySelector("[data-viewer-reset]")?.addEventListener(
       "click",
       () => {
-        this.fitCamera(this.selection());
+        this.fitCamera();
         this.requestRender();
       },
       { signal: this.abort.signal },
@@ -399,50 +416,60 @@ class FurnitureViewer extends HTMLElement {
       });
     }
 
-    this.updateShadowBounds(sel);
+    this.layout = this.room!.update(sel.width, sel.height, sel.depth);
+    this.updateShadowBounds();
     if (!this.fitted) {
-      this.fitCamera(sel);
+      this.fitCamera();
       this.fitted = true;
     } else {
-      // Follow the piece's middle as it grows, without moving the camera.
-      this.controls?.target.set(0, (sel.height * MM) / 2, 0);
+      // The room may have moved around a resized piece; look at its middle
+      // again without moving the camera.
+      this.controls?.target.copy(this.roomTarget());
       this.controls?.update();
     }
     this.requestRender();
   }
 
-  private updateShadowBounds(sel: Selection) {
+  /** Where the camera looks: the middle of the room, a little below eye level. */
+  private roomTarget() {
+    const [x, , z] = this.layout!.center;
+    return new Vector3(x, 0.9, z);
+  }
+
+  private updateShadowBounds() {
     const light = this.light!;
-    const r = (Math.max(sel.width, sel.depth, sel.height) * MM) / 2 + 0.6;
+    const { center, radius } = this.layout!;
+    const r = radius + 0.5;
     const cam = light.shadow.camera;
     cam.left = cam.bottom = -r;
     cam.right = cam.top = r;
     cam.near = 0.1;
-    cam.far = 12;
+    cam.far = 20;
     cam.updateProjectionMatrix();
-    light.target.position.set(0, 0, 0);
+    // Daylight from high over the windowed (left) wall, towards the open corner.
+    light.position.set(center[0] - 2.5, 6, center[2] + 3);
+    light.target.position.set(center[0], 0, center[2]);
   }
 
-  private fitCamera(sel: Selection) {
+  /** The whole room, from the open corner, as an isometric drawing sees it. */
+  private fitCamera() {
     const camera = this.camera!;
-    const w = sel.width * MM;
-    const h = sel.height * MM;
-    const d = sel.depth * MM;
-    const radius = Math.sqrt(w * w + h * h + d * d) / 2;
+    const target = this.roomTarget();
+    // A narrow view stands further back, so the open corners stay in frame.
+    const radius = this.layout!.radius * (camera.aspect < 1.2 ? 0.86 : 0.76);
     const fov = (camera.fov * Math.PI) / 180;
     const fitHeight = radius / Math.sin(fov / 2);
-    const fitWidth = fitHeight / Math.min(1, camera.aspect);
-    const distance = Math.max(fitHeight, fitWidth) * 1.02;
-    const target = new Vector3(0, h / 2, 0);
-    const dir = new Vector3(1, 0.62, 1.35).normalize();
+    const distance = fitHeight / Math.min(1, camera.aspect);
+    // 45° round from both walls, 35° above the floor.
+    const dir = new Vector3(Math.SQRT1_2 * 0.82, 0.57, Math.SQRT1_2 * 0.82).normalize();
     camera.position.copy(target.clone().add(dir.multiplyScalar(distance)));
-    camera.near = distance / 100;
-    camera.far = distance * 20;
+    camera.near = 0.05;
+    camera.far = distance * 6;
     camera.updateProjectionMatrix();
     if (this.controls) {
       this.controls.target.copy(target);
-      this.controls.minDistance = radius * 1.2;
-      this.controls.maxDistance = distance * 2.5;
+      this.controls.minDistance = 1;
+      this.controls.maxDistance = distance * 1.4;
       this.controls.update();
     }
   }
