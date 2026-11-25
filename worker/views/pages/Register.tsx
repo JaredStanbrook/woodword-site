@@ -111,6 +111,17 @@ export const Register: FC<RegisterProps> = (props) => {
                   />
                 </AuthField>
 
+                <AuthField id="name" label="Your name (optional)">
+                  <input
+                    id="name"
+                    name="displayName"
+                    type="text"
+                    autocomplete="name"
+                    maxlength={50}
+                    class={AUTH_INPUT}
+                  />
+                </AuthField>
+
                 <AuthField id="password" label="Password">
                   <input
                     id="password"
@@ -162,6 +173,17 @@ export const Register: FC<RegisterProps> = (props) => {
                     required
                     class={AUTH_INPUT}
                     placeholder="you@example.com"
+                  />
+                </AuthField>
+
+                <AuthField id="pin-name" label="Your name (optional)">
+                  <input
+                    id="pin-name"
+                    name="displayName"
+                    type="text"
+                    autocomplete="name"
+                    maxlength={50}
+                    class={AUTH_INPUT}
                   />
                 </AuthField>
 
@@ -221,14 +243,14 @@ export const Register: FC<RegisterProps> = (props) => {
                   />
                 </AuthField>
 
-                <AuthField id="pk-name" label="Your name">
+                <AuthField id="pk-name" label="Your name (optional)">
                   <input
                     id="pk-name"
-                    name="name"
+                    name="displayName"
                     type="text"
-                    required
+                    autocomplete="name"
+                    maxlength={50}
                     class={AUTH_INPUT}
-                    placeholder="Ada Joiner"
                   />
                 </AuthField>
 
