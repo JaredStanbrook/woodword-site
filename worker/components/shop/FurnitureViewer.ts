@@ -204,15 +204,18 @@ class FurnitureViewer extends HTMLElement {
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
     controls.enablePan = false;
-    // The wheel zooms towards whatever is under the pointer (zoomAt below).
-    // OrbitControls' own zoomToCursor aims at a plane through the target,
-    // so pointing at the piece zoomed somewhere else in the room. A pinch
-    // still zooms towards the middle of the view.
-    canvas.addEventListener("wheel", (e) => this.zoomAt(e), {
+    // Zoom is ours, not OrbitControls': a wheel zooms towards whatever is
+    // under the pointer, a pinch towards whatever is between the fingers
+    // (onWheel, onPointer). OrbitControls' zoomToCursor aims at a plane
+    // through the centre of the room, so it zoomed somewhere else.
+    controls.enableZoom = false;
+    canvas.addEventListener("wheel", (e) => this.onWheel(e), {
       passive: false,
-      capture: true,
       signal: this.abort.signal,
     });
+    for (const type of ["pointerdown", "pointermove", "pointerup", "pointercancel"] as const) {
+      canvas.addEventListener(type, (e) => this.onPointer(e), { signal: this.abort.signal });
+    }
     // From straight at the back wall to straight at the left wall, and from
     // well above to a little above the floor: always into the open corner.
     controls.minAzimuthAngle = 0.02;
@@ -496,57 +499,92 @@ class FurnitureViewer extends HTMLElement {
     }
   }
 
-  /**
-   * Zooms in towards the point under the pointer and keeps that point under
-   * it: camera and target both move towards it by the same factor. The point
-   * becomes the new centre to turn around, so after zooming in on the piece,
-   * dragging turns around the piece. Zooming out drifts back to the room.
-   */
-  private zoomAt(e: WheelEvent) {
-    const controls = this.controls;
-    const camera = this.camera;
-    if (!controls || !camera || !this.scene) return;
-    e.preventDefault();
-    // Handled here: OrbitControls' own wheel zoom must not run as well.
-    e.stopImmediatePropagation();
-
+  /** The nearest solid thing at a point on screen, or null over empty space. */
+  private pick(clientX: number, clientY: number): Vector3 | null {
     const rect = this.renderer!.domElement.getBoundingClientRect();
     const pointer = new Vector2(
-      ((e.clientX - rect.left) / rect.width) * 2 - 1,
-      -((e.clientY - rect.top) / rect.height) * 2 + 1,
+      ((clientX - rect.left) / rect.width) * 2 - 1,
+      -((clientY - rect.top) / rect.height) * 2 + 1,
     );
     const ray = new Raycaster();
-    ray.setFromCamera(pointer, camera);
-    // The nearest solid thing under the pointer; nothing (the sky round the
-    // room) means the middle of the view, as a plain zoom would.
-    const hit = ray.intersectObjects(this.scene.children, true).find((h) => {
+    ray.setFromCamera(pointer, this.camera!);
+    const hit = ray.intersectObjects(this.scene!.children, true).find((h) => {
       const m = (h.object as Mesh).material as Material | undefined;
       return h.object.visible && !(m && m.transparent);
     });
-    const point = hit?.point ?? controls.target.clone();
-    if (!this.layout) return;
+    return hit?.point ?? null;
+  }
 
-    // A trackpad sends many small deltas, a wheel a few large ones.
-    const delta = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
-    let factor = Math.min(1.25, Math.max(0.8, Math.exp(delta * 0.0015)));
+  /**
+   * Zooms by `factor` (below 1 is closer). In: towards `point`, which stays
+   * put on screen and becomes the centre to turn around, so after zooming in
+   * on the piece, dragging turns around the piece. Out: back towards the
+   * middle of the room, so zooming right out shows the whole room again.
+   */
+  private zoomBy(factor: number, point: Vector3 | null) {
+    const controls = this.controls;
+    const camera = this.camera;
+    if (!controls || !camera || !this.layout) return;
     const distance = camera.position.distanceTo(controls.target);
     if (distance * factor < controls.minDistance) factor = controls.minDistance / distance;
     if (distance * factor > controls.maxDistance) factor = controls.maxDistance / distance;
     if (Math.abs(factor - 1) < 1e-4) return;
 
     if (factor < 1) {
-      // In: towards the point under the pointer, which stays put on screen.
-      camera.position.sub(point).multiplyScalar(factor).add(point);
-      controls.target.sub(point).multiplyScalar(factor).add(point);
+      const at = point ?? controls.target.clone();
+      camera.position.sub(at).multiplyScalar(factor).add(at);
+      controls.target.sub(at).multiplyScalar(factor).add(at);
     } else {
-      // Out: back towards the middle of the room, so zooming right out
-      // returns to the whole room rather than leaving it off to one side.
       const offset = camera.position.clone().sub(controls.target).multiplyScalar(factor);
       controls.target.lerp(this.roomTarget(), 1 - 1 / factor);
       camera.position.copy(controls.target).add(offset);
     }
     controls.update();
     this.requestRender();
+  }
+
+  /** A wheel or trackpad: towards whatever is under the pointer. */
+  private onWheel(e: WheelEvent) {
+    if (!this.controls) return;
+    e.preventDefault();
+    // A trackpad sends many small deltas, a wheel a few large ones.
+    const delta = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+    const factor = Math.min(1.25, Math.max(0.8, Math.exp(delta * 0.0015)));
+    this.zoomBy(factor, factor < 1 ? this.pick(e.clientX, e.clientY) : null);
+  }
+
+  /**
+   * Two fingers: zoom towards what was between them when the pinch began,
+   * so it stays between them. One finger still turns the view (OrbitControls).
+   */
+  private touches = new Map<number, { x: number; y: number }>();
+  private pinch: { distance: number; point: Vector3 | null } | null = null;
+
+  private onPointer(e: PointerEvent) {
+    if (e.pointerType !== "touch") return;
+    if (e.type === "pointerdown") this.touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    else if (e.type === "pointermove" && this.touches.has(e.pointerId))
+      this.touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    else this.touches.delete(e.pointerId);
+
+    // Two fingers zoom and never turn. OrbitControls keeps treating the
+    // first finger as a drag when its own zoom is off, so uneven fingers
+    // turned the room a little with every pinch.
+    if (this.controls) this.controls.enableRotate = this.touches.size < 2;
+    if (this.touches.size !== 2) {
+      this.pinch = null;
+      return;
+    }
+    const [a, b] = [...this.touches.values()];
+    const distance = Math.hypot(a.x - b.x, a.y - b.y);
+    if (!this.pinch) {
+      this.pinch = { distance, point: this.pick((a.x + b.x) / 2, (a.y + b.y) / 2) };
+      return;
+    }
+    if (distance < 1) return;
+    const factor = this.pinch.distance / distance;
+    this.pinch.distance = distance;
+    this.zoomBy(factor, factor < 1 ? this.pinch.point : null);
   }
 
   private resize() {
