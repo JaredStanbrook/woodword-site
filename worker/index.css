@@ -77,69 +77,69 @@
 :root {
   color-scheme: light;
 
-  --background: oklch(0.89 0.05 70); /* Candlelit honey */
-  --foreground: oklch(0.22 0.04 35); /* Brown-black ink */
-  --card: oklch(0.95 0.028 78); /* Pale wax, for fields and panels of text */
-  --card-foreground: oklch(0.22 0.04 35);
-  --popover: oklch(0.955 0.026 78);
-  --popover-foreground: oklch(0.22 0.04 35);
+  --background: oklch(0.89 0 0); /* Paper grey */
+  --foreground: oklch(0.22 0 0); /* Ink */
+  --card: oklch(0.95 0 0); /* Pale grey, for fields and panels of text */
+  --card-foreground: oklch(0.22 0 0);
+  --popover: oklch(0.955 0 0);
+  --popover-foreground: oklch(0.22 0 0);
 
-  --primary: oklch(0.45 0.17 25); /* Blood rose */
-  --primary-foreground: oklch(0.96 0.02 80);
+  --primary: oklch(0.45 0 0); /* Graphite */
+  --primary-foreground: oklch(0.96 0 0);
 
-  --secondary: oklch(0.83 0.06 64);
-  --secondary-foreground: oklch(0.22 0.04 35);
+  --secondary: oklch(0.83 0 0);
+  --secondary-foreground: oklch(0.22 0 0);
 
-  --muted: oklch(0.85 0.055 66);
-  --muted-foreground: oklch(0.38 0.05 40);
+  --muted: oklch(0.85 0 0);
+  --muted-foreground: oklch(0.38 0 0);
 
-  --accent: oklch(0.93 0.04 74);
-  --accent-foreground: oklch(0.22 0.04 35);
+  --accent: oklch(0.93 0 0);
+  --accent-foreground: oklch(0.22 0 0);
 
   --destructive: oklch(0.43 0.17 30);
-  --destructive-foreground: oklch(0.96 0.02 80);
+  --destructive-foreground: oklch(0.96 0 0);
 
   --success: oklch(0.4 0.09 150);
-  --success-foreground: oklch(0.96 0.02 80);
+  --success-foreground: oklch(0.96 0 0);
   --warning: oklch(0.78 0.14 70);
-  --warning-foreground: oklch(0.22 0.04 35);
+  --warning-foreground: oklch(0.22 0 0);
 
-  --border: oklch(0.3 0.045 38);
-  --input: oklch(0.22 0.04 35);
-  --ring: oklch(0.45 0.17 25);
+  --border: oklch(0.3 0 0);
+  --input: oklch(0.22 0 0);
+  --ring: oklch(0.45 0 0);
 
-  /* Gold foil, for ornament on the jewel panels and the night spine. */
-  --gilt: oklch(0.8 0.12 82);
+  /* Silver foil, for ornament on the jewel panels and the night spine. */
+  --gilt: oklch(0.8 0 0);
 
   /* The deep panel: the spine, the cover, a block that should read as night. */
-  --night: oklch(0.25 0.045 32);
-  --night-foreground: oklch(0.96 0.02 80);
+  --night: oklch(0.25 0 0);
+  --night-foreground: oklch(0.96 0 0);
 
-  --chart-1: oklch(0.45 0.17 25);
-  --chart-2: oklch(0.42 0.09 65);
-  --chart-3: oklch(0.4 0.09 150);
-  --chart-4: oklch(0.4 0.06 290);
-  --chart-5: oklch(0.5 0.13 45);
+  --chart-1: oklch(0.45 0 0);
+  --chart-2: oklch(0.42 0 0);
+  --chart-3: oklch(0.4 0 0);
+  --chart-4: oklch(0.4 0 0);
+  --chart-5: oklch(0.5 0 0);
 
   /* Shadows are a hard offset in ink, like a second pull of a print. They
      mean one thing: you can press this (a button, a piece in the collection,
      the option you chose), or it floats above the page (a dialog, a toast).
      Panels that only hold content get a border, never a shadow. */
-  --shadow-ink: oklch(0.22 0.04 35);
+  --shadow-ink: oklch(0.22 0 0);
 
-  --sidebar: oklch(0.25 0.045 32);
-  --sidebar-foreground: oklch(0.96 0.02 80);
-  --sidebar-primary: oklch(0.8 0.12 82);
-  --sidebar-primary-foreground: oklch(0.25 0.045 32);
-  --sidebar-accent: oklch(0.32 0.05 32);
-  --sidebar-accent-foreground: oklch(0.96 0.02 80);
-  --sidebar-border: oklch(0.4 0.05 35);
-  --sidebar-ring: oklch(0.8 0.12 82);
+  --sidebar: oklch(0.25 0 0);
+  --sidebar-foreground: oklch(0.96 0 0);
+  --sidebar-primary: oklch(0.8 0 0);
+  --sidebar-primary-foreground: oklch(0.25 0 0);
+  --sidebar-accent: oklch(0.32 0 0);
+  --sidebar-accent-foreground: oklch(0.96 0 0);
+  --sidebar-border: oklch(0.4 0 0);
+  --sidebar-ring: oklch(0.8 0 0);
 
-  --product: oklch(0.62 0.12 75);
-  --product-foreground: oklch(0.22 0.04 35);
-  --product-wash: oklch(0.29 0.04 70);
-  --product-ink: oklch(0.3 0.07 65);
+  --product: oklch(0.62 0 0);
+  --product-foreground: oklch(0.22 0 0);
+  --product-wash: oklch(0.29 0 0);
+  --product-ink: oklch(0.3 0 0);
 
   --font-display: "Grenze Gotisch", "UnifrakturMaguntia", ui-serif, Georgia, serif;
   --font-serif: "EB Garamond", ui-serif, Georgia, Cambria, "Times New Roman", serif;
@@ -166,18 +166,18 @@
    overrides. */
 @layer components {
   .on-night {
-    --background: oklch(0.31 0.045 32);
-    --foreground: oklch(0.96 0.02 80);
-    --card: oklch(0.31 0.045 32);
-    --card-foreground: oklch(0.96 0.02 80);
-    --muted: oklch(0.31 0.045 32);
-    --muted-foreground: oklch(0.84 0.035 75);
-    --accent: oklch(0.36 0.05 32);
-    --accent-foreground: oklch(0.96 0.02 80);
-    --border: oklch(0.48 0.05 35);
-    --input: oklch(0.64 0.05 40);
-    --ring: oklch(0.8 0.12 82);
-    --shadow-ink: oklch(0.15 0.03 32);
+    --background: oklch(0.31 0 0);
+    --foreground: oklch(0.96 0 0);
+    --card: oklch(0.31 0 0);
+    --card-foreground: oklch(0.96 0 0);
+    --muted: oklch(0.31 0 0);
+    --muted-foreground: oklch(0.84 0 0);
+    --accent: oklch(0.36 0 0);
+    --accent-foreground: oklch(0.96 0 0);
+    --border: oklch(0.48 0 0);
+    --input: oklch(0.64 0 0);
+    --ring: oklch(0.8 0 0);
+    --shadow-ink: oklch(0.15 0 0);
     background-color: var(--night);
     color: var(--foreground);
   }
