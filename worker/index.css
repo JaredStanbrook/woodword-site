@@ -117,10 +117,9 @@
   --chart-4: oklch(0.4 0 0);
   --chart-5: oklch(0.5 0 0);
 
-  /* Shadows are a hard offset in ink, like a second pull of a print. They
-     mean one thing: you can press this (a button, a piece in the collection,
-     the option you chose), or it floats above the page (a dialog, a toast).
-     Panels that only hold content get a border, never a shadow. */
+  /* No drop shadows anywhere in the shop: buttons, cards, menus and dialogs
+     are flat, and borders do the separating. The tokens stay so a product
+     design can bring its own. */
   --shadow-ink: oklch(0.22 0 0);
 
   --sidebar: oklch(0.25 0 0);
@@ -147,14 +146,14 @@
   --font-heading: var(--font-display);
 
   --radius: 0.25rem;
-  --shadow-2xs: 1px 1px 0 0 var(--shadow-ink);
-  --shadow-xs: 2px 2px 0 0 var(--shadow-ink);
-  --shadow-sm: 3px 3px 0 0 var(--shadow-ink);
-  --shadow: 4px 4px 0 0 var(--shadow-ink);
-  --shadow-md: 4px 4px 0 0 var(--shadow-ink);
-  --shadow-lg: 6px 6px 0 0 var(--shadow-ink);
-  --shadow-xl: 8px 8px 0 0 var(--shadow-ink);
-  --shadow-2xl: 12px 12px 0 0 var(--shadow-ink);
+  --shadow-2xs: none;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+  --shadow-2xl: none;
 }
 
 /* A night panel inside the dusk page. Remaps the tokens, so anything inside
