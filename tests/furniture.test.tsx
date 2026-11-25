@@ -16,6 +16,7 @@ import {
   cutList,
   normaliseSelection,
   quote,
+  paintOrder,
   resizeParts,
   selectionInputFromQuery,
   selectionToQuery,
@@ -130,6 +131,18 @@ describe("resizing by component", () => {
     expect(right.position[0] - right.size[0] / 2).toBe(0);
     expect(right.position[0] + right.size[0] / 2).toBe(1080);
     expect(part(cab, wider, "handle_right").position[0]).toBe(40);
+  });
+});
+
+describe("workshop drawing", () => {
+  it("paints each part after the parts it hides", () => {
+    const spec = specOf(CATALOGUE.find((p) => p.slug === "splay-console")!);
+    const names = paintOrder(resizeParts(spec, standardSelection(spec))).map((p) => p.name);
+    const at = (n: string) => names.indexOf(n);
+    // The aprons sit under the top, the shelf behind the front legs.
+    for (const n of names.filter((n) => n.startsWith("apron")))
+      expect(at(n), n).toBeLessThan(at("top"));
+    expect(at("shelf")).toBeLessThan(at("leg_1"));
   });
 });
 

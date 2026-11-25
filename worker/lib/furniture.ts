@@ -372,15 +372,45 @@ function extent(parts: ResolvedPart[]) {
   return { lo, hi };
 }
 
+/**
+ * Components in painting order, back to front. The drawing is seen from
+ * +x, +y, +z, so of two boxes that are apart along some axis, the one lower
+ * on that axis is behind and is painted first. Boxes with no gap between them
+ * on any axis (they overlap) are left to the centre-depth fallback, which
+ * also breaks ties.
+ */
+export function paintOrder(parts: ResolvedPart[]): ResolvedPart[] {
+  const n = parts.length;
+  const lo = parts.map((p) => p.position.map((c, a) => c - p.size[a] / 2));
+  const hi = parts.map((p) => p.position.map((c, a) => c + p.size[a] / 2));
+  const depth = parts.map((p) => p.position[0] + p.position[1] + p.position[2]);
+  const EPS = 0.01;
+  const behind = (i: number, j: number) => [0, 1, 2].some((a) => hi[i][a] <= lo[j][a] + EPS);
+  // before[j] = the parts that must be painted before j.
+  const before = parts.map(() => new Set<number>());
+  for (let i = 0; i < n; i++)
+    for (let j = i + 1; j < n; j++) {
+      const ij = behind(i, j);
+      const ji = behind(j, i);
+      if (ij && !ji) before[j].add(i);
+      else if (ji && !ij) before[i].add(j);
+    }
+  const done = new Set<number>();
+  const out: ResolvedPart[] = [];
+  while (out.length < n) {
+    const left = [...Array(n).keys()].filter((i) => !done.has(i));
+    const ready = left.filter((i) => [...before[i]].every((k) => done.has(k)));
+    // A cycle (rare, from overlapping parts) is broken at the deepest part.
+    const next = (ready.length ? ready : left).reduce((a, b) => (depth[b] < depth[a] ? b : a));
+    done.add(next);
+    out.push(parts[next]);
+  }
+  return out;
+}
+
 /** Each component as three visible faces of a box, back to front. */
 export function isoDrawing(parts: ResolvedPart[]) {
-  const ordered = [...parts].sort(
-    (a, b) =>
-      a.position[0] +
-      a.position[1] +
-      a.position[2] -
-      (b.position[0] + b.position[1] + b.position[2]),
-  );
+  const ordered = paintOrder(parts);
   const faces: IsoFace[] = [];
   for (const part of ordered) {
     const [sx, sy, sz] = part.size;
