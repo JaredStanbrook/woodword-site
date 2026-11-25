@@ -22,6 +22,7 @@ export const seoRoute = new Hono<AppEnv>();
 const STATIC_ROUTES: SitemapEntry[] = [
   { loc: "/", changefreq: "weekly", priority: 1.0 },
   { loc: "/made-to-measure", changefreq: "monthly", priority: 0.6 },
+  { loc: "/cookies", changefreq: "yearly", priority: 0.1 },
 ];
 
 seoRoute.get("/robots.txt", (c) =>

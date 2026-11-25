@@ -31,6 +31,7 @@ const menuConfig: Record<string, Item[]> = {
     { to: "/admin/orders", name: "Orders" },
     { to: "/admin/access", name: "Access links" },
     { to: "/admin/logs", name: "System logs" },
+    { to: "/admin/analytics", name: "Analytics" },
   ],
 };
 

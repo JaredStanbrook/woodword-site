@@ -11,6 +11,7 @@ import { userRoles, rolePermissions, userPermissions } from "../schema/roles.sch
 import { product } from "../schema/product.schema";
 import { cartItem, savedDesign, orders, orderItem, orderEvent } from "../schema/shop.schema";
 import { accessLink } from "../schema/access.schema";
+import { analyticsEvent } from "../schema/analytics.schema";
 import { requireRole } from "../middleware/guard.middleware";
 import { AppEnv } from "@server/types";
 
@@ -57,6 +58,7 @@ devRouter.get("/", async (c) => {
     fetchTableData(db, orderItem, "order_item"),
     fetchTableData(db, orderEvent, "order_event"),
     fetchTableData(db, accessLink, "access_link"),
+    fetchTableData(db, analyticsEvent, "analytics_event"),
   ]);
 
   // Build HTML response

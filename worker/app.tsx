@@ -7,10 +7,13 @@ import { ProfilePage } from "./views/pages/Profile";
 import type { SafeUser } from "./schema/auth.schema.ts";
 
 import { apiAuth } from "./routes/api/auth";
+import { analyticsApi } from "./routes/api/analytics";
 import { webAuth } from "./routes/web/auth";
 import { logsRoute } from "./routes/admin/logs";
+import { analyticsAdminRoute } from "./routes/admin/analytics";
 import { accessAdminRoute } from "./routes/admin/access.tsx";
 import { accessRoute } from "./routes/access.tsx";
+import { cookiesRoute } from "./routes/cookies";
 import { accessGate } from "./middleware/access-gate.middleware.ts";
 import { shopRoute } from "./routes/shop.tsx";
 import { checkoutRoute, stripeWebhook } from "./routes/checkout.tsx";
@@ -32,6 +35,7 @@ admin.route("/", dashboardRoute);
 admin.route("/products", productsAdminRoute);
 admin.route("/orders", ordersAdminRoute);
 admin.route("/logs", logsRoute);
+admin.route("/analytics", analyticsAdminRoute);
 admin.route("/access", accessAdminRoute);
 
 // ==========================================
@@ -54,6 +58,9 @@ const app = new Hono<AppEnv>()
 
   // Invitation links (/a/:token) and the page the gate sends everyone else to.
   .route("/", accessRoute)
+
+  // The cookie policy, and where the banner saves a visitor's choice.
+  .route("/", cookiesRoute)
 
   .route("/admin", admin)
 
@@ -86,7 +93,9 @@ const app = new Hono<AppEnv>()
   .basePath("/api")
   .route("/auth", apiAuth)
   // Stripe posts payment events here: /api/stripe/webhook.
-  .route("/stripe", stripeWebhook);
+  .route("/stripe", stripeWebhook)
+  // Page views from visitors who allowed performance cookies.
+  .route("/analytics", analyticsApi);
 
 export type AppType = typeof app;
 export default app;

@@ -1,5 +1,7 @@
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Layout } from "../views/Layout";
+import { offeredCategories } from "../config/cookies.config";
+import { readConsent } from "../lib/consent";
 import { resolveMeta, type PageMeta } from "../lib/seo";
 import { assetVersion } from "../lib/asset-version";
 import { isGateEnabled, isGatedPath } from "../services/access-gate.service";
@@ -62,6 +64,7 @@ export const globalRenderer = jsxRenderer(
         user={user}
         currentPath={c.req.path + new URL(c.req.url).search}
         assetVersion={assetVersion(c)}
+        cookies={{ offered: offeredCategories(c.env), consent: readConsent(c) }}
       >
         {children}
       </Layout>

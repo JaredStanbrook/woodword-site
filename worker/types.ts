@@ -65,6 +65,14 @@ export type Vars = {
   EMAIL_FROM?: string;
   /** Where new-order notifications go. */
   ORDERS_EMAIL?: string;
+  /**
+   * The optional cookie categories the site uses, e.g.
+   * "functional,performance". Unset: all three; empty: none, and no banner.
+   * See worker/config/cookies.config.ts.
+   */
+  COOKIE_CATEGORIES?: string;
+  /** Days analytics rows are kept. Unset: 395 (13 months). */
+  ANALYTICS_RETENTION_DAYS?: string;
 };
 
 /**

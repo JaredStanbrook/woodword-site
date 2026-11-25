@@ -106,6 +106,7 @@ describe("UI pages load", () => {
       "/orders",
       "/login",
       "/register",
+      "/cookies",
     ]) {
       const res = await get(testApp, path);
       expect(res.status, `GET ${path}`).toBe(200);
@@ -172,6 +173,7 @@ describe("UI pages load", () => {
       "/admin/orders/1/spec",
       "/admin/orders/1/spec.json",
       "/admin/logs",
+      "/admin/analytics",
     ]) {
       const res = await get(testApp, path);
       expect(res.status, `GET ${path}`).toBe(200);
