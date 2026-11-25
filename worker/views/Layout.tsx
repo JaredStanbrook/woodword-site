@@ -156,7 +156,7 @@ export const Layout: FC<LayoutProps> = (props) => {
         ${
           props.meta.bare
             ? ""
-            : html`<footer class="mt-28 border-t-2 lg:ml-60">
+            : html`<footer class="border-t-2 lg:ml-60">
                 <!-- One line. The spine (or the menu on a phone) already holds
                      the navigation; the footer only says whose shop this is
                      and where to find an order. -->
