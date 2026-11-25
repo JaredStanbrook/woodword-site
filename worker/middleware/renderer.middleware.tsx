@@ -3,7 +3,10 @@ import { Layout } from "../views/Layout";
 import { resolveMeta, type PageMeta } from "../lib/seo";
 import { assetVersion } from "../lib/asset-version";
 import { isGateEnabled, isGatedPath } from "../services/access-gate.service";
-import { cartCount } from "../services/cart.service";
+import { and, eq, isNull } from "drizzle-orm";
+import { cartSummary } from "../services/cart.service";
+import { product } from "../schema/product.schema";
+import { CATEGORIES, type Category } from "../schema/furniture.config";
 
 declare module "hono" {
   interface ContextRenderer {
@@ -41,16 +44,23 @@ export const globalRenderer = jsxRenderer(
       meta.jsonLd = [];
     }
 
-    // One indexed sum per page, and only for visitors who have a cart cookie.
-    const pieces = meta.bare ? 0 : await cartCount(c).catch(() => 0);
+    // The nav shows the cart's total and the kinds of piece on sale. The cart
+    // is read only for visitors with a cart cookie.
+    const [cart, categories] = meta.bare
+      ? [{ count: 0, totalCents: 0 }, []]
+      : await Promise.all([
+          cartSummary(c).catch(() => ({ count: 0, totalCents: 0 })),
+          shopCategories(c).catch(() => [] as Category[]),
+        ]);
 
     return (
       <Layout
-        cartCount={pieces}
+        cart={cart}
+        categories={categories}
         meta={meta}
         app={app}
         user={user}
-        currentPath={c.req.path}
+        currentPath={c.req.path + new URL(c.req.url).search}
         assetVersion={assetVersion(c)}
       >
         {children}
@@ -61,3 +71,13 @@ export const globalRenderer = jsxRenderer(
   // which otherwise puts two at the top of every page.
   { docType: false },
 );
+
+/** The categories with something published in them, in catalogue order. */
+async function shopCategories(c: Parameters<typeof cartSummary>[0]): Promise<Category[]> {
+  const rows = await c.var.db
+    .select({ category: product.category })
+    .from(product)
+    .where(and(eq(product.status, "published"), isNull(product.deletedAt)));
+  const present = new Set(rows.map((r) => r.category));
+  return CATEGORIES.filter((cat) => present.has(cat));
+}

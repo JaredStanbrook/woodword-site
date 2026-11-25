@@ -94,12 +94,6 @@
   color: var(--sp-ink);
   text-shadow: 3px 3px 0 var(--sp-marigold);
 }
-.design-splay .sp-h2-light {
-  color: var(--sp-cream);
-  text-shadow:
-    3px 3px 0 var(--sp-ink),
-    6px 6px 0 var(--sp-pink);
-}
 
 /* Chintz flowers, stuck on at angles. */
 .design-splay .sp-bloom {
@@ -183,7 +177,7 @@
     grid-area: title;
     align-self: end;
   }
-  .design-splay .sp-frame {
+  .design-splay .sp-gallery {
     grid-area: frame;
   }
   .design-splay .sp-hero-side {
@@ -219,18 +213,27 @@
   filter: drop-shadow(4px 4px 0 var(--sp-ink));
 }
 
-/* The home photo in a stack of coloured mounts, cane inside. */
-.design-splay .sp-frame {
+/* The gallery: the large picture in a stack of coloured mounts, cane
+   inside; the thumbnails as round medallions under it. */
+.design-splay .sp-gallery {
   position: relative;
   z-index: 1;
-  /* Room for the 35px of mounts drawn outside it. */
-  width: min(30rem, calc(100% - 7rem));
-  margin: 2.5rem auto 3rem;
-  padding: 1rem;
+  /* Room for the 35px of mounts drawn outside the large picture. */
+  width: min(30rem, calc(100% - 4.5rem));
+  margin: 2.5rem auto 0;
+}
+@media (min-width: 64rem) {
+  .design-splay .sp-gallery {
+    width: min(30rem, calc(100% - 3rem));
+  }
+}
+.design-splay .sp-gallery [data-part="gallery-main"] {
+  border: 1rem solid transparent;
   rotate: -2deg;
   background:
-    repeating-linear-gradient(45deg, var(--sp-oak) 0 3px, transparent 3px 9px),
-    repeating-linear-gradient(-45deg, var(--sp-oak) 0 3px, transparent 3px 9px), var(--sp-cane);
+    repeating-linear-gradient(45deg, var(--sp-oak) 0 3px, transparent 3px 9px) border-box,
+    repeating-linear-gradient(-45deg, var(--sp-oak) 0 3px, transparent 3px 9px) border-box,
+    var(--sp-cane) border-box;
   box-shadow:
     0 0 0 5px var(--sp-ink),
     0 0 0 16px var(--sp-marigold),
@@ -239,14 +242,35 @@
     0 0 0 35px var(--sp-ink),
     18px 18px 0 35px var(--sp-ink);
 }
-@media (min-width: 64rem) {
-  .design-splay .sp-frame {
-    width: min(30rem, calc(100% - 3rem));
-  }
+.design-splay .sp-gallery [data-gallery-item] {
+  outline: 4px solid var(--sp-ink);
+  outline-offset: -4px;
 }
-.design-splay .sp-frame-photo {
-  aspect-ratio: 4 / 5;
+.design-splay .sp-gallery [data-part="gallery-thumbs"] {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin: 4.25rem 0 0;
+  padding: 0;
+  border: 0;
+}
+.design-splay .sp-gallery [data-part="gallery-thumb"] {
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 999px;
   border: 4px solid var(--sp-ink);
+  background: var(--sp-marigold);
+  box-shadow: 3px 3px 0 var(--sp-ink);
+}
+.design-splay .sp-gallery [data-part="gallery-thumb"]:has(:checked) {
+  outline: 4px dotted var(--sp-pink);
+  outline-offset: 4px;
+  border-color: var(--sp-cream);
+}
+.design-splay .sp-gallery [data-part="gallery-thumb"]:has(:focus-visible) {
+  outline: 4px solid var(--sp-marigold);
+  outline-offset: 4px;
 }
 
 .design-splay .sp-hero-side {
@@ -267,28 +291,8 @@
   box-shadow: 8px 8px 0 var(--sp-leaf);
   rotate: 1deg;
 }
-.design-splay .sp-hero-badges {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1.5rem;
+.design-splay .sp-burst {
   margin-top: 2.5rem;
-}
-.design-splay .sp-medallion {
-  width: 9.5rem;
-  height: 9.5rem;
-  padding: 0.5rem;
-  border-radius: 999px;
-  background: var(--sp-marigold);
-  outline: 4px dotted var(--sp-pink);
-  outline-offset: 5px;
-  box-shadow: 0 0 0 4px var(--sp-ink);
-}
-.design-splay .sp-medallion-photo {
-  width: 100%;
-  height: 100%;
-  border-radius: 999px;
-  border: 4px solid var(--sp-ink);
 }
 .design-splay .sp-burst {
   display: grid;
@@ -575,12 +579,6 @@
 .design-splay .splay .iso-drawing polygon {
   stroke: var(--sp-ink);
 }
-.design-splay .splay [data-fill="blueprint-foil"] {
-  background: var(--sp-ink);
-}
-.design-splay .splay .iso-drawing.iso-foil polygon {
-  stroke: var(--sp-marigold);
-}
 .design-splay .sp-config [data-part="live-drawing"] {
   margin-top: 0.5rem;
 }
@@ -633,260 +631,6 @@
 .design-splay .sp-config [data-part="save"] button {
   color: var(--sp-cream);
   font-weight: 650;
-}
-
-/* ==========================================
-   SHED: green, laid in squares like the shed's pavers
-   ========================================== */
-
-.design-splay .sp-shed {
-  position: relative;
-  padding: 4.5rem 1rem 5rem;
-  background:
-    linear-gradient(#5fc283 3px, transparent 3px) 0 0 / 5rem 5rem,
-    linear-gradient(90deg, #5fc283 3px, transparent 3px) 0 0 / 5rem 5rem,
-    var(--sp-leaf);
-  border-block: 5px solid var(--sp-ink);
-}
-.design-splay .sp-shed > * {
-  max-width: 68rem;
-  margin-inline: auto;
-}
-.design-splay .sp-snaps {
-  display: grid;
-  gap: 3rem;
-  padding: 0 0.5rem;
-}
-@media (min-width: 40rem) {
-  .design-splay .sp-snaps {
-    grid-template-columns: 1fr 1fr;
-    gap: 2.5rem;
-  }
-  .design-splay .sp-snap-b {
-    margin-top: 4rem;
-  }
-}
-.design-splay .sp-snap {
-  position: relative;
-  padding: 0.75rem 0.75rem 3rem;
-  background: var(--sp-cream);
-  border: 4px solid var(--sp-ink);
-  box-shadow: 10px 10px 0 var(--sp-ink);
-}
-.design-splay .sp-snap::before {
-  content: "";
-  position: absolute;
-  z-index: 1;
-  top: -1rem;
-  left: 50%;
-  width: 6rem;
-  height: 1.9rem;
-  translate: -50% 0;
-  rotate: -4deg;
-  background: repeating-linear-gradient(90deg, var(--sp-pink) 0 10px, #f78bb8 10px 20px);
-  border: 2px solid var(--sp-ink);
-}
-.design-splay .sp-snap-a {
-  rotate: -3deg;
-}
-.design-splay .sp-snap-b {
-  rotate: 2.5deg;
-}
-.design-splay .sp-snap-photo {
-  aspect-ratio: 3 / 4;
-  border: 3px solid var(--sp-ink);
-}
-.design-splay .sp-tape {
-  display: block;
-  width: fit-content;
-  max-width: min(100%, 40rem);
-  margin-top: 3.5rem;
-  padding: 0.75rem 1.5rem;
-  background: var(--sp-marigold);
-  color: var(--sp-ink);
-  font-size: 1.125rem;
-  font-weight: 650;
-  border: 3px solid var(--sp-ink);
-  rotate: -1.5deg;
-  box-shadow: 6px 6px 0 var(--sp-ink);
-}
-
-/* ==========================================
-   FACTS: marigold awning, candy tiles, blobs
-   ========================================== */
-
-.design-splay .sp-facts {
-  padding: 4.5rem 1rem 5rem;
-  background:
-    repeating-linear-gradient(90deg, transparent 0 2.5rem, #f9cb47 2.5rem 5rem), var(--sp-marigold);
-}
-.design-splay .sp-facts > * {
-  max-width: 76rem;
-  margin-inline: auto;
-}
-.design-splay .sp-facts > * + * {
-  margin-top: 3.5rem;
-}
-.design-splay .sp-tiles {
-  display: grid;
-  gap: 1.25rem;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-}
-.design-splay .sp-tile {
-  padding: 1.25rem 1.5rem 1.5rem;
-  border: 4px solid var(--sp-ink);
-  border-radius: 1.5rem;
-  box-shadow: 6px 6px 0 var(--sp-ink);
-}
-.design-splay .sp-tile:nth-child(4n + 1) {
-  background: var(--sp-cobalt);
-  color: var(--sp-cream);
-  rotate: -1.5deg;
-}
-.design-splay .sp-tile:nth-child(4n + 2) {
-  background: var(--sp-pink);
-  rotate: 1deg;
-}
-.design-splay .sp-tile:nth-child(4n + 3) {
-  background: var(--sp-cream);
-  rotate: -0.5deg;
-}
-.design-splay .sp-tile:nth-child(4n + 4) {
-  background: #7fd39d;
-  rotate: 1.5deg;
-}
-.design-splay .sp-tile dt {
-  font-size: 0.9375rem;
-  font-weight: 650;
-}
-.design-splay .sp-tile dd {
-  margin: 0.25rem 0 0;
-  font-family: var(--sp-display);
-  font-size: clamp(1.25rem, 4.5vw, 1.625rem);
-  line-height: 1.1;
-}
-
-.design-splay .sp-blobs {
-  display: grid;
-  gap: 1.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-}
-.design-splay .sp-blob {
-  padding: 2.25rem 2.75rem 2.5rem;
-  background: var(--sp-cream);
-  border: 4px solid var(--sp-ink);
-  border-radius: 58% 42% 55% 45% / 42% 50% 50% 58%;
-}
-.design-splay .sp-blob:nth-child(3n + 2) {
-  border-radius: 44% 56% 40% 60% / 55% 45% 55% 45%;
-  background: #ffd6e7;
-}
-.design-splay .sp-blob:nth-child(3n + 3) {
-  border-radius: 52% 48% 62% 38% / 48% 58% 42% 52%;
-  background: #d9e2ff;
-}
-.design-splay .sp-blob h2 {
-  margin: 0 0 0.5rem;
-  font-size: 1.75rem;
-  line-height: 1.1;
-  color: var(--sp-poppy);
-  text-shadow: 2px 2px 0 var(--sp-ink);
-}
-.design-splay .sp-blob p {
-  margin: 0;
-  font-size: 1.0625rem;
-  font-weight: 500;
-}
-
-.design-splay .sp-last {
-  display: grid;
-  gap: 2.5rem;
-  align-items: center;
-}
-@media (min-width: 48rem) {
-  .design-splay .sp-last {
-    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-  }
-}
-/* Sizes on a ticket stub, perforated down one side. */
-.design-splay .sp-ticket {
-  position: relative;
-  min-width: 0;
-  padding: 1.5rem 1rem 1.25rem 2rem;
-  background:
-    radial-gradient(circle at 0 50%, var(--sp-marigold) 7px, transparent 7.5px) 0 0 / 1.5rem 1.25rem
-      repeat-y,
-    var(--sp-cream);
-  border: 4px solid var(--sp-ink);
-  border-radius: 1rem;
-  box-shadow: 8px 8px 0 var(--sp-cobalt);
-}
-.design-splay .sp-ticket h2 {
-  margin: 0 0 0.75rem;
-  font-size: 2rem;
-  line-height: 1.1;
-}
-.design-splay .sp-ticket [data-part="sizes"] table {
-  font-size: 0.9375rem;
-}
-@media (min-width: 40rem) {
-  .design-splay .sp-ticket {
-    padding: 1.75rem 1.75rem 1.5rem 2.75rem;
-  }
-  .design-splay .sp-ticket [data-part="sizes"] table {
-    font-size: 1rem;
-  }
-  .design-splay .sp-ticket [data-part="sizes"] thead th {
-    font-size: 0.9375rem;
-  }
-}
-.design-splay .sp-ticket [data-part="sizes"] th,
-.design-splay .sp-ticket [data-part="sizes"] td {
-  padding-right: 0.5rem;
-  border-color: var(--sp-ink);
-  font-style: normal;
-  white-space: nowrap;
-}
-.design-splay .sp-ticket [data-part="sizes"] thead th {
-  color: var(--sp-ink);
-  font-size: 0.8125rem;
-  font-weight: 700;
-}
-.design-splay .sp-ticket [data-part="sizes"] tbody tr:nth-child(odd) {
-  background: #ffe3a3;
-}
-
-/* Care on a round pink sticker. */
-.design-splay .sp-care {
-  justify-self: center;
-  display: grid;
-  place-items: center;
-  width: min(100%, 16rem);
-  aspect-ratio: 1;
-  padding: 2.5rem;
-  border-radius: 999px;
-  background: var(--sp-pink);
-  border: 4px solid var(--sp-ink);
-  outline: 4px dashed var(--sp-ink);
-  outline-offset: -16px;
-  rotate: 6deg;
-  text-align: center;
-}
-.design-splay .sp-care [data-part="care"] h2 {
-  font-size: 1.625rem;
-  line-height: 1.1;
-}
-.design-splay .sp-care [data-part="care"] p {
-  color: var(--sp-ink);
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.4;
-}
-
-@media (min-width: 48rem) {
-  .design-splay .sp-care {
-    width: min(100%, 19rem);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

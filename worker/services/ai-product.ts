@@ -29,9 +29,6 @@ const mode = z.enum(RESIZE_MODES);
 const GeneratedProduct = z.object({
   name: z.string(),
   summary: z.string().describe("One sentence for the gallery card, under 140 characters."),
-  description: z
-    .string()
-    .describe("Two short paragraphs on construction and materials, separated by a blank line."),
   category: z.enum(CATEGORIES),
   leadDaysStandard: z.number().int(),
   leadDaysCustom: z.number().int(),
@@ -80,9 +77,6 @@ const GeneratedProduct = z.object({
   design: z.object({
     headline: z.string(),
     intro: z.string(),
-    story: z.array(z.object({ heading: z.string(), body: z.string() })),
-    highlights: z.array(z.object({ label: z.string(), value: z.string() })),
-    care: z.string(),
   }),
 });
 
@@ -109,7 +103,7 @@ PRICING (integer cents, the shop's currency): baseCents is fixed making cost; ti
 
 OPTIONS: up to four groups. A timber group should paint "body" with a colour per species and use timberMultiplier for dearer species (walnut ~1.6–1.8). Finishes usually paint "none". The first choice is the default. Use "" for colour when there is none.
 
-PAGE COPY: each piece's page is designed for it by hand later, so you only write the copy. Write in plain, specific British English about how it is made — no superlatives, no claims the brief does not support, no invented certifications. Story: two to four short sections. Highlights: three or four short label/value facts.`;
+PAGE COPY: each piece's page is designed for it by hand later, so you only write the copy. Write in plain, specific British English about how it is made — no superlatives, no claims the brief does not support, no invented certifications. The page has few words: headline, 6 words or fewer; intro, at most 2 sentences and 25 words.`;
 
 function toProductData(g: Generated, prompt: string): ProductData {
   const t = (v: { x: number; y: number; z: number }) => [v.x, v.y, v.z] as [number, number, number];
@@ -120,7 +114,7 @@ function toProductData(g: Generated, prompt: string): ProductData {
     status: "draft",
     availability: "made_to_order",
     summary: g.summary,
-    description: g.description,
+    description: "",
     leadDaysStandard: g.leadDaysStandard,
     leadDaysCustom: g.leadDaysCustom,
     sortOrder: 0,
@@ -153,7 +147,7 @@ function toProductData(g: Generated, prompt: string): ProductData {
       })),
     })),
     // Starts on the draft design until its own page is made.
-    design: { ...g.design, id: "draft", extra: {}, photos: {} },
+    design: { ...g.design, id: "draft" },
   };
 }
 

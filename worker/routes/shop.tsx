@@ -70,23 +70,13 @@ shopRoute.get("/", async (c) => {
     .where(live)
     .orderBy(asc(product.sortOrder), desc(product.publishedAt));
 
-  // Offer only categories that have something in them.
-  const categories = CATEGORIES.filter((cat) => all.some((p) => p.category === cat));
   const items = all
     .filter((p) => !active || p.category === active)
     .map((p) => ({ product: p, fromCents: startingPrice(specOf(p)) }));
 
   const { app } = c.var;
   return c.render(
-    <GalleryPage
-      items={items}
-      categories={categories}
-      active={active}
-      locale={app.locale}
-      currency={app.currency}
-      appName={app.name}
-      tagline={app.tagline}
-    />,
+    <GalleryPage items={items} active={active} locale={app.locale} currency={app.currency} />,
     {
       // The home page's title says what the site is, not only its name.
       title: active

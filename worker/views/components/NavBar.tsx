@@ -1,26 +1,31 @@
 import { html } from "hono/html";
 import { PropsUser } from "@server/schema/auth.schema";
+import type { Category } from "@server/schema/furniture.config";
+import { formatPrice } from "@server/lib/money";
+import { CATEGORY_LABELS } from "@views/shop/parts";
+
+type Item = { to: string; name: string };
 
 // --- CONFIGURATION ---
 /**
- * Nav links per role. A user sees the union of the lists for every role they
- * hold, de-duplicated by href. `default` is what signed-out visitors get.
+ * The nav has two groups, like a shop's: first what is for sale (built from
+ * the categories with something in them), then the pages about buying it.
+ * These are the second group, per role. A user sees the union of the lists
+ * for every role they hold, de-duplicated by href. `default` is what
+ * signed-out visitors get.
  *
  * This is the main thing to edit when you add a feature area to a new site.
  */
-const menuConfig: Record<string, Array<{ to: string; name: string }>> = {
+const menuConfig: Record<string, Item[]> = {
   default: [
-    { to: "/", name: "The collection" },
     { to: "/made-to-measure", name: "Made to measure" },
     { to: "/orders", name: "Track an order" },
   ],
   user: [
-    { to: "/", name: "The collection" },
     { to: "/made-to-measure", name: "Made to measure" },
     { to: "/account", name: "Your orders" },
   ],
   admin: [
-    { to: "/", name: "The collection" },
     { to: "/admin", name: "Dashboard" },
     { to: "/admin/products", name: "Products" },
     { to: "/admin/orders", name: "Orders" },
@@ -29,19 +34,19 @@ const menuConfig: Record<string, Array<{ to: string; name: string }>> = {
   ],
 };
 
-// --- COMPONENTS ---
-
-// --- MAIN NAVBAR ---
-
 interface NavBarProps {
   appName: string;
   user?: PropsUser | null;
+  /** Path and query, so a category link can show it is the current page. */
   currentPath?: string;
-  cartCount?: number;
+  cart?: { count: number; totalCents: number };
+  categories?: Category[];
+  locale: string;
+  currency: string;
 }
 
-const getMenuItems = (user: PropsUser | null | undefined) => {
-  const items: { to: string; name: string }[] = [];
+const infoItems = (user: PropsUser | null | undefined) => {
+  const items: Item[] = [];
   const seen = new Set<string>();
   for (const role of user?.roles ?? []) {
     for (const item of menuConfig[role] ?? []) {
@@ -52,6 +57,12 @@ const getMenuItems = (user: PropsUser | null | undefined) => {
   }
   return items.length > 0 ? items : menuConfig.default;
 };
+
+/** One kind of piece: the collection itself. Several: one link for each. */
+const shopItems = (categories: Category[]): Item[] =>
+  categories.length > 1
+    ? categories.map((cat) => ({ to: `/?category=${cat}`, name: CATEGORY_LABELS[cat] }))
+    : [{ to: "/", name: "The collection" }];
 
 const Wordmark = ({ appName, size }: { appName: string; size: "lg" | "sm" }) => html`
   <a
@@ -65,58 +76,77 @@ const Wordmark = ({ appName, size }: { appName: string; size: "lg" | "sm" }) => 
 `;
 
 /**
- * The site's navigation is a book spine: a night-dark column down the left
- * on large screens, a bar across the top on small ones. It stays night in
- * both themes, so the brand reads the same by day.
+ * The site's navigation: a night-dark column down the left on large
+ * screens, a bar across the top on small ones whose menu drops down from it.
+ * Name first, then the cart and what it comes to, then what is for sale,
+ * then the pages about buying it.
  */
-export const NavBar = ({ appName, user, currentPath, cartCount = 0 }: NavBarProps) => {
-  const menuItems = getMenuItems(user);
+export const NavBar = ({
+  appName,
+  user,
+  currentPath,
+  cart = { count: 0, totalCents: 0 },
+  categories = [],
+  locale,
+  currency,
+}: NavBarProps) => {
+  const shop = shopItems(categories);
+  const info = infoItems(user);
   const isActive = (to: string) =>
-    to === "/" || to === "/admin" ? currentPath === to : Boolean(currentPath?.startsWith(to));
+    to === "/" || to === "/admin" || to.includes("?")
+      ? currentPath === to
+      : Boolean(currentPath?.startsWith(to));
+  const total = formatPrice(cart.totalCents, locale, currency);
   const cartLabel =
-    cartCount > 0 ? `Cart, ${cartCount} piece${cartCount === 1 ? "" : "s"}` : "Cart, empty";
+    cart.count > 0
+      ? `Cart, ${cart.count} piece${cart.count === 1 ? "" : "s"}, ${total}`
+      : "Cart, empty";
 
-  const link = (item: { to: string; name: string }, big = false) => html`
+  const CartLink = (cls: string) => html`
+    <a
+      href="/cart"
+      aria-label="${cartLabel}"
+      aria-current="${isActive("/cart") ? "page" : "false"}"
+      class="inline-flex h-11 items-center gap-2.5 tabular-nums text-sidebar-foreground/85 hover:text-sidebar-foreground ${cls}"
+    >
+      <span aria-hidden="true">${total}</span>
+      <i data-lucide="shopping-bag" class="h-5 w-5"></i>
+    </a>
+  `;
+
+  const link = (item: Item, cls: string) => html`
     <a
       href="${item.to}"
       aria-current="${isActive(item.to) ? "page" : "false"}"
-      class="group flex min-h-11 items-center gap-3 px-6 ${big ? "text-xl" : "text-lg"} transition-colors ${
+      class="flex min-h-10 items-center transition-colors ${cls} ${
         isActive(item.to)
-          ? "text-sidebar-foreground"
-          : "text-sidebar-foreground/65 hover:text-sidebar-foreground"
+          ? "text-sidebar-foreground underline decoration-gilt decoration-2 underline-offset-[6px]"
+          : "text-sidebar-foreground/70 hover:text-sidebar-foreground"
       }"
     >
-      <span
-        class="h-1.5 w-1.5 shrink-0 rotate-45 ${isActive(item.to) ? "bg-gilt" : "bg-transparent group-hover:bg-gilt/50"}"
-        aria-hidden="true"
-      ></span>
       ${item.name}
     </a>
   `;
 
+  const account = (cls: string) =>
+    user
+      ? html`${link({ to: "/profile", name: "Sign-in and security" }, cls)}
+          <button
+            hx-post="/web/auth/logout"
+            class="flex min-h-10 items-center text-sidebar-foreground/70 hover:text-sidebar-foreground ${cls}"
+          >
+            Sign out
+          </button>`
+      : link({ to: "/login", name: "Sign in" }, cls);
+
   return html`
-    <!-- Small screens: a bar across the top. -->
+    <!-- Small screens: cart, name, menu. -->
     <header
-      class="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between bg-sidebar px-3 text-sidebar-foreground lg:hidden"
+      class="fixed inset-x-0 top-0 z-40 grid h-14 grid-cols-[1fr_auto_1fr] items-center bg-sidebar px-3 text-sidebar-foreground lg:hidden"
     >
+      <div>${CartLink("px-1 text-base")}</div>
       ${Wordmark({ appName, size: "sm" })}
-      <div class="flex items-center">
-        <a
-          href="/cart"
-          aria-label="${cartLabel}"
-          class="relative inline-flex h-11 w-11 items-center justify-center rounded-full hover:bg-sidebar-accent"
-        >
-          <i data-lucide="shopping-bag" class="h-5 w-5"></i>
-          ${
-            cartCount > 0
-              ? html`<span
-                  class="absolute right-1 top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-gilt px-1 text-[0.65rem] font-semibold leading-none text-sidebar tabular-nums"
-                  aria-hidden="true"
-                  >${cartCount > 99 ? "99+" : cartCount}</span
-                >`
-              : ""
-          }
-        </a>
+      <div class="flex justify-end">
         <button
           id="mobile-menu-toggle"
           class="inline-flex h-11 w-11 items-center justify-center rounded-full hover:bg-sidebar-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
@@ -129,50 +159,28 @@ export const NavBar = ({ appName, user, currentPath, cartCount = 0 }: NavBarProp
       </div>
     </header>
 
-    <!-- Large screens: the spine. -->
+    <!-- Large screens: the column. -->
     <aside
-      class="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col bg-sidebar py-8 text-sidebar-foreground lg:flex"
+      class="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col overflow-y-auto bg-sidebar px-6 py-8 text-sidebar-foreground lg:flex"
       aria-label="Site"
     >
-      <div class="px-6">${Wordmark({ appName, size: "lg" })}</div>
-      <p class="mt-2 px-6 text-sm italic leading-snug text-sidebar-foreground/60">
-        Furniture, made to measure
-      </p>
-      <nav class="mt-8 flex flex-col" aria-label="Main">
-        ${menuItems.map((item) => link(item))}
-        ${link({ to: "/cart", name: cartCount > 0 ? `Cart (${cartCount})` : "Cart" })}
+      ${Wordmark({ appName, size: "lg" })}
+      <div class="mt-10">${CartLink("text-lg")}</div>
+      <nav class="mt-6 flex flex-col text-lg" aria-label="Main">
+        ${shop.map((item) => link(item, ""))}
+        <div class="mt-6 flex flex-col font-semibold">${info.map((item) => link(item, ""))}</div>
       </nav>
-      <div class="mt-auto">
-        <div class="flex items-center justify-between gap-2 pl-6 pr-4">
-          ${
-            user
-              ? html`<div class="min-w-0">
-                  <a
-                    href="/account"
-                    class="block truncate text-base text-sidebar-foreground/80 hover:text-sidebar-foreground"
-                    >${user.displayName || user.email}</a
-                  >
-                  <div class="flex gap-3 text-sm">
-                    <a
-                      href="/profile"
-                      class="inline-flex h-11 items-center text-sidebar-foreground/60 hover:text-sidebar-foreground"
-                      >Security</a
-                    >
-                    <button
-                      hx-post="/web/auth/logout"
-                      class="inline-flex h-11 items-center text-sidebar-foreground/60 hover:text-sidebar-foreground"
-                    >
-                      Sign out
-                    </button>
-                  </div>
-                </div>`
-              : html`<a
-                  href="/login"
-                  class="inline-flex h-11 items-center text-base text-sidebar-foreground/80 hover:text-sidebar-foreground"
-                  >Sign in</a
-                >`
-          }
-        </div>
+      <div class="mt-auto flex flex-col pt-8 text-base">
+        ${
+          user
+            ? html`<a
+                href="/account"
+                class="block truncate text-sidebar-foreground/85 hover:text-sidebar-foreground"
+                >${user.displayName || user.email}</a
+              >`
+            : ""
+        }
+        ${account("")}
       </div>
     </aside>
 
@@ -185,32 +193,27 @@ export const NavBar = ({ appName, user, currentPath, cartCount = 0 }: NavBarProp
       ></div>
       <div
         data-menu-panel
-        class="relative -translate-y-full bg-sidebar pb-4 text-sidebar-foreground shadow-lg transition-transform duration-300 ease-out motion-reduce:transition-none"
+        class="relative -translate-y-full bg-sidebar pb-6 text-sidebar-foreground shadow-lg transition-transform duration-300 ease-out motion-reduce:transition-none"
       >
-        <div class="flex h-14 items-center justify-between px-3">
+        <div class="grid h-14 grid-cols-[1fr_auto_1fr] items-center px-3">
+          <div>${CartLink("px-1 text-base")}</div>
           ${Wordmark({ appName, size: "sm" })}
-          <button
-            id="mobile-menu-close"
-            class="inline-flex h-11 w-11 items-center justify-center rounded-full hover:bg-sidebar-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-            aria-label="Close menu"
-          >
-            <i data-lucide="x" class="h-6 w-6"></i>
-          </button>
+          <div class="flex justify-end">
+            <button
+              id="mobile-menu-close"
+              class="inline-flex h-11 w-11 items-center justify-center rounded-full hover:bg-sidebar-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+              aria-label="Close menu"
+            >
+              <i data-lucide="x" class="h-6 w-6"></i>
+            </button>
+          </div>
         </div>
-        <nav class="mt-2 flex flex-col" aria-label="Main">
-          ${menuItems.map((item) => link(item, true))}
-          ${link({ to: "/cart", name: cartCount > 0 ? `Cart (${cartCount})` : "Cart" }, true)}
-          ${
-            user
-              ? html`${link({ to: "/profile", name: "Sign-in and security" }, true)}
-                  <button
-                    hx-post="/web/auth/logout"
-                    class="flex min-h-11 items-center gap-3 px-6 text-xl text-sidebar-foreground/65"
-                  >
-                    <span class="h-1.5 w-1.5 shrink-0" aria-hidden="true"></span>Sign out
-                  </button>`
-              : link({ to: "/login", name: "Sign in" }, true)
-          }
+        <nav class="mt-3 flex flex-col items-center text-xl" aria-label="Main">
+          ${shop.map((item) => link(item, "min-h-11"))}
+          <div class="mt-3 flex flex-col items-center font-semibold">
+            ${info.map((item) => link(item, "min-h-11"))}
+          </div>
+          <div class="mt-3 flex flex-col items-center text-lg">${account("min-h-11")}</div>
         </nav>
       </div>
     </div>

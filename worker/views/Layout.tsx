@@ -4,6 +4,7 @@ import { type PropsUser } from "@server/schema/auth.schema";
 import type { AppConfig } from "@server/config/app.config";
 import { jsonLdScript, type ResolvedMeta } from "@server/lib/seo";
 import { NavBar } from "./components/NavBar";
+import type { Category } from "@server/schema/furniture.config";
 
 interface LayoutProps {
   meta: ResolvedMeta;
@@ -12,7 +13,8 @@ interface LayoutProps {
   user?: PropsUser | null;
   currentPath?: string;
   /** Pieces in the visitor's cart, for the badge in the nav. */
-  cartCount?: number;
+  cart?: { count: number; totalCents: number };
+  categories?: Category[];
   headExtra?: Child;
   /**
    * Appended to the stylesheet URL so each deploy gets a new one. Its file
@@ -122,7 +124,10 @@ export const Layout: FC<LayoutProps> = (props) => {
                 appName: props.app.name,
                 user: props.user,
                 currentPath: props.currentPath,
-                cartCount: props.cartCount,
+                cart: props.cart,
+                categories: props.categories ?? [],
+                locale: props.app.locale,
+                currency: props.app.currency,
               })
         }
 

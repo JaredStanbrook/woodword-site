@@ -305,6 +305,38 @@
   background-image: linear-gradient(to right, var(--product), transparent);
 }
 
+/* THE GALLERY (worker/designs/blocks.tsx Gallery). The thumbnail picked
+   shows its picture; with no thumbnails, the one picture shows. Twelve rules
+   for GALLERY_MAX pictures. */
+@layer components {
+  .photo-gallery [data-gallery-item] {
+    display: none;
+  }
+  .photo-gallery:not(:has([data-gallery-pick])) [data-gallery-item],
+  .photo-gallery:has([data-gallery-pick="0"]:checked) [data-gallery-item="0"],
+  .photo-gallery:has([data-gallery-pick="1"]:checked) [data-gallery-item="1"],
+  .photo-gallery:has([data-gallery-pick="2"]:checked) [data-gallery-item="2"],
+  .photo-gallery:has([data-gallery-pick="3"]:checked) [data-gallery-item="3"],
+  .photo-gallery:has([data-gallery-pick="4"]:checked) [data-gallery-item="4"],
+  .photo-gallery:has([data-gallery-pick="5"]:checked) [data-gallery-item="5"],
+  .photo-gallery:has([data-gallery-pick="6"]:checked) [data-gallery-item="6"],
+  .photo-gallery:has([data-gallery-pick="7"]:checked) [data-gallery-item="7"],
+  .photo-gallery:has([data-gallery-pick="8"]:checked) [data-gallery-item="8"],
+  .photo-gallery:has([data-gallery-pick="9"]:checked) [data-gallery-item="9"],
+  .photo-gallery:has([data-gallery-pick="10"]:checked) [data-gallery-item="10"],
+  .photo-gallery:has([data-gallery-pick="11"]:checked) [data-gallery-item="11"] {
+    display: block;
+  }
+  .photo-gallery [data-part="gallery-thumb"]:has(:checked) {
+    outline: 3px solid var(--foreground);
+    outline-offset: 2px;
+  }
+  .photo-gallery [data-part="gallery-thumb"]:has(:focus-visible) {
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
 /* ISOMETRIC LINE DRAWING (lib/furniture.ts isoDrawing)
    An engraving: gilt lines over faces shaded from the page's product wash, so
    at night it reads as gold foil on a dark cover. */

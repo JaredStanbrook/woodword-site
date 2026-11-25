@@ -4,13 +4,8 @@
 
 import type { SelectProduct } from "@server/schema/product.schema";
 import { specOf } from "@server/schema/product.schema";
-import {
-  AVAILABILITY,
-  BLUEPRINTS,
-  CATEGORIES,
-  PRODUCT_STATUSES,
-} from "@server/schema/furniture.config";
-import { DESIGNS, type DesignDef } from "@server/designs";
+import { AVAILABILITY, CATEGORIES, PRODUCT_STATUSES } from "@server/schema/furniture.config";
+import { DESIGNS } from "@server/designs";
 import type { ProductFormValues } from "@server/services/product-form";
 import {
   cutList,
@@ -302,176 +297,48 @@ const Section = ({
   </section>
 );
 
-const BLUEPRINT_LABELS: Record<string, string> = {
-  line: "Drawing",
-  measured: "Drawing with measurements",
-  foil: "Gilt drawing on night",
-};
-
 /**
- * The chosen design and everything it lets the owner fill in: the shared
- * copy (labelled the way this design uses it), its own text fields, and a
- * choice for each photo slot. Swapped in place when the design changes, so
- * the labels and slots always match the design picked.
+ * The chosen design and the two lines of copy every design shows. A page has
+ * few words on purpose: the photos, the 3D view and the price carry it.
  */
-export const DesignFields = ({
+const DesignFields = ({
   values,
   errors,
-  product,
 }: {
   values: ProductFormValues;
   errors: Record<string, string>;
-  product?: SelectProduct;
 }) => {
-  const current = values.design || "draft";
-  const def: DesignDef = DESIGNS[current] ?? DESIGNS.draft;
-  const label = (k: keyof NonNullable<DesignDef["labels"]>, fallback: string) =>
-    def.labels?.[k]?.label ?? fallback;
-  const hint = (k: keyof NonNullable<DesignDef["labels"]>, fallback?: string) =>
-    def.labels?.[k]?.hint ?? fallback;
-  const images = product?.images ?? [];
-  // Text and photo choices that belong to other designs ride along unseen,
-  // so switching design and back, or saving, loses none of them.
-  const shown = new Set([
-    ...def.extra.map((f) => `extra.${f.key}`),
-    ...def.photos.map((slot) => `photo.${slot.key}`),
-  ]);
-  const carried = Object.entries(values).filter(
-    ([k, v]) => (k.startsWith("extra.") || k.startsWith("photo.")) && !shown.has(k) && v,
-  );
+  const current = DESIGNS[values.design || "draft"] ?? DESIGNS.draft;
   return (
-    <div id="design-fields" class="space-y-5">
-      {carried.map(([k, v]) => (
-        <input type="hidden" name={k} value={v} />
-      ))}
+    <div class="space-y-5">
       <Err errors={errors} name="design" />
       <div class="space-y-1.5">
         <label for="p-design" class="text-sm font-medium">
           Design
         </label>
-        <select
-          id="p-design"
-          name="design"
-          class={inputClass}
-          hx-post={`/admin/products/design-fields${product ? `?id=${product.id}` : ""}`}
-          hx-trigger="change"
-          hx-target="#design-fields"
-          hx-swap="outerHTML"
-        >
+        <select id="p-design" name="design" class={inputClass}>
           {Object.values(DESIGNS).map((d) => (
-            <option value={d.id} selected={d.id === def.id}>
-              {d.name}
+            <option value={d.id} selected={d.id === current.id}>
+              {d.name}: {d.note}
             </option>
           ))}
         </select>
-        <p class="text-xs text-muted-foreground">{def.note}</p>
       </div>
-
       <Text
         name="headline"
-        label={label("headline", "Headline")}
-        hint={hint("headline")}
+        label="Headline"
+        hint="Under the name. 6 words or fewer."
         values={values}
         errors={errors}
       />
       <Area
         name="intro"
-        label={label("intro", "Introduction")}
-        hint={hint("intro")}
+        label="Introduction"
+        hint="Up to 2 sentences, 25 words or fewer."
         values={values}
         errors={errors}
         rows={3}
       />
-      <Area
-        name="story"
-        label={label("story", "Story sections")}
-        values={values}
-        errors={errors}
-        rows={8}
-        hint={hint("story", "Start each section with a line beginning '# ' for its heading.")}
-      />
-      <Area
-        name="highlights"
-        label={label("highlights", "Highlights")}
-        values={values}
-        errors={errors}
-        rows={4}
-        hint={hint("highlights", "One per line, as Label: Value — e.g. Seats: Six")}
-      />
-      <Area
-        name="care"
-        label={label("care", "Care")}
-        hint={hint("care")}
-        values={values}
-        errors={errors}
-        rows={3}
-      />
-      {def.extra.map((f) =>
-        (f.rows ?? 1) > 1 ? (
-          <Area
-            name={`extra.${f.key}`}
-            label={f.label}
-            hint={f.hint}
-            values={values}
-            errors={errors}
-            rows={f.rows}
-          />
-        ) : (
-          <Text
-            name={`extra.${f.key}`}
-            label={f.label}
-            hint={f.hint}
-            values={values}
-            errors={errors}
-          />
-        ),
-      )}
-
-      {def.photos.length ? (
-        <fieldset class="space-y-4 border-t-2 pt-5">
-          <legend class="sr-only">Photos</legend>
-          <p class="text-sm font-medium">Photos</p>
-          <p class="text-xs text-muted-foreground">
-            {images.length
-              ? "Numbers match the uploads under Images and 3D model. A slot left on a drawing shows the piece's workshop drawing at the size the customer picks."
-              : product
-                ? "Upload photos under Images and 3D model, then choose them here. Until then each slot shows a workshop drawing."
-                : "Save the piece first, then upload photos and choose them here. Until then each slot shows a workshop drawing."}
-          </p>
-          <div class="grid gap-4 sm:grid-cols-2">
-            {def.photos.map((slot) => {
-              const chosen = values[`photo.${slot.key}`] ?? "";
-              const id = `p-photo-${slot.key}`;
-              return (
-                <div class="space-y-1.5">
-                  <label for={id} class="text-sm font-medium">
-                    {slot.label}
-                  </label>
-                  <select id={id} name={`photo.${slot.key}`} class={inputClass}>
-                    <option value="" selected={!chosen}>
-                      {BLUEPRINT_LABELS[slot.fallback]} (design default)
-                    </option>
-                    {BLUEPRINTS.filter((b) => b !== slot.fallback).map((b) => (
-                      <option value={`blueprint:${b}`} selected={chosen === `blueprint:${b}`}>
-                        {BLUEPRINT_LABELS[b]}
-                      </option>
-                    ))}
-                    {images.map((key, i) => (
-                      <option value={key} selected={chosen === key}>
-                        Photo {i + 1}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              );
-            })}
-          </div>
-        </fieldset>
-      ) : (
-        <p class="border-t-2 pt-5 text-xs text-muted-foreground">
-          This design has no photo slots: uploaded photos appear together at the foot of the page.
-        </p>
-      )}
     </div>
   );
 };
@@ -795,14 +662,6 @@ export const ProductEditorPage = ({
               errors={errors}
               hint="One line for the gallery card and search results."
             />
-            <Area
-              name="description"
-              label="Description"
-              values={values}
-              errors={errors}
-              rows={5}
-              hint="Longer copy. Blank lines start new paragraphs."
-            />
             <div class="grid gap-4 sm:grid-cols-2">
               <Text
                 name="leadDaysStandard"
@@ -931,9 +790,9 @@ export const ProductEditorPage = ({
 
           <Section
             title="Page design"
-            hint="Each piece has a page designed for it. Pick it here; the text and photos below are what that design shows, and can be changed any time."
+            hint="Each piece has a page designed for it. Its photos are the ones under Images and 3D model, in that order, all in one gallery."
           >
-            <DesignFields values={values} errors={errors} product={product} />
+            <DesignFields values={values} errors={errors} />
           </Section>
 
           {values.prompt ? (

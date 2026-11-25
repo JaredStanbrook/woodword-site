@@ -18,4 +18,4 @@ export const DESIGNS: Record<string, DesignDef> = Object.fromEntries(
 export const designFor = (p: Pick<SelectProduct, "design">): DesignDef =>
   DESIGNS[p.design?.id] ?? draft;
 
-export type { DesignDef, DesignProps, FieldDef, SlotDef } from "./types";
+export type { DesignDef, DesignProps } from "./types";

@@ -242,8 +242,7 @@ describe("admin product form", () => {
       if (parsed.ok) {
         expect(parsed.data.model).toEqual(p.model);
         expect(parsed.data.pricing).toEqual(p.pricing);
-        expect(parsed.data.design.story).toEqual(p.design.story);
-        expect(parsed.data.design.highlights).toEqual(p.design.highlights);
+        expect(parsed.data.design).toEqual(p.design);
       }
     }
   });

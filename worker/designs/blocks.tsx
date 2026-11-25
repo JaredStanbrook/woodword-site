@@ -7,11 +7,10 @@
 
 import type { SelectProduct } from "@server/schema/product.schema";
 import { specOf } from "@server/schema/product.schema";
-import { BLUEPRINTS, type Blueprint, type Selection } from "@server/schema/furniture.config";
+import type { Selection } from "@server/schema/furniture.config";
 import { resizeParts } from "@server/lib/furniture";
 import { AvailabilityBadge, IsoDrawing, mediaUrl } from "@views/shop/parts";
 import { Configurator } from "@views/shop/Configurator";
-import type { SlotDef } from "./types";
 
 export { AvailabilityBadge, Configurator };
 
@@ -19,74 +18,108 @@ export { AvailabilityBadge, Configurator };
 export const designClass = (p: SelectProduct) => `design-${p.design?.id || "draft"}`;
 
 // ==========================================
-// PHOTO SLOTS
+// THE GALLERY
 // ==========================================
 
-export type SlotSource = { image: string } | { blueprint: Blueprint };
-
-/** What fills a slot: the chosen photo, a chosen drawing, or the design's own fallback. */
-export function slotSource(p: SelectProduct, slot: SlotDef): SlotSource {
-  const v = p.design?.photos?.[slot.key];
-  if (v && p.images.includes(v)) return { image: v };
-  const kind = v?.startsWith("blueprint:") ? v.slice("blueprint:".length) : "";
-  if ((BLUEPRINTS as readonly string[]).includes(kind)) return { blueprint: kind as Blueprint };
-  return { blueprint: slot.fallback };
-}
+/** As many pictures as the gallery's CSS can switch between (worker/index.css). */
+export const GALLERY_MAX = 12;
 
 /**
- * One photo slot. A photo fills the box (object-cover); a drawing sits on the
- * product's dark panel, or on the night panel in gilt. Size the box with
- * `class`; `data-slot` and `data-fill` are there for a design's CSS to hook.
+ * Every photo of the piece in one place, in upload order, and last the
+ * workshop drawing at the size chosen. One large picture with a row of
+ * thumbnails under it; a thumbnail is a radio button, so switching needs no
+ * script and works from the keyboard. Hooks for a design's CSS: data-part
+ * gallery, gallery-main, gallery-thumbs, gallery-thumb; each picture has
+ * data-fill "photo" or "drawing".
  */
-export const Photo = ({
+export const Gallery = ({
   product,
   selection,
-  slot,
-  alt,
   class: cls = "",
-  imgClass = "",
-  eager = false,
+  mainClass = "aspect-[4/5]",
 }: {
   product: SelectProduct;
   selection: Selection;
-  slot: SlotDef;
-  alt?: string;
   class?: string;
-  imgClass?: string;
-  /** Load straight away (a hero), rather than lazily. */
-  eager?: boolean;
+  /** Sizes the large picture; give it a fixed aspect ratio. */
+  mainClass?: string;
 }) => {
-  const src = slotSource(product, slot);
-  if ("image" in src) {
-    return (
-      <figure class={`relative overflow-hidden ${cls}`} data-slot={slot.key} data-fill="photo">
-        <img
-          src={mediaUrl(src.image)}
-          alt={alt ?? `${product.name}, ${slot.label.toLowerCase()}`}
-          loading={eager ? "eager" : "lazy"}
-          decoding="async"
-          class={`h-full w-full object-cover ${imgClass}`}
-        />
-      </figure>
-    );
-  }
-  const foil = src.blueprint === "foil";
+  const photos = product.images.slice(0, GALLERY_MAX - 1);
+  const count = photos.length + 1;
+  const name = `gallery-${product.id ?? 0}`;
+  const parts = resizeParts(specOf(product), selection);
+  const drawing = (dims: boolean) => (
+    <div class="absolute inset-0 bg-product-wash p-[8%]">
+      <IsoDrawing
+        parts={parts}
+        size={selection}
+        dims={dims}
+        label={`Workshop drawing of the ${product.name}`}
+      />
+    </div>
+  );
   return (
-    <figure
-      class={`relative overflow-hidden ${foil ? "bg-night" : "bg-product-wash"} ${cls}`}
-      data-slot={slot.key}
-      data-fill={`blueprint-${src.blueprint}`}
-    >
-      <div class="absolute inset-0 p-[7%]">
-        <IsoDrawing
-          parts={resizeParts(specOf(product), selection)}
-          size={selection}
-          dims={src.blueprint !== "line"}
-          foil={foil}
-          label={`Workshop drawing of the ${product.name}`}
-        />
+    <div class={`photo-gallery ${cls}`} data-part="gallery">
+      <div class={`relative overflow-hidden ${mainClass}`} data-part="gallery-main">
+        {photos.map((key, i) => (
+          <figure class="absolute inset-0" data-gallery-item={i} data-fill="photo">
+            <img
+              src={mediaUrl(key)}
+              alt={`${product.name}, photo ${i + 1} of ${photos.length}`}
+              loading={i === 0 ? "eager" : "lazy"}
+              decoding="async"
+              class="h-full w-full object-cover"
+            />
+          </figure>
+        ))}
+        <figure class="absolute inset-0" data-gallery-item={photos.length} data-fill="drawing">
+          {drawing(true)}
+        </figure>
       </div>
-    </figure>
+      {count > 1 ? (
+        <fieldset class="mt-3 grid grid-cols-4 gap-3 sm:grid-cols-5" data-part="gallery-thumbs">
+          <legend class="sr-only">Pictures of the {product.name}</legend>
+          {photos.map((key, i) => (
+            <label
+              class="relative block aspect-square cursor-pointer overflow-hidden"
+              data-part="gallery-thumb"
+            >
+              <input
+                type="radio"
+                name={name}
+                value={i}
+                checked={i === 0}
+                class="sr-only"
+                data-gallery-pick={i}
+                aria-label={`Photo ${i + 1}`}
+              />
+              <img
+                src={mediaUrl(key)}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                class="h-full w-full object-cover"
+              />
+            </label>
+          ))}
+          <label
+            class="relative block aspect-square cursor-pointer overflow-hidden"
+            data-part="gallery-thumb"
+          >
+            <input
+              type="radio"
+              name={name}
+              value={photos.length}
+              checked={photos.length === 0}
+              class="sr-only"
+              data-gallery-pick={photos.length}
+              aria-label="Workshop drawing"
+            />
+            {drawing(false)}
+          </label>
+        </fieldset>
+      ) : null}
+    </div>
   );
 };
 
@@ -154,83 +187,3 @@ export const PreviewBanner = ({ product }: { product: SelectProduct }) => (
     </div>
   </div>
 );
-
-export const PhotoGrid = ({
-  product,
-  class: cls = "",
-}: {
-  product: SelectProduct;
-  class?: string;
-}) =>
-  product.images.length === 0 ? null : (
-    <div class={`grid gap-3 sm:grid-cols-2 ${cls}`}>
-      {product.images.map((key, i) => (
-        <img
-          src={mediaUrl(key)}
-          alt={`${product.name}, photograph ${i + 1}`}
-          loading="lazy"
-          decoding="async"
-          class={`w-full rounded-sm object-cover ${i === 0 && product.images.length % 2 === 1 ? "sm:col-span-2 aspect-[16/9]" : "aspect-[4/3]"}`}
-        />
-      ))}
-    </div>
-  );
-
-export const DimensionTable = ({ product }: { product: SelectProduct }) => (
-  <div class="overflow-x-auto" data-part="sizes">
-    <table class="w-full text-sm tabular-nums">
-      <caption class="sr-only">Standard size and the range it can be made in</caption>
-      <thead>
-        <tr class="border-b-2 text-left text-sm italic text-muted-foreground">
-          <th scope="col" class="py-2 pr-4 font-medium">
-            Dimension
-          </th>
-          <th scope="col" class="py-2 pr-4 font-medium">
-            Standard
-          </th>
-          <th scope="col" class="py-2 pr-4 font-medium">
-            Minimum
-          </th>
-          <th scope="col" class="py-2 font-medium">
-            Maximum
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {(["width", "height", "depth"] as const).map((k) => (
-          <tr class="border-b-2 last:border-0">
-            <th scope="row" class="py-2.5 pr-4 text-left font-medium capitalize">
-              {k}
-            </th>
-            <td class="py-2.5 pr-4">{product.dimensions[k].standard} mm</td>
-            <td class="py-2.5 pr-4 text-muted-foreground">{product.dimensions[k].min} mm</td>
-            <td class="py-2.5 text-muted-foreground">{product.dimensions[k].max} mm</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-);
-
-export const Paragraphs = ({ text, class: cls = "" }: { text: string; class?: string }) => (
-  <>
-    {text
-      .split(/\n{2,}/)
-      .map((p) => p.trim())
-      .filter(Boolean)
-      .map((p) => (
-        <p class={cls}>{p}</p>
-      ))}
-  </>
-);
-
-export const CareNote = ({ product }: { product: SelectProduct }) =>
-  product.design.care ? (
-    <div class="space-y-2" data-part="care">
-      <h2 class="font-heading text-lg">Living with it</h2>
-      <Paragraphs
-        text={product.design.care}
-        class="text-sm leading-relaxed text-muted-foreground"
-      />
-    </div>
-  ) : null;

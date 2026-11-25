@@ -177,31 +177,6 @@ export const CATALOGUE: ProductData[] = [
       headline: "Leans out. Stands firm.",
       intro:
         "Solid oak, legs splayed both ways, a low shelf running past them. Built to fit your wall.",
-      story: [
-        {
-          heading: "The splay",
-          body: "Legs lean out to the floor, so a narrow table never rocks.",
-        },
-        {
-          heading: "The shelf",
-          body: "It runs past the legs, with room for books or a basket.",
-        },
-        {
-          heading: "Your size",
-          body: "Any length from 800 to 1600 mm, cut to fit your wall.",
-        },
-      ],
-      highlights: [
-        { label: "Timber", value: "Solid oak" },
-        { label: "Legs", value: "Splayed both ways" },
-        { label: "Shelf", value: "Past the legs" },
-      ],
-      care: "Dust it dry and oil the top when it looks thirsty.",
-      extra: {
-        shed_heading: "From the shed",
-        shed_note: "Built in a tin shed, door open to the lawn.",
-      },
-      photos: {},
     },
   },
 ];
@@ -219,10 +194,5 @@ export const blankProduct = (): ProductData => ({
     id: "draft",
     headline: "",
     intro: "",
-    story: [],
-    highlights: [],
-    care: "",
-    extra: {},
-    photos: {},
   },
 });

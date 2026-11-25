@@ -28,9 +28,9 @@ What the site does, and the few things only the owner can set up.
    design is built in code ([designing-a-piece.md](designing-a-piece.md)).
    Until then the piece uses the plain **Draft** design, which cannot be
    published.
-5. Under **Page design**, pick the piece's design, edit its text, and choose
-   which uploaded photo goes in each of its photo slots (an empty slot shows
-   the workshop drawing).
+5. Under **Page design**, pick the piece's design and write its two lines.
+   Every uploaded photo appears in the page's gallery, in upload order,
+   followed by the workshop drawing.
 6. **View page** shows it as customers will see it (only admins can). Set
    Status to **published** when it is right.
 

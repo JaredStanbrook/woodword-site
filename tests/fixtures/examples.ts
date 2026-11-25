@@ -276,34 +276,7 @@ export const EXAMPLES: ProductData[] = [
       roundToCents: 1000,
     },
     options: [TIMBERS, FINISHES],
-    design: {
-      id: "draft",
-      extra: {},
-      photos: {},
-      headline: "A table built like a building: one thick slab, four posts, nothing extra.",
-      intro:
-        "Drawn around a 30 mm solid top and square legs set in from the corners. Make it as long as your room allows — the legs move out to carry it and stay the same section.",
-      story: [
-        {
-          heading: "The top",
-          body: "Boards are chosen in sequence from the same log, so the grain runs on across the joints.",
-        },
-        {
-          heading: "The frame",
-          body: "Mortise-and-tenon aprons, drawbored with oak pegs. No screws, no brackets, nothing to work loose.",
-        },
-        {
-          heading: "Your size",
-          body: "From a 1200 mm table for four to 2400 mm for ten. The aprons and legs are recalculated for the size you choose.",
-        },
-      ],
-      highlights: [
-        { label: "Seats", value: "Six at standard size" },
-        { label: "Top thickness", value: "30 mm solid" },
-        { label: "Joinery", value: "Drawbored mortise and tenon" },
-      ],
-      care: "Wipe with a damp cloth. Refresh the oil once a year, or when water stops beading on the surface.",
-    },
+    design: { id: "draft", headline: "", intro: "" },
   },
   {
     name: "Hearth Sideboard",
@@ -360,31 +333,7 @@ export const EXAMPLES: ProductData[] = [
       },
       FINISHES,
     ],
-    design: {
-      id: "draft",
-      extra: {},
-      photos: {},
-      headline: "For the good plates, the board games, and the bottle saved for later.",
-      intro:
-        "A sideboard in the old way: dovetailed at the corners, a shelf inside, two doors that meet in the middle on brass hinges. It sits on a dark plinth, so it seems to hover.",
-      story: [
-        {
-          heading: "Hand-cut dovetails",
-          body: "Each corner is sawn and chopped by hand, and left visible on the top, where it can be seen and felt.",
-        },
-        {
-          heading: "Doors that close with a breath",
-          body: "The doors are fitted to a gap the thickness of a coin, so they close on a cushion of air.",
-        },
-      ],
-      highlights: [
-        { label: "Shelf", value: "One, full depth" },
-        { label: "Hinges", value: "Solid brass knife" },
-        { label: "Back", value: "Frame and panel" },
-        { label: "Plinth", value: "Ebonised or matching" },
-      ],
-      care: "Dust with a dry cloth. Keep it out of direct sun for the first months while the timber settles into its colour.",
-    },
+    design: { id: "draft", headline: "", intro: "" },
   },
   {
     name: "Grid Shelving",
@@ -440,34 +389,7 @@ export const EXAMPLES: ProductData[] = [
         ],
       },
     ],
-    design: {
-      id: "draft",
-      extra: {},
-      photos: {},
-      headline: "Five planes, two posts. A grid you can stretch to the wall you have.",
-      intro:
-        "Housed joints and two hidden rails hold it square. Change the height and the middle shelves spread evenly; change the width and the shelves lengthen while the uprights stay put.",
-      story: [
-        {
-          heading: "Housed shelves",
-          body: "Each shelf sits in a 6 mm groove in both uprights, glued along its full depth.",
-        },
-        {
-          heading: "Hidden rails",
-          body: "Two rails at the back resist racking, so the unit stays square when loaded.",
-        },
-        {
-          heading: "Even spacing",
-          body: "The gaps between shelves are recalculated for the height you choose, never left uneven.",
-        },
-      ],
-      highlights: [
-        { label: "Shelves", value: "5" },
-        { label: "Load per shelf", value: "25 kg" },
-        { label: "Thickness", value: "24 mm" },
-      ],
-      care: "Above 2000 mm tall, fix it to the wall with the bracket we include.",
-    },
+    design: { id: "draft", headline: "", intro: "" },
   },
   {
     name: "Settle Bench",
@@ -522,28 +444,6 @@ export const EXAMPLES: ProductData[] = [
         ],
       },
     ],
-    design: {
-      id: "draft",
-      extra: {},
-      photos: {},
-      headline: "Somewhere to sit and take your boots off.",
-      intro:
-        "Three boards and a stretcher. The ends go right through the seat and are wedged from above, the oldest way to make a bench that does not wobble.",
-      story: [
-        {
-          heading: "Through-wedged",
-          body: "Each end passes through the seat in two tenons, split and wedged with a contrasting timber.",
-        },
-        {
-          heading: "Ready to go",
-          body: "The standard size is usually in the workshop, finished, and can leave within days.",
-        },
-      ],
-      highlights: [
-        { label: "Seats", value: "Two to three" },
-        { label: "Seat thickness", value: "40 mm" },
-      ],
-      care: "Oil it when it looks dry. It is meant to be sat on, stood on, and to get better for it.",
-    },
+    design: { id: "draft", headline: "", intro: "" },
   },
 ];

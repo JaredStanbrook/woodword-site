@@ -2,18 +2,24 @@
 
 Every piece in the shop gets a product page designed for it alone. The
 navigation and the footer are the shop's. **Everything between them is the
-piece's own:** its colours, typefaces, shapes, patterns, buttons, sliders,
-price, tables and photos. Nothing in the body should look like another page.
+piece's own:** its colours, typefaces, shapes, patterns, buttons, sliders and
+price. Nothing in the body should look like another page.
+
+**And the page stays small.** A customer comes to see the piece, make it
+their size, and buy it. Pictures, the 3D model and the price do that work;
+words only name things. A page has the five parts listed under "What a page
+is" below, and nothing else: no story sections, no fact tiles, no sizes
+table, no care notes, no workshop band, no long description.
 
 The pipeline:
 
 1. **You** send photos of the piece, a description and a style.
 2. **Claude** builds a named design in `worker/designs/<id>/` from this brief.
-3. **You** pick that design in the admin under **Page design**, edit its
-   text, upload the photos and choose which photo goes in each slot.
+3. **You** pick that design in the admin under **Page design**, write its two
+   lines, and upload the photos.
 
-The design fixes the look. The words and the photos stay yours to change in
-the admin at any time.
+The design fixes the look. The two lines and the photos stay yours to change
+in the admin at any time.
 
 ---
 
@@ -34,54 +40,42 @@ Standard size (W × H × D mm):
 Range it can be built in (min–max for each):
 Price at the standard size:
 Lead time (standard / custom size):
-Anything the page must or must not say:
 
-Photos:
+Photos (the first one leads; all of them go in the gallery):
 1. at home / in use
 2. a detail: grain, a joint, an edge
-3. in the workshop (one or two)
-(more is fine; say if one should lead)
+3. in the workshop
 ```
 
 ---
 
 ## 2. Instructions for Claude
 
-### Keep it short
+### What a page is
 
-Every page stays short. Pictures, the 3D model and the price carry it; words
-only label and explain. These limits apply to the copy you draft for the
-catalogue entry, and they are what the admin field hints should ask for:
+Five parts, in this order of importance. Each comes from a shared block, so
+buying, sizing and the 3D view work the same on every page.
 
-| Field                 | Limit                                                      |
-| --------------------- | ---------------------------------------------------------- |
-| Headline              | 6 words or fewer                                           |
-| Introduction          | 2 sentences, 25 words or fewer                             |
-| Story                 | 3 sections at most, a 2–3 word heading and 1 sentence each |
-| Highlights            | 3 or 4, values of 3 words or fewer                         |
-| Care                  | 1 sentence                                                 |
-| Description           | Leave empty unless the owner asks for it                   |
-| A design's extra text | 1 line each                                                |
+| Part                                                   | Block                                | Words                                              |
+| ------------------------------------------------------ | ------------------------------------ | -------------------------------------------------- |
+| The piece's name, as the page's one `<h1>`             | `product.name`                       | the name                                           |
+| A short line, and up to two sentences                  | `design.headline`, `design.intro`    | headline 6 words or fewer; intro 25 words or fewer |
+| Every photo, in one gallery, then the workshop drawing | `<Gallery>`                          | none                                               |
+| The 3D model                                           | `<Viewer>`                           | none                                               |
+| Size, options, price, lead time, add to cart           | `<Configurator {...props} />`, whole | its own labels                                     |
 
-Words the design itself hard-codes (section titles, a "from") are 3 words or
-fewer, and there should be no more than four of them on the page.
+Plus `<AvailabilityBadge>` beside the name; it renders nothing for made to
+order. The configurator already shows each size's range, so there is no
+sizes table.
 
-### The essentials: what every page must have
+Words the design hard-codes itself (a section title, a "from" beside the
+price) are 3 words or fewer, and there are no more than three of them on the
+page. Splay has two: "Make it fit" and "from".
 
-| What                                                     | Where it comes from                                           |
-| -------------------------------------------------------- | ------------------------------------------------------------- |
-| The piece's name, as the page's one `<h1>`               | `product.name`                                                |
-| A short headline                                         | `design.headline` (shown when set)                            |
-| The photos                                               | `<Photo slot={…}>`, once for each slot in the manifest        |
-| The 3D model                                             | `<Viewer>`                                                    |
-| Size, options, the live price, lead time, add to cart    | `<Configurator {...props} />`, whole                          |
-| Whether it is in stock or a limited run                  | `<AvailabilityBadge>` (renders nothing for made to order)     |
-| The sizes it can be built in                             | `<DimensionTable>`                                            |
-| How to look after it                                     | `<CareNote>` (renders nothing when care is empty)             |
-| Introduction, story, highlights, description, extra text | When set: the owner may type them, so the page must show them |
-
-`npm test` enforces this table (`tests/designs.test.tsx`). A design that
-drops a block, a field or a slot fails the build.
+`npm test` enforces this (`tests/designs.test.tsx`): one `<h1>` with the
+name, both lines, one gallery with every photo and the drawing, the viewer
+and the configurator. The admin offers only the two lines; there is nowhere
+to type more.
 
 ### Read the piece before designing anything
 
@@ -100,7 +94,8 @@ drops a block, a field or a slot fails the build.
   variable file rather than one with every axis. A page loads only the fonts
   its CSS uses.
 - **Commit to the style** the owner asked for, all the way through, down to
-  the slider thumbs and the table rows.
+  the slider thumbs and the gallery thumbnails. Spend the boldness on those
+  five parts, not on adding more.
 - **Name the design.** A short lowercase id (`splay`), plus a display name
   for the admin dropdown.
 
@@ -119,21 +114,15 @@ Register it in two places:
 
 `worker/designs/splay/` is the worked example.
 
-**The manifest** (`DesignDef`, see `worker/designs/types.ts`):
-
-| Field    | What it is                                                                                                                                                              |
-| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`     | Matches the folder name and the `.design-<id>` class.                                                                                                                   |
-| `name`   | Shown in the admin's Design dropdown.                                                                                                                                   |
-| `note`   | One line under the dropdown: the style, and which piece it is for.                                                                                                      |
-| `photos` | The photo slots, `photo1`, `photo2`… in page order. Each `label` says where it appears; each `fallback` is the drawing shown while empty: `line`, `measured` or `foil`. |
-| `extra`  | Text the design adds of its own (a band heading, a caption). Keep it to one or two fields.                                                                              |
-| `labels` | Admin labels and hints for the shared copy. Put the word limits from the table above in the hints, so the owner keeps the page short too.                               |
+**The manifest** (`DesignDef`, see `worker/designs/types.ts`): `id` (matches
+the folder and the `.design-<id>` class), `name` (the admin dropdown) and
+`note` (one line beside it: the style, and which piece it is for).
 
 ### Make every element its own
 
 The view wraps everything in one root element (`<div class="<id>">`) and
-arranges the blocks however the style wants. Restyling works in three steps:
+arranges the five parts however the style wants. Restyling works in three
+steps:
 
 1. **Redefine the shop's tokens on that root.** `--background`,
    `--foreground`, `--card`, `--muted-foreground`, `--border`, `--input`,
@@ -144,13 +133,14 @@ arranges the blocks however the style wants. Restyling works in three steps:
    its rules beat the classes the blocks carry. Select by hook, never by a
    Tailwind class name:
 
-   | Block           | Hooks                                                                                                                                                                                          |
-   | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-   | Configurator    | `size`, `reset`, `dimension` (with `data-dimension="width"` etc.), `dimension-label`, `dimension-range`, `unit`, plus `[data-step-down]`, `[data-step-up]`, `[data-number]` and `input.slider` |
-   | Options         | `option-group`, `option-legend`, `choices`, `choice` (style the chosen one with `:has(:checked)`), `swatch`, `choice-name`, `choice-note`, `choice-price`                                      |
-   | Price panel     | `price-panel`, `live-drawing`, `price`, `price-note`, `breakdown`, `breakdown-lines`, `lead`, `lead-note`, `buy`, `qty`, `add`, `save`, `unavailable`                                          |
-   | Viewer          | `viewer`, plus `[data-viewer-hint]` and `[data-viewer-reset]`                                                                                                                                  |
-   | Everything else | `sizes`, `care`, `availability` (with `data-availability`); photo slots are `[data-slot]` with `data-fill="photo"` or `"blueprint-…"`                                                          |
+   | Block        | Hooks                                                                                                                                                                                                 |
+   | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | Gallery      | `gallery`, `gallery-main` (give it an aspect ratio, or pass `mainClass`), `gallery-thumbs`, `gallery-thumb` (the picked one is `:has(:checked)`); each picture has `data-fill="photo"` or `"drawing"` |
+   | Configurator | `size`, `reset`, `dimension` (with `data-dimension="width"` etc.), `dimension-label`, `dimension-range`, `unit`, plus `[data-step-down]`, `[data-step-up]`, `[data-number]` and `input.slider`        |
+   | Options      | `option-group`, `option-legend`, `choices`, `choice` (style the chosen one with `:has(:checked)`), `swatch`, `choice-name`, `choice-note`, `choice-price`                                             |
+   | Price panel  | `price-panel`, `live-drawing`, `price`, `price-note`, `breakdown`, `breakdown-lines`, `lead`, `lead-note`, `buy`, `qty`, `add`, `save`, `unavailable`                                                 |
+   | Viewer       | `viewer`, plus `[data-viewer-hint]` and `[data-viewer-reset]`                                                                                                                                         |
+   | Badge        | `availability` (with `data-availability`)                                                                                                                                                             |
 
    Workshop drawings are SVG: restyle `.iso-drawing .iso-top`, `.iso-left`
    and `.iso-right` (fill) and `polygon` (stroke) under the root. Don't mix
@@ -158,10 +148,12 @@ arranges the blocks however the style wants. Restyling works in three steps:
 
 3. **Hide only filler.** A design may hide `lead-note` or `save`. It may
    never hide the price, the size controls, the options, the lead time, add
-   to cart, the sizes table or the care note.
+   to cart, or a gallery thumbnail.
 
 ### Rules
 
+- **Five parts, few words.** Nothing on the page beyond the table above.
+  If the style seems to need more, make the five parts bolder instead.
 - **Body only.** Never touch the nav, the footer, `Layout.tsx`, or
   `worker/index.css` beyond the one `@import` line.
 - **Every rule starts with `.design-<id>`.** The only at-rules allowed are
@@ -170,9 +162,8 @@ arranges the blocks however the style wants. Restyling works in three steps:
 - **Page styles go under the root** (`.design-<id> .<id>`). `.design-<id>`
   on its own also wraps the piece's collection card and cart line, so it
   sets only the four `--product*` tokens that colour those.
-- **All words come from the admin.** Hard-code decoration only.
-- **Photos fill their box** (`object-cover`). Give every slot a fixed aspect
-  ratio, so an empty one (a drawing) holds the same space.
+- **All words come from the admin.** Hard-code decoration, and the three
+  short labels at most.
 - **Keep it usable.** Visible keyboard focus, buttons and inputs at least
   44 px, no horizontal scroll at 390 px, and nothing decorative over a
   control. Decoration gets `aria-hidden` and `pointer-events: none`.
@@ -187,20 +178,18 @@ arranges the blocks however the style wants. Restyling works in three steps:
 
 1. `npm run build` and `npm test` pass.
 2. Run locally and add the piece: in `worker/config/catalogue.ts` as a draft
-   with its dimensions, components, placeholder prices and short copy, then
-   `npm run seed:local`.
-3. Upload the photos in the local admin, choose the design, assign the
-   slots.
-4. Screenshot the page at 390 px and 1440 px wide, with every slot filled
-   and with every slot empty (drawings). Check:
+   with its dimensions, components, placeholder prices, headline and intro,
+   then `npm run seed:local`.
+3. Upload the photos in the local admin and choose the design.
+4. Screenshot the page at 390 px and 1440 px wide, with photos and with
+   none (the gallery shows only the drawing). Check:
    - no horizontal scroll, and nothing clipped at the edges;
    - nothing from the shop's own look is left in the body;
+   - every thumbnail switches the large picture, by click and by keyboard;
    - dragging the 3D view on a phone turns the model without scrolling the
      page;
    - the price and add to cart work.
-5. Screenshot the other product pages before and after. Shared-block hooks
-   must not change them.
-6. Check the collection card: its colours come from `.design-<id>`, and with
+5. Check the collection card: its colours come from `.design-<id>`, and with
    two or more photos it turns through them.
 
 ### Hand-off
@@ -208,8 +197,8 @@ arranges the blocks however the style wants. Restyling works in three steps:
 Tell the owner:
 
 - the design's name and style;
-- which photo goes in which slot;
-- which text fields it adds;
+- which photo should be first (it leads the gallery and the collection
+  card);
 - anything to finish in the admin: real prices, and a GLB if the shape needs
   one.
 
@@ -219,15 +208,9 @@ Tell the owner:
 
 1. **Products → the piece** (or **New product**; save once so photos can be
    uploaded).
-2. **Images and 3D model**: upload the photos. They are numbered; the first
-   leads on the collection card.
-3. **Page design**:
-   - choose the design;
-   - edit the text, keeping to the lengths in each field's hint;
-   - fill in the design's own fields;
-   - for each photo slot, pick a photo by number, or leave it on a drawing.
+2. **Images and 3D model**: upload the photos. They appear in the gallery in
+   this order; **Make first** chooses the one that leads.
+3. **Page design**: choose the design, and write the headline (6 words or
+   fewer) and the introduction (2 sentences at most).
 4. **Save**, then **Preview page**. Set Status to **published** when it is
    right. A piece still on the Draft design cannot be published.
-
-Switching to another design and back keeps everything typed. Removing a
-photo puts any slot that used it back to its drawing.

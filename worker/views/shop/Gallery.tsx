@@ -1,16 +1,13 @@
 // worker/views/shop/Gallery.tsx
 //
-// The storefront. One loud thing — the cover: a night panel in a heavy gilt
-// frame, the first piece engraved on it in foil under a crescent moon — then
-// the collection as square jewel-toned tiles beneath it.
+// The storefront: the collection, straight away, as jewel-toned tiles.
 
 import type { SelectProduct } from "@server/schema/product.schema";
 import { specOf } from "@server/schema/product.schema";
 import type { Category, Selection } from "@server/schema/furniture.config";
 import { resizeParts, standardSelection } from "@server/lib/furniture";
 import { formatPrice } from "@server/lib/money";
-import { CATEGORY_LABELS, IsoDrawing, buttonPrimary, mediaUrl } from "./parts";
-import { CoverFrame, Fleuron, NightSky } from "./ornaments";
+import { CATEGORY_LABELS, IsoDrawing, mediaUrl } from "./parts";
 import { designClass } from "@server/designs/blocks";
 
 export interface GalleryItem {
@@ -20,12 +17,9 @@ export interface GalleryItem {
 
 interface GalleryProps {
   items: GalleryItem[];
-  categories: Category[];
   active: Category | null;
   locale: string;
   currency: string;
-  appName: string;
-  tagline: string;
 }
 
 /**
@@ -36,6 +30,8 @@ interface GalleryProps {
  * cards. Pieces keep their order; the first is always wide.
  */
 export function collectionLayout(count: number): { wide: boolean }[] {
+  // One piece on its own fills the row.
+  if (count === 1) return [{ wide: true }];
   let wideRows = Math.floor(count / 2);
   while (wideRows > 0 && (count - wideRows * 2) % 3 !== 0) wideRows--;
   const plainRows = (count - wideRows * 2) / 3;
@@ -211,134 +207,18 @@ export const GalleryGrid = ({
   );
 };
 
-const FilterLink = ({
-  href,
-  label,
-  current,
-}: {
-  href: string;
-  label: string;
-  current: boolean;
-}) => (
-  <a
-    href={href}
-    aria-current={current ? "page" : undefined}
-    class={`inline-flex h-11 shrink-0 items-center gap-2 text-lg font-semibold italic transition-colors ${
-      current ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-    }`}
-  >
-    {current ? <Fleuron class="h-1.5 w-1.5" /> : null}
-    {label}
-  </a>
-);
-
 /**
- * The cover. The first piece in the collection, drawn in gold foil on a
- * night panel under a crescent moon, inside a heavy gilt frame that draws
- * itself in once, on arrival. It is the only motion on the page.
+ * The home page is the collection, from the top: a short title and the
+ * pieces. Kinds of piece are in the nav, so the page carries no filters.
  */
-const Cover = ({
-  item,
-  locale,
-  currency,
-}: {
-  item: GalleryItem;
-  locale: string;
-  currency: string;
-}) => {
-  const p = item.product;
-  const spec = specOf(p);
-  return (
-    <figure class={`${designClass(p)} mx-auto w-full max-w-md`}>
-      <a
-        href={`/furniture/${p.slug}`}
-        class="group relative block focus:outline-none"
-        aria-label={p.name}
-      >
-        <div class="relative aspect-[4/5] overflow-hidden rounded-sm border-[3px] border-foreground bg-night shadow transition-[transform,box-shadow] duration-300 group-hover:-translate-y-0.5 group-hover:shadow-lg">
-          <div class="absolute inset-x-[18%] top-[12%] h-[24%]">
-            <NightSky />
-          </div>
-          <div class="absolute inset-x-[10%] bottom-[10%] top-[33%] transition-transform duration-700 group-hover:-translate-y-1">
-            <IsoDrawing
-              parts={resizeParts(spec, standardSelection(spec))}
-              size={standardSelection(spec)}
-              foil
-              dims
-            />
-          </div>
-          <CoverFrame ratio={4 / 5} draw />
-        </div>
-      </a>
-      <figcaption class="mt-4 text-center text-base italic text-muted-foreground">
-        <a href={`/furniture/${p.slug}`} class="hover:text-foreground">
-          {p.name}, from {formatPrice(item.fromCents, locale, currency)}
-        </a>
-      </figcaption>
-    </figure>
-  );
-};
-
-export const GalleryPage = (props: GalleryProps) => {
-  const featured = props.items[0];
-  return (
-    <div>
-      {props.active ? null : (
-        <section class="mx-auto grid max-w-6xl items-center gap-14 px-5 pt-12 pb-20 sm:px-8 lg:grid-cols-[1.15fr_1fr] lg:pt-20">
-          <div class="space-y-8">
-            <h1 class="text-[3.4rem] leading-[0.95] sm:text-7xl xl:text-[5.5rem]">
-              Made to measure, meant to outlast you.
-            </h1>
-            <p class="max-w-[34rem] text-xl leading-relaxed text-muted-foreground">
-              Tables, cabinets and shelves built by hand to the size of your room. Turn each piece,
-              change its measurements, and watch the price follow before you commit to a thing.
-            </p>
-            <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
-              <a href="#collection" class={buttonPrimary}>
-                Browse the collection
-              </a>
-              <a
-                href="/made-to-measure"
-                class="inline-flex h-11 items-center text-lg font-semibold italic underline decoration-2 underline-offset-[6px]"
-              >
-                How made to measure works
-              </a>
-            </div>
-          </div>
-          {featured ? (
-            <Cover item={featured} locale={props.locale} currency={props.currency} />
-          ) : null}
-        </section>
-      )}
-
-      <section
-        id="collection"
-        class={`mx-auto max-w-6xl scroll-mt-16 px-5 sm:px-8 ${props.active ? "pt-12 lg:pt-20" : ""}`}
-        aria-labelledby="collection-heading"
-      >
-        <div class="mb-12 flex flex-wrap items-end justify-between gap-x-10 gap-y-4 border-b-[3px] border-foreground pb-4">
-          {props.active ? (
-            <h1 id="collection-heading" class="text-6xl">
-              {CATEGORY_LABELS[props.active]}
-            </h1>
-          ) : (
-            <h2 id="collection-heading" class="font-display text-5xl font-bold leading-none">
-              The collection
-            </h2>
-          )}
-          <nav class="-mb-1 flex max-w-full flex-wrap gap-x-6" aria-label="Filter by kind of piece">
-            <FilterLink href="/" label="Everything" current={props.active === null} />
-            {props.categories.map((cat) => (
-              <FilterLink
-                href={`/?category=${cat}`}
-                label={CATEGORY_LABELS[cat]}
-                current={props.active === cat}
-              />
-            ))}
-          </nav>
-        </div>
-        <GalleryGrid {...props} />
-      </section>
-    </div>
-  );
-};
+export const GalleryPage = (props: GalleryProps) => (
+  <section
+    class="mx-auto max-w-6xl px-5 pt-8 pb-16 sm:px-8 lg:pt-12"
+    aria-labelledby="collection-heading"
+  >
+    <h1 id="collection-heading" class="mb-8 font-display text-3xl font-bold leading-none">
+      {props.active ? CATEGORY_LABELS[props.active] : "The collection"}
+    </h1>
+    <GalleryGrid {...props} />
+  </section>
+);

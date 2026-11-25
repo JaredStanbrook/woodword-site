@@ -9,7 +9,7 @@
 
 import type { Context } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 
 import type { AppEnv } from "../types";
 import { cartItem, type SelectCartItem } from "../schema/shop.schema";
@@ -80,14 +80,15 @@ export async function cartLines(c: Context<AppEnv>, cartId: string | null): Prom
   });
 }
 
-export async function cartCount(c: Context<AppEnv>): Promise<number> {
-  const cartId = readCartId(c);
-  if (!cartId) return 0;
-  const [row] = await c.var.db
-    .select({ count: sql<number>`coalesce(sum(${cartItem.quantity}), 0)` })
-    .from(cartItem)
-    .where(eq(cartItem.cartId, cartId));
-  return Number(row?.count ?? 0);
+/** Pieces in the visitor's cart and what they come to, for the nav. */
+export async function cartSummary(
+  c: Context<AppEnv>,
+): Promise<{ count: number; totalCents: number }> {
+  const lines = await cartLines(c, readCartId(c));
+  return {
+    count: lines.reduce((n, l) => n + l.item.quantity, 0),
+    totalCents: lines.reduce((n, l) => n + l.lineTotalCents, 0),
+  };
 }
 
 /** A published, buyable product by id, or undefined. */
