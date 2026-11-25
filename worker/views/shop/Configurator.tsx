@@ -58,12 +58,16 @@ const DimensionControl = ({
   const label = AXIS_LABEL[axis];
 
   return (
-    <div class="space-y-1" data-dimension={axis}>
+    <div class="space-y-1" data-dimension={axis} data-part="dimension">
       <div class="flex items-baseline justify-between gap-3">
-        <label for={id} class="text-sm font-medium">
+        <label for={id} class="text-sm font-medium" data-part="dimension-label">
           {label}
         </label>
-        <span class="text-xs text-muted-foreground tabular-nums" id={`${id}-range`}>
+        <span
+          class="text-xs text-muted-foreground tabular-nums"
+          id={`${id}-range`}
+          data-part="dimension-range"
+        >
           {fixed ? "Fixed size" : `${dim.min} to ${dim.max} mm, standard ${dim.standard}`}
         </span>
       </div>
@@ -92,7 +96,10 @@ const DimensionControl = ({
             data-number
             class="flex h-11 w-full rounded-sm border-2 border-input bg-background pl-3 pr-12 text-base tabular-nums focus:outline-none focus:ring-2 focus:ring-ring"
           />
-          <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+          <span
+            class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground"
+            data-part="unit"
+          >
             mm
           </span>
         </div>
@@ -132,7 +139,7 @@ export const Breakdown = ({
   locale: string;
   currency: string;
 }) => (
-  <dl class="space-y-1.5 text-sm" data-breakdown>
+  <dl class="space-y-1.5 text-sm" data-breakdown data-part="breakdown-lines">
     {quote.lines.map((line) => (
       <div class="flex justify-between gap-4">
         <dt class="text-muted-foreground">{line.label}</dt>
@@ -168,7 +175,7 @@ export const Configurator = (props: ConfiguratorProps) => {
           <input type="hidden" name="item" value={String(props.editingItemId)} />
         ) : null}
 
-        <fieldset class="space-y-5">
+        <fieldset class="space-y-5" data-part="size">
           {/* The legend names the group for screen readers; on screen the three
               labelled controls say it already. */}
           <legend class="sr-only">Size</legend>
@@ -176,6 +183,7 @@ export const Configurator = (props: ConfiguratorProps) => {
             <button
               type="button"
               data-reset-size
+              data-part="reset"
               class="inline-flex h-11 items-center gap-1.5 normal-case tracking-normal text-sm text-muted-foreground hover:text-foreground"
             >
               <i data-lucide="rotate-ccw" class="h-3.5 w-3.5"></i> Back to the standard size
@@ -187,11 +195,16 @@ export const Configurator = (props: ConfiguratorProps) => {
         </fieldset>
 
         {spec.options.map((group) => (
-          <fieldset class="space-y-3">
-            <legend class="mb-3 text-base font-semibold">{group.label}</legend>
-            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <fieldset class="space-y-3" data-part="option-group">
+            <legend class="mb-3 text-base font-semibold" data-part="option-legend">
+              {group.label}
+            </legend>
+            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2" data-part="choices">
               {group.choices.map((choice) => (
-                <label class="group/choice relative flex min-h-11 cursor-pointer items-center gap-3 rounded-sm border-2 border-foreground/25 px-3 py-2.5 transition-colors hover:border-foreground/60 has-[:checked]:border-foreground has-[:checked]:bg-card has-[:checked]:shadow-sm has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
+                <label
+                  data-part="choice"
+                  class="group/choice relative flex min-h-11 cursor-pointer items-center gap-3 rounded-sm border-2 border-foreground/25 px-3 py-2.5 transition-colors hover:border-foreground/60 has-[:checked]:border-foreground has-[:checked]:bg-card has-[:checked]:shadow-sm has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring"
+                >
                   <input
                     type="radio"
                     name={`o.${group.id}`}
@@ -204,18 +217,26 @@ export const Configurator = (props: ConfiguratorProps) => {
                   {choice.color ? (
                     <span
                       class="h-6 w-6 shrink-0 rounded-full border-2 border-foreground/20"
+                      data-part="swatch"
                       style={`background-color: ${choice.color}`}
                       aria-hidden="true"
                     ></span>
                   ) : null}
                   <span class="min-w-0 flex-1">
-                    <span class="block text-sm font-medium">{choice.label}</span>
+                    <span class="block text-sm font-medium" data-part="choice-name">
+                      {choice.label}
+                    </span>
                     {choice.description ? (
-                      <span class="block text-xs text-muted-foreground">{choice.description}</span>
+                      <span class="block text-xs text-muted-foreground" data-part="choice-note">
+                        {choice.description}
+                      </span>
                     ) : null}
                   </span>
                   {choice.priceCents ? (
-                    <span class="shrink-0 text-xs text-muted-foreground tabular-nums">
+                    <span
+                      class="shrink-0 text-xs text-muted-foreground tabular-nums"
+                      data-part="choice-price"
+                    >
                       {choice.priceCents > 0 ? "+" : "−"}
                       {formatPrice(Math.abs(choice.priceCents), locale, currency)}
                     </span>
@@ -240,12 +261,14 @@ export const Configurator = (props: ConfiguratorProps) => {
         <section
           class="on-night space-y-5 rounded-sm border-[3px] border-night p-6"
           aria-label="Price"
+          data-part="price-panel"
         >
           {/* The workshop drawing of exactly this configuration, redrawn by
               <furniture-configurator> on every change. */}
           <div
             class="-mx-2 aspect-[16/10]"
             data-live-drawing
+            data-part="live-drawing"
             dangerouslySetInnerHTML={{
               __html: isoSvg(resizeParts(spec, selection), {
                 dims: true,
@@ -255,15 +278,15 @@ export const Configurator = (props: ConfiguratorProps) => {
             }}
           ></div>
           <div>
-            <p class="font-serif text-6xl font-semibold text-gilt">
+            <p class="font-serif text-6xl font-semibold text-gilt" data-part="price">
               <RollingPrice cents={quote.totalCents} locale={locale} currency={currency} />
             </p>
-            <p class="mt-2 text-sm text-muted-foreground" data-custom-label>
+            <p class="mt-2 text-sm text-muted-foreground" data-custom-label data-part="price-note">
               {quote.custom ? "Made to your size" : "The standard size"}
             </p>
           </div>
 
-          <details class="group border-t-2 pt-4">
+          <details class="group border-t-2 pt-4" data-part="breakdown">
             <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between text-sm font-medium [&::-webkit-details-marker]:hidden">
               How this price is made up
               <i
@@ -276,19 +299,22 @@ export const Configurator = (props: ConfiguratorProps) => {
             </div>
           </details>
 
-          <p class="flex items-start gap-2 border-t-2 pt-4 text-sm">
+          <p class="flex items-start gap-2 border-t-2 pt-4 text-sm" data-part="lead">
             <i data-lucide="clock" class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"></i>
             <span>
               <span data-lead-label>{leadTimeLabel(quote.leadDays)}</span>
-              <span class="block text-xs text-muted-foreground">
+              <span class="block text-xs text-muted-foreground" data-part="lead-note">
                 Delivery is arranged once it is finished. Custom sizes take longer to make.
               </span>
             </span>
           </p>
 
           {props.purchasable ? (
-            <div class="flex flex-col gap-3 border-t-2 pt-5 sm:flex-row sm:items-center">
-              <label class="flex items-center gap-2 text-sm">
+            <div
+              class="flex flex-col gap-3 border-t-2 pt-5 sm:flex-row sm:items-center"
+              data-part="buy"
+            >
+              <label class="flex items-center gap-2 text-sm" data-part="qty">
                 <span class="text-muted-foreground">Qty</span>
                 <input
                   type="number"
@@ -300,18 +326,22 @@ export const Configurator = (props: ConfiguratorProps) => {
                   class="h-11 w-20 rounded-sm border-2 border-input bg-background px-3 text-base tabular-nums focus:outline-none focus:ring-2 focus:ring-ring"
                 />
               </label>
-              <button type="submit" class={`${buttonPrimary} w-full sm:w-auto sm:flex-1`}>
+              <button
+                type="submit"
+                class={`${buttonPrimary} w-full sm:w-auto sm:flex-1`}
+                data-part="add"
+              >
                 <i data-lucide="shopping-bag" class="h-4 w-4"></i>
                 {props.editingItemId ? "Update cart" : "Add to cart"}
               </button>
             </div>
           ) : (
-            <p class="border-t-2 pt-5 text-sm text-muted-foreground">
+            <p class="border-t-2 pt-5 text-sm text-muted-foreground" data-part="unavailable">
               This piece is not available to order at the moment.
             </p>
           )}
 
-          <div class="flex flex-wrap gap-2 border-t-2 pt-4" id="save-design">
+          <div class="flex flex-wrap gap-2 border-t-2 pt-4" id="save-design" data-part="save">
             <button
               type="submit"
               formaction="/designs"

@@ -103,7 +103,11 @@ export const Viewer = ({
   selection: Selection;
   class?: string;
 }) => (
-  <furniture-viewer class={`relative block overflow-hidden bg-product-wash ${cls}`} data-viewer>
+  <furniture-viewer
+    class={`relative block overflow-hidden bg-product-wash ${cls}`}
+    data-viewer
+    data-part="viewer"
+  >
     {/* Never catches a pointer: once the 3D view loads underneath, a drag
         has to reach its canvas, and an invisible element still takes touches. */}
     <div
@@ -173,7 +177,7 @@ export const PhotoGrid = ({
   );
 
 export const DimensionTable = ({ product }: { product: SelectProduct }) => (
-  <div class="overflow-x-auto">
+  <div class="overflow-x-auto" data-part="sizes">
     <table class="w-full text-sm tabular-nums">
       <caption class="sr-only">Standard size and the range it can be made in</caption>
       <thead>
@@ -222,7 +226,7 @@ export const Paragraphs = ({ text, class: cls = "" }: { text: string; class?: st
 
 export const CareNote = ({ product }: { product: SelectProduct }) =>
   product.design.care ? (
-    <div class="space-y-2">
+    <div class="space-y-2" data-part="care">
       <h2 class="font-heading text-lg">Living with it</h2>
       <Paragraphs
         text={product.design.care}

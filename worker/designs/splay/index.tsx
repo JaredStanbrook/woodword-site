@@ -1,12 +1,20 @@
 // worker/designs/splay/index.tsx
 //
-// Splay, made for the oak console with legs that lean out both ways. The
-// piece goes from a tin shed to a plastered hallway, and the page follows it:
-// the hero is plaster, its photo cut to the console's own splayed outline;
-// the workshop photos are prints pinned over shed pavers; every section is
-// marked by a leg set at the splay.
+// Splay, for the oak console with legs that lean out both ways.
+//
+// Maximalism, built from what is in the photos: the blue kayak and tarp, the
+// yellow buoys, the chintz teapot, the matryoshka dolls, the green tub, the
+// cane lamp shade and the shed's pavers. Pattern on pattern, colour on
+// colour, flowers stuck over everything, and very few words.
+//
+// Every element is this design's own. The shared blocks (viewer,
+// configurator, sizes, care) keep their markup and behaviour; design.css
+// restyles them through their data-part hooks.
 
 import type { FC } from "hono/jsx";
+import { specOf } from "@server/schema/product.schema";
+import { startingPrice } from "@server/lib/furniture";
+import { formatPrice } from "@server/lib/money";
 import {
   AvailabilityBadge,
   CareNote,
@@ -20,154 +28,152 @@ import type { DesignDef, DesignProps, SlotDef } from "../types";
 
 const HOME: SlotDef = {
   key: "photo1",
-  label: "Photo 1: the piece at home, beside the name (portrait)",
+  label: "Photo 1: the piece at home, in the big frame (portrait)",
   fallback: "measured",
 };
-const SHED_A: SlotDef = {
+const DETAIL: SlotDef = {
   key: "photo2",
-  label: "Photo 2: first workshop print",
+  label: "Photo 2: a close detail, in the round medallion",
+  fallback: "foil",
+};
+const SHED_A: SlotDef = {
+  key: "photo3",
+  label: "Photo 3: first workshop snapshot",
   fallback: "line",
 };
 const SHED_B: SlotDef = {
-  key: "photo3",
-  label: "Photo 3: second workshop print",
-  fallback: "foil",
-};
-const DETAIL: SlotDef = {
   key: "photo4",
-  label: "Photo 4: a close detail (grain, a joint, an edge) beside the story",
-  fallback: "measured",
+  label: "Photo 4: second workshop snapshot",
+  fallback: "line",
 };
 
-/** The console seen end-on: a top, two legs leaning out. Decoration only. */
-const SplayMark = ({ class: cls = "" }: { class?: string }) => (
-  <svg
-    viewBox="0 0 64 40"
-    class={cls}
-    aria-hidden="true"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="3"
-    stroke-linecap="square"
-  >
-    <path d="M6 4h52M16 4 10 38M48 4l6 34M13 24h38" />
+/** A chintz flower, like the ones on the teapot. Decoration only. */
+const Bloom = ({ class: cls = "", petal = "var(--sp-poppy)", heart = "var(--sp-marigold)" }) => (
+  <svg viewBox="0 0 100 100" class={`sp-bloom ${cls}`} aria-hidden="true">
+    <path d="M50 52 C30 70 14 88 6 96 C24 92 40 78 50 52Z" fill="var(--sp-leaf)" />
+    <path d="M52 50 C72 66 88 70 98 66 C90 52 74 44 52 50Z" fill="var(--sp-leaf)" />
+    {[0, 72, 144, 216, 288].map((r) => (
+      <ellipse
+        cx="50"
+        cy="27"
+        rx="15"
+        ry="22"
+        fill={petal}
+        stroke="var(--sp-ink)"
+        stroke-width="3"
+        transform={`rotate(${r} 50 50)`}
+      />
+    ))}
+    <circle cx="50" cy="50" r="13" fill={heart} stroke="var(--sp-ink)" stroke-width="3" />
+    <circle cx="50" cy="50" r="4" fill="var(--sp-ink)" />
   </svg>
 );
 
 const Splay: FC<DesignProps> = (props) => {
-  const { product: p, selection } = props;
+  const { product: p, selection, locale, currency } = props;
   const d = p.design;
   const x = d.extra ?? {};
+  const from = formatPrice(startingPrice(specOf(p)), locale, currency);
   return (
     <div class="splay">
-      <section class="splay-plaster border-b-[3px] border-foreground">
-        <div class="mx-auto grid max-w-7xl lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-          <div class="px-4 pt-6 sm:px-6 lg:py-12 lg:pl-8">
-            <Photo
-              product={p}
-              selection={selection}
-              slot={HOME}
-              eager
-              class="splay-outline aspect-[4/5] w-full lg:aspect-auto lg:h-full lg:min-h-[38rem]"
-            />
-          </div>
-          <header class="flex min-w-0 flex-col justify-end gap-6 px-5 pt-8 pb-12 sm:px-10 lg:py-16">
+      <section class="sp-hero">
+        <Bloom class="sp-bloom-a" />
+        <Bloom class="sp-bloom-b" petal="var(--sp-pink)" />
+        <Bloom class="sp-bloom-c" petal="var(--sp-marigold)" heart="var(--sp-poppy)" />
+        <div class="sp-hero-grid">
+          <div class="sp-hero-title">
             <AvailabilityBadge availability={p.availability} />
-            <h1 class="break-words text-6xl leading-[0.9] sm:text-7xl xl:text-8xl">{p.name}</h1>
-            <p class="flex items-center gap-3 text-base italic text-muted-foreground">
-              <SplayMark class="h-6 w-10 shrink-0 text-foreground" />
-              <span>{x.splay_note || "Legs splayed outward, both ways"}</span>
-            </p>
-            {d.headline ? (
-              <p class="max-w-xl font-heading text-2xl leading-snug">{d.headline}</p>
-            ) : null}
-            <p class="max-w-xl text-lg leading-relaxed text-muted-foreground">
-              {d.intro || p.summary}
-            </p>
-          </header>
-        </div>
-      </section>
-
-      <section class="mx-auto max-w-7xl px-4 pt-14 sm:px-6 lg:pt-20" aria-label="Size and order">
-        <div class="grid gap-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-14">
-          <div class="lg:sticky lg:top-8 lg:self-start">
-            <Viewer
-              product={p}
-              selection={selection}
-              class="aspect-[4/3] rounded-sm border-[3px] border-foreground"
-            />
+            <h1 class="sp-name">{p.name}</h1>
+            {d.headline ? <p class="sp-ribbon">{d.headline}</p> : null}
           </div>
-          <Configurator {...props} />
-        </div>
-      </section>
-
-      <section class="splay-pavers mt-20 border-y-[3px] border-foreground">
-        <div class="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
-          <h2 class="splay-leg font-heading text-4xl leading-tight sm:text-5xl">
-            {x.shed_heading || "From the shed"}
-          </h2>
-          <div class="mt-12 grid gap-12 sm:grid-cols-2 sm:gap-10">
-            <div class="splay-print splay-print-a">
-              <Photo product={p} selection={selection} slot={SHED_A} class="aspect-[3/4]" />
-            </div>
-            <div class="splay-print splay-print-b sm:mt-16">
-              <Photo product={p} selection={selection} slot={SHED_B} class="aspect-[3/4]" />
+          <div class="sp-frame">
+            <Photo product={p} selection={selection} slot={HOME} eager class="sp-frame-photo" />
+          </div>
+          <div class="sp-hero-side">
+            <p class="sp-intro">{d.intro || p.summary}</p>
+            <div class="sp-hero-badges">
+              <div class="sp-medallion">
+                <Photo product={p} selection={selection} slot={DETAIL} class="sp-medallion-photo" />
+              </div>
+              <a href="#sp-build" class="sp-burst">
+                <span class="sp-burst-from">from</span>
+                <span class="sp-burst-price">{from}</span>
+              </a>
             </div>
           </div>
-          {x.shed_note ? (
-            <div class="splay-plaster mt-12 max-w-2xl space-y-3 border-2 border-foreground px-5 py-4 text-lg italic leading-relaxed">
-              <Paragraphs text={x.shed_note} />
-            </div>
-          ) : null}
         </div>
       </section>
 
-      <section class="mx-auto grid max-w-7xl gap-12 px-4 pt-20 sm:px-6 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-16">
-        <div class="md:sticky md:top-8 md:self-start">
-          <Photo
-            product={p}
-            selection={selection}
-            slot={DETAIL}
-            class="splay-outline aspect-[4/5] w-full"
-          />
-        </div>
-        <div class="space-y-12">
-          {d.story.map((s) => (
-            <article class="splay-step space-y-3">
-              <h2 class="font-heading text-2xl">{s.heading}</h2>
-              <Paragraphs text={s.body} class="text-lg leading-relaxed text-muted-foreground" />
-            </article>
-          ))}
-          {p.description ? (
-            <div class="space-y-4">
-              <Paragraphs
-                text={p.description}
-                class="text-lg leading-relaxed text-muted-foreground"
-              />
-            </div>
-          ) : null}
+      <section id="sp-build" class="sp-build" aria-labelledby="sp-build-title">
+        <Bloom class="sp-bloom-d" petal="var(--sp-pink)" />
+        <h2 id="sp-build-title" class="sp-h2">
+          Make it fit
+        </h2>
+        <div class="sp-build-grid">
+          <div class="sp-viewer-frame">
+            <Viewer product={p} selection={selection} class="sp-viewer" />
+          </div>
+          <div class="sp-config">
+            <Configurator {...props} />
+          </div>
         </div>
       </section>
 
-      <section class="mx-auto mt-20 max-w-7xl px-4 sm:px-6">
+      <section class="sp-shed" aria-labelledby="sp-shed-title">
+        <h2 id="sp-shed-title" class="sp-h2 sp-h2-light">
+          {x.shed_heading || "From the shed"}
+        </h2>
+        <div class="sp-snaps">
+          <div class="sp-snap sp-snap-a">
+            <Photo product={p} selection={selection} slot={SHED_A} class="sp-snap-photo" />
+          </div>
+          <div class="sp-snap sp-snap-b">
+            <Photo product={p} selection={selection} slot={SHED_B} class="sp-snap-photo" />
+          </div>
+        </div>
+        {x.shed_note ? (
+          <div class="sp-tape">
+            <Paragraphs text={x.shed_note} />
+          </div>
+        ) : null}
+      </section>
+
+      <section class="sp-facts" aria-label="About this piece">
         {d.highlights.length ? (
-          <dl class="grid border-t-[3px] border-foreground sm:grid-cols-2 lg:grid-cols-4">
+          <dl class="sp-tiles">
             {d.highlights.map((h) => (
-              <div class="splay-tally border-b-2 py-5 sm:pr-6">
-                <dt class="text-sm italic text-muted-foreground">{h.label}</dt>
-                <dd class="mt-1 font-heading text-xl">{h.value}</dd>
+              <div class="sp-tile">
+                <dt>{h.label}</dt>
+                <dd>{h.value}</dd>
               </div>
             ))}
           </dl>
         ) : null}
-        <div class="mt-14 grid gap-12 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-          <div class="min-w-0 space-y-4">
-            <h2 class="font-heading text-2xl">Sizes it can be built in</h2>
+        {d.story.length || p.description ? (
+          <div class="sp-blobs">
+            {d.story.map((s) => (
+              <article class="sp-blob">
+                <h2>{s.heading}</h2>
+                <Paragraphs text={s.body} />
+              </article>
+            ))}
+            {p.description ? (
+              <div class="sp-blob">
+                <Paragraphs text={p.description} />
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+        <div class="sp-last">
+          <div class="sp-ticket">
+            <h2>Sizes</h2>
             <DimensionTable product={p} />
           </div>
-          <div class="splay-plaster self-start border-[3px] border-foreground p-6 sm:p-8">
-            <CareNote product={p} />
-          </div>
+          {d.care ? (
+            <div class="sp-care">
+              <CareNote product={p} />
+            </div>
+          ) : null}
         </div>
       </section>
     </div>
@@ -177,34 +183,36 @@ const Splay: FC<DesignProps> = (props) => {
 export const splay: DesignDef = {
   id: "splay",
   name: "Splay",
-  note: "Plaster and shed pavers, photos cut to a splayed outline. Made for the oak console.",
+  note: "Maximalist: cobalt cane weave, chintz flowers, candy colours. Made for the oak console.",
   view: Splay,
   labels: {
-    story: { hint: "Each section is marked by a leaning leg. Two or three read best." },
-    highlights: { hint: "Four fit in one row on a wide screen. One per line, as Label: Value." },
+    headline: { label: "Ribbon", hint: "On the red ribbon under the name. 6 words or fewer." },
+    intro: { hint: "On the cream card. 2 sentences, 25 words or fewer." },
+    story: {
+      label: "Story blobs",
+      hint: "Up to 3. Start each with '# ' and a 2–3 word heading, then 1 sentence.",
+    },
+    highlights: {
+      label: "Tiles",
+      hint: "3 or 4, one per line as Label: Value. Values of 3 words or fewer.",
+    },
+    care: { hint: "1 sentence, on the pink sticker." },
   },
   extra: [
     {
-      key: "splay_note",
-      label: "Line beside the splay mark",
-      hint: "Under the name. Empty: 'Legs splayed outward, both ways'.",
-      rows: 1,
-      max: 80,
-    },
-    {
       key: "shed_heading",
-      label: "Workshop band heading",
-      hint: "Over the two workshop prints. Empty: 'From the shed'.",
+      label: "Workshop heading",
+      hint: "Over the workshop snapshots, 3 words or fewer. Empty: 'From the shed'.",
       rows: 1,
-      max: 60,
+      max: 40,
     },
     {
       key: "shed_note",
-      label: "Workshop band caption",
-      hint: "Under the prints. Leave empty to show none.",
-      rows: 3,
-      max: 600,
+      label: "Workshop caption",
+      hint: "One line on the tape under the snapshots. Leave empty for none.",
+      rows: 1,
+      max: 120,
     },
   ],
-  photos: [HOME, SHED_A, SHED_B, DETAIL],
+  photos: [HOME, DETAIL, SHED_A, SHED_B],
 };

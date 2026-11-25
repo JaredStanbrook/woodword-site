@@ -46,6 +46,8 @@ export const AvailabilityBadge = ({ availability }: { availability: Availability
   return (
     <span
       class={`inline-flex items-center rounded-sm border-2 px-2 py-0.5 text-sm italic ${style.class}`}
+      data-part="availability"
+      data-availability={availability}
     >
       {style.label}
     </span>

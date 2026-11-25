@@ -2,14 +2,14 @@
 @import "tw-animate-css";
 
 /* Product page designs, one stylesheet per piece (worker/designs/). Each is
-   scoped to .design-<id> and sits in the components layer, so a utility class
-   on an element still wins over a design's own rule. */
-@import "./designs/draft/design.css" layer(components);
-@import "./designs/nord/design.css" layer(components);
-@import "./designs/hearth/design.css" layer(components);
-@import "./designs/grid/design.css" layer(components);
-@import "./designs/settle/design.css" layer(components);
-@import "./designs/splay/design.css" layer(components);
+   scoped to .design-<id> and sits in the "designs" layer, declared after
+   Tailwind's, so a design can restyle the shared blocks, utilities and all. */
+@import "./designs/draft/design.css" layer(designs);
+@import "./designs/nord/design.css" layer(designs);
+@import "./designs/hearth/design.css" layer(designs);
+@import "./designs/grid/design.css" layer(designs);
+@import "./designs/settle/design.css" layer(designs);
+@import "./designs/splay/design.css" layer(designs);
 
 /* THEME: "Candlelight"
    One theme, made for this shop rather than a light or dark mode: a room lit
@@ -164,21 +164,23 @@
 /* A night panel inside the dusk page. Remaps the tokens, so anything inside
    — muted text, rules, fields, hovers — reads correctly without per-element
    overrides. */
-.on-night {
-  --background: oklch(0.31 0.045 32);
-  --foreground: oklch(0.96 0.02 80);
-  --card: oklch(0.31 0.045 32);
-  --card-foreground: oklch(0.96 0.02 80);
-  --muted: oklch(0.31 0.045 32);
-  --muted-foreground: oklch(0.84 0.035 75);
-  --accent: oklch(0.36 0.05 32);
-  --accent-foreground: oklch(0.96 0.02 80);
-  --border: oklch(0.48 0.05 35);
-  --input: oklch(0.64 0.05 40);
-  --ring: oklch(0.8 0.12 82);
-  --shadow-ink: oklch(0.15 0.03 32);
-  background-color: var(--night);
-  color: var(--foreground);
+@layer components {
+  .on-night {
+    --background: oklch(0.31 0.045 32);
+    --foreground: oklch(0.96 0.02 80);
+    --card: oklch(0.31 0.045 32);
+    --card-foreground: oklch(0.96 0.02 80);
+    --muted: oklch(0.31 0.045 32);
+    --muted-foreground: oklch(0.84 0.035 75);
+    --accent: oklch(0.36 0.05 32);
+    --accent-foreground: oklch(0.96 0.02 80);
+    --border: oklch(0.48 0.05 35);
+    --input: oklch(0.64 0.05 40);
+    --ring: oklch(0.8 0.12 82);
+    --shadow-ink: oklch(0.15 0.03 32);
+    background-color: var(--night);
+    color: var(--foreground);
+  }
 }
 
 @theme inline {
@@ -310,159 +312,164 @@
 /* ISOMETRIC LINE DRAWING (lib/furniture.ts isoDrawing)
    An engraving: gilt lines over faces shaded from the page's product wash, so
    at night it reads as gold foil on a dark cover. */
-.iso-drawing polygon {
-  stroke: var(--gilt);
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-.iso-drawing .iso-top {
-  fill: color-mix(in oklch, var(--product) 22%, var(--product-wash));
-}
-.iso-drawing .iso-left {
-  fill: color-mix(in oklch, var(--product) 40%, var(--product-wash));
-}
-.iso-drawing .iso-right {
-  fill: color-mix(in oklch, var(--product) 58%, var(--product-wash));
-}
-.iso-drawing .iso-metal {
-  fill: color-mix(in oklch, var(--gilt) 60%, var(--product-wash));
-}
-.iso-drawing .iso-glass {
-  fill: color-mix(in oklch, var(--chart-4) 25%, var(--product-wash));
-  fill-opacity: 0.6;
-}
-.iso-drawing .iso-accent.iso-top {
-  fill: color-mix(in oklch, var(--foreground) 14%, var(--product-wash));
-}
-.iso-drawing .iso-accent.iso-left {
-  fill: color-mix(in oklch, var(--foreground) 26%, var(--product-wash));
-}
-.iso-drawing .iso-accent.iso-right {
-  fill: color-mix(in oklch, var(--foreground) 38%, var(--product-wash));
-}
-/* Dimension lines and figures: bone on the dark panels the drawings sit on,
+/* Shared block styles sit in the components layer, so a product design
+   (layer "designs", worker/designs/) can restyle them. */
+@layer components {
+  .iso-drawing polygon {
+    stroke: var(--gilt);
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+  .iso-drawing .iso-top {
+    fill: color-mix(in oklch, var(--product) 22%, var(--product-wash));
+  }
+  .iso-drawing .iso-left {
+    fill: color-mix(in oklch, var(--product) 40%, var(--product-wash));
+  }
+  .iso-drawing .iso-right {
+    fill: color-mix(in oklch, var(--product) 58%, var(--product-wash));
+  }
+  .iso-drawing .iso-metal {
+    fill: color-mix(in oklch, var(--gilt) 60%, var(--product-wash));
+  }
+  .iso-drawing .iso-glass {
+    fill: color-mix(in oklch, var(--chart-4) 25%, var(--product-wash));
+    fill-opacity: 0.6;
+  }
+  .iso-drawing .iso-accent.iso-top {
+    fill: color-mix(in oklch, var(--foreground) 14%, var(--product-wash));
+  }
+  .iso-drawing .iso-accent.iso-left {
+    fill: color-mix(in oklch, var(--foreground) 26%, var(--product-wash));
+  }
+  .iso-drawing .iso-accent.iso-right {
+    fill: color-mix(in oklch, var(--foreground) 38%, var(--product-wash));
+  }
+  /* Dimension lines and figures: bone on the dark panels the drawings sit on,
    set in the book face's italic, like pencil on a workshop sketch. */
-.iso-drawing .iso-dims {
-  color: color-mix(in oklch, var(--night-foreground) 78%, transparent);
-}
-.iso-drawing .iso-dims-text {
-  color: var(--night-foreground);
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 600;
-  font-variant-numeric: lining-nums;
-}
-/* Line only: gold foil on the cover, no fill. */
-.iso-drawing.iso-foil polygon {
-  fill: transparent;
-}
+  .iso-drawing .iso-dims {
+    color: color-mix(in oklch, var(--night-foreground) 78%, transparent);
+  }
+  .iso-drawing .iso-dims-text {
+    color: var(--night-foreground);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 600;
+    font-variant-numeric: lining-nums;
+  }
+  /* Line only: gold foil on the cover, no fill. */
+  .iso-drawing.iso-foil polygon {
+    fill: transparent;
+  }
 
-/* The cover's gilt frame draws itself in, once, on arrival. */
-@keyframes draw-in {
-  from {
-    stroke-dashoffset: 1;
+  /* The cover's gilt frame draws itself in, once, on arrival. */
+  @keyframes draw-in {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
   }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-.draw-in {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: draw-in 2.4s cubic-bezier(0.6, 0, 0.2, 1) 0.2s forwards;
-}
-@media (prefers-reduced-motion: reduce) {
   .draw-in {
-    animation: none;
-    stroke-dashoffset: 0;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw-in 2.4s cubic-bezier(0.6, 0, 0.2, 1) 0.2s forwards;
   }
-}
+  @media (prefers-reduced-motion: reduce) {
+    .draw-in {
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+  }
 
-/* ROLLING PRICE (components/shop/RollingPrice.ts)
+  /* ROLLING PRICE (components/shop/RollingPrice.ts)
    Each digit is a column of 0–9 moved by translateY. The readable price sits
    beside it in an sr-only live region; this is decoration over the top. */
-.price-roll {
-  /* Taller than 1em: a display face's figures overshoot the em box, and a
+  .price-roll {
+    /* Taller than 1em: a display face's figures overshoot the em box, and a
      1em window clips their tops mid-roll. */
-  --roll-h: 1.2em;
-  display: inline-flex;
-  align-items: baseline;
-  font-variant-numeric: tabular-nums lining-nums;
-  line-height: var(--roll-h);
-}
-.price-roll .digit {
-  display: inline-block;
-  height: var(--roll-h);
-  overflow: hidden;
-  position: relative;
-}
-.price-roll .digit > span {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: transform 650ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.price-roll .digit > span > span {
-  height: var(--roll-h);
-  line-height: var(--roll-h);
-}
-@media (prefers-reduced-motion: reduce) {
-  .price-roll .digit > span {
-    transition: none;
+    --roll-h: 1.2em;
+    display: inline-flex;
+    align-items: baseline;
+    font-variant-numeric: tabular-nums lining-nums;
+    line-height: var(--roll-h);
   }
+  .price-roll .digit {
+    display: inline-block;
+    height: var(--roll-h);
+    overflow: hidden;
+    position: relative;
+  }
+  .price-roll .digit > span {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 650ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .price-roll .digit > span > span {
+    height: var(--roll-h);
+    line-height: var(--roll-h);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .price-roll .digit > span {
+      transition: none;
+    }
+  }
+
+  /* A range slider styled from tokens. The native one ignores the theme. */
+  input[type="range"].slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 2.75rem;
+    background: transparent;
+    cursor: pointer;
+  }
+  input[type="range"].slider::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(
+      to right,
+      var(--foreground) 0 var(--fill, 50%),
+      color-mix(in oklch, var(--foreground) 25%, transparent) var(--fill, 50%) 100%
+    );
+  }
+  input[type="range"].slider::-moz-range-track {
+    height: 6px;
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--foreground) 25%, transparent);
+  }
+  input[type="range"].slider::-moz-range-progress {
+    height: 6px;
+    background: var(--foreground);
+  }
+  input[type="range"].slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    margin-top: -8px;
+    height: 22px;
+    width: 22px;
+    rotate: 45deg;
+    border-radius: 2px;
+    background: var(--card);
+    border: 3px solid var(--foreground);
+    box-shadow: var(--shadow-sm);
+  }
+  input[type="range"].slider::-moz-range-thumb {
+    height: 16px;
+    width: 16px;
+    rotate: 45deg;
+    border-radius: 2px;
+    background: var(--card);
+    border: 3px solid var(--foreground);
+  }
+  input[type="range"].slider:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Container for scrolling text */
 }
 
-/* A range slider styled from tokens. The native one ignores the theme. */
-input[type="range"].slider {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 2.75rem;
-  background: transparent;
-  cursor: pointer;
-}
-input[type="range"].slider::-webkit-slider-runnable-track {
-  height: 6px;
-  border-radius: 999px;
-  background: linear-gradient(
-    to right,
-    var(--foreground) 0 var(--fill, 50%),
-    color-mix(in oklch, var(--foreground) 25%, transparent) var(--fill, 50%) 100%
-  );
-}
-input[type="range"].slider::-moz-range-track {
-  height: 6px;
-  border-radius: 999px;
-  background: color-mix(in oklch, var(--foreground) 25%, transparent);
-}
-input[type="range"].slider::-moz-range-progress {
-  height: 6px;
-  background: var(--foreground);
-}
-input[type="range"].slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  margin-top: -8px;
-  height: 22px;
-  width: 22px;
-  rotate: 45deg;
-  border-radius: 2px;
-  background: var(--card);
-  border: 3px solid var(--foreground);
-  box-shadow: var(--shadow-sm);
-}
-input[type="range"].slider::-moz-range-thumb {
-  height: 16px;
-  width: 16px;
-  rotate: 45deg;
-  border-radius: 2px;
-  background: var(--card);
-  border: 3px solid var(--foreground);
-}
-input[type="range"].slider:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-}
-
-/* Container for scrolling text */
 .scroll-text-container {
   width: 100%;
   overflow: hidden;

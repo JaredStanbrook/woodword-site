@@ -5,6 +5,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import postcss from "postcss";
 
 import { CATALOGUE } from "../worker/config/catalogue";
 import { DESIGNS } from "../worker/designs";
@@ -99,22 +100,30 @@ describe("page designs", () => {
     const site = readFileSync(join(__dirname, "../worker/index.css"), "utf8");
     for (const id of designIds) {
       expect(site, `${id} imported`).toContain(
-        `@import "./designs/${id}/design.css" layer(components);`,
+        `@import "./designs/${id}/design.css" layer(designs);`,
       );
-      const css = readFileSync(join(DESIGN_DIR, id, "design.css"), "utf8")
-        .replace(/\/\*[\s\S]*?\*\//g, "")
-        // Drop declaration blocks, leaving only selectors.
-        .replace(/\{[^{}]*\}/g, "\n");
-      const selectors = css
-        .split(/[\n,]/)
-        .map((s) => s.trim())
-        .filter(Boolean);
-      expect(selectors.length, `${id} has rules`).toBeGreaterThan(0);
-      for (const sel of selectors) {
-        expect(sel, `${id}: every rule stays under .design-${id}`).toMatch(
-          new RegExp(`^\\.design-${id}(?![\\w-])`),
+      // Rules sit under .design-<id>; the only at-rules allowed are fonts,
+      // media and supports queries, and keyframes named for the design.
+      const root = postcss.parse(readFileSync(join(DESIGN_DIR, id, "design.css"), "utf8"));
+      let rules = 0;
+      root.walkAtRules((at) => {
+        expect(["font-face", "media", "supports", "keyframes"], `${id}: @${at.name}`).toContain(
+          at.name,
         );
-      }
+        if (at.name === "keyframes")
+          expect(at.params, `${id}: keyframes name`).toMatch(new RegExp(`^${id}-`));
+      });
+      root.walkRules((rule) => {
+        if (rule.parent?.type === "atrule" && (rule.parent as postcss.AtRule).name === "keyframes")
+          return;
+        rules++;
+        for (const sel of rule.selectors) {
+          expect(sel, `${id}: every rule stays under .design-${id}`).toMatch(
+            new RegExp(`^\\.design-${id}(?![\\w-])`),
+          );
+        }
+      });
+      expect(rules, `${id} has rules`).toBeGreaterThan(0);
     }
   });
 

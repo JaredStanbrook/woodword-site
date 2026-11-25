@@ -1,100 +1,896 @@
-/* worker/designs/splay/design.css — Splay.
-   Sampled from the photos: oiled oak, the hallway's warm plaster, the blue-
-   grey of the shed's pavers. The motif is the console's outline: narrow at
-   the top, wider at the floor, the legs leaning out at about seven degrees.
+/* worker/designs/splay/design.css — Splay, maximalist.
+   Everything is pulled from the photos: kayak cobalt, buoy marigold, the
+   teapot's chintz poppies, matryoshka pink, the green tub, cane from the
+   lamp shade, oak. Two faces of its own: Shrikhand, fat and folksy, for the
+   name, headings and numbers; Bricolage Grotesque for everything read.
    Every rule stays under .design-splay. */
+
+@font-face {
+  font-family: "Shrikhand";
+  src: url("/fonts/shrikhand-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/fonts/bricolage-grotesque-var.woff2") format("woff2-variations");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* The piece anywhere in the shop (collection card, cart line). */
 .design-splay {
-  --product: oklch(0.6 0.11 62);
-  --product-foreground: oklch(0.2 0.04 40);
-  --product-wash: oklch(0.3 0.045 52);
-  --product-ink: oklch(0.36 0.08 55);
-  --font-heading: var(--font-modern);
-
-  --splay-plaster: oklch(0.95 0.014 85);
-  --splay-paver: oklch(0.83 0.016 235);
-  --splay-joint: oklch(0.72 0.02 235);
-  --splay-print: oklch(0.985 0.006 85);
-  /* How far each side leans in over the height of a photo. */
-  --splay-in: 6%;
+  --product: #f6b90e;
+  --product-foreground: #1a1640;
+  --product-wash: #142c7a;
+  --product-ink: #e8452c;
 }
 
-.design-splay .splay-plaster {
-  background-color: var(--splay-plaster);
-}
+/* ==========================================
+   THE PAGE
+   ========================================== */
 
-/* The console's silhouette: narrower at the top, wider at the foot. */
-.design-splay .splay-outline {
-  clip-path: polygon(var(--splay-in) 0, calc(100% - var(--splay-in)) 0, 100% 100%, 0 100%);
-}
+.design-splay .splay {
+  --sp-cobalt: #1d3fae;
+  --sp-cobalt-deep: #142c7a;
+  --sp-marigold: #f6b90e;
+  --sp-poppy: #e8452c;
+  --sp-pink: #ef5d9c;
+  --sp-leaf: #2e9f5b;
+  --sp-cream: #fbf1dc;
+  --sp-cane: #e9c98a;
+  --sp-oak: #b5732f;
+  --sp-ink: #1a1640;
+  --sp-display: "Shrikhand", "Cooper Black", Georgia, serif;
+  --sp-text: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
 
-/* The shed floor: pavers laid in a grid, joints in a darker grey. */
-.design-splay .splay-pavers {
-  background-color: var(--splay-paver);
-  background-image:
-    linear-gradient(var(--splay-joint) 2px, transparent 2px),
-    linear-gradient(90deg, var(--splay-joint) 2px, transparent 2px);
-  background-size: 9rem 6rem;
-  background-position: -1px -1px;
-}
+  /* The shared blocks read these. */
+  --background: var(--sp-cream);
+  --foreground: var(--sp-ink);
+  --card: #fff8ea;
+  --card-foreground: var(--sp-ink);
+  --muted: #f3e3c3;
+  --muted-foreground: #47406f;
+  --accent: #ffe3a3;
+  --accent-foreground: var(--sp-ink);
+  --border: var(--sp-ink);
+  --input: var(--sp-ink);
+  --ring: var(--sp-cobalt);
+  --primary: var(--sp-pink);
+  --primary-foreground: var(--sp-ink);
+  --gilt: var(--sp-marigold);
+  --night-foreground: var(--sp-cream);
+  --product-wash: var(--sp-cobalt-deep);
+  --shadow-ink: var(--sp-ink);
 
-/* Workshop photos as prints, taped down slightly askew. */
-.design-splay .splay-print {
+  overflow-x: clip;
+  background: var(--sp-cream);
+  color: var(--sp-ink);
+  font-family: var(--sp-text);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  font-variant-numeric: lining-nums;
+}
+.design-splay .splay :focus-visible {
+  outline: 3px solid var(--sp-ink);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 7px var(--sp-marigold);
+}
+.design-splay .splay h1,
+.design-splay .splay h2,
+.design-splay .splay h3 {
+  font-family: var(--sp-display);
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: 0;
+}
+.design-splay .sp-h2 {
   position: relative;
-  background: var(--splay-print);
-  border: 2px solid var(--foreground);
-  padding: 0.75rem 0.75rem 2.75rem;
-  box-shadow: var(--shadow-md);
+  margin: 0 0 2.5rem;
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  line-height: 1;
+  color: var(--sp-ink);
+  text-shadow: 3px 3px 0 var(--sp-marigold);
 }
-.design-splay .splay-print::before {
+.design-splay .sp-h2-light {
+  color: var(--sp-cream);
+  text-shadow:
+    3px 3px 0 var(--sp-ink),
+    6px 6px 0 var(--sp-pink);
+}
+
+/* Chintz flowers, stuck on at angles. */
+.design-splay .sp-bloom {
+  position: absolute;
+  z-index: 2;
+  width: 6rem;
+  height: 6rem;
+  pointer-events: none;
+}
+.design-splay .sp-bloom-a {
+  top: 1.25rem;
+  right: 4%;
+  rotate: 14deg;
+}
+.design-splay .sp-bloom-b {
+  bottom: 18%;
+  left: -1.5rem;
+  width: 7.5rem;
+  height: 7.5rem;
+  rotate: -20deg;
+}
+.design-splay .sp-bloom-c {
+  bottom: 2.5rem;
+  right: 38%;
+  width: 4.5rem;
+  height: 4.5rem;
+  rotate: 35deg;
+}
+.design-splay .sp-bloom-d {
+  top: -2.5rem;
+  right: 6%;
+  width: 6.5rem;
+  height: 6.5rem;
+  rotate: -12deg;
+}
+
+/* ==========================================
+   HERO: cobalt cane weave, the name huge
+   ========================================== */
+
+.design-splay .sp-hero {
+  position: relative;
+  padding: 2.5rem 1rem 5rem;
+  color: var(--sp-cream);
+  /* Cane: open octagons where two diagonal weaves cross. */
+  background:
+    radial-gradient(circle, var(--sp-cobalt-deep) 30%, transparent 33%) 0 0 / 22px 22px,
+    repeating-linear-gradient(45deg, #2c52c8 0 4px, transparent 4px 11px),
+    repeating-linear-gradient(-45deg, #2c52c8 0 4px, transparent 4px 11px),
+    var(--sp-cobalt);
+}
+/* Scalloped hem, hanging over the next section. */
+.design-splay .sp-hero::after {
   content: "";
   position: absolute;
-  top: -0.8rem;
+  inset: auto 0 -1.75rem;
+  height: 1.75rem;
+  background: radial-gradient(circle at 50% 0, var(--sp-cobalt) 1.4rem, transparent 1.45rem) 0 0 /
+    2.8rem 1.75rem repeat-x;
+  z-index: 1;
+}
+.design-splay .sp-hero-grid {
+  display: grid;
+  gap: 2.5rem;
+  max-width: 76rem;
+  margin: 0 auto;
+}
+@media (min-width: 64rem) {
+  .design-splay .sp-hero {
+    padding: 4rem 3.5rem 6rem;
+  }
+  .design-splay .sp-hero-grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    grid-template-areas:
+      "frame title"
+      "frame side";
+    column-gap: 4rem;
+    align-items: start;
+  }
+  .design-splay .sp-hero-title {
+    grid-area: title;
+    align-self: end;
+  }
+  .design-splay .sp-frame {
+    grid-area: frame;
+  }
+  .design-splay .sp-hero-side {
+    grid-area: side;
+  }
+}
+
+.design-splay .sp-name {
+  margin: 0.5rem 0 0;
+  font-size: clamp(3.5rem, 13vw, 8rem);
+  line-height: 0.88;
+  color: var(--sp-cream);
+  rotate: -3deg;
+  overflow-wrap: break-word;
+  text-shadow:
+    4px 4px 0 var(--sp-ink),
+    8px 8px 0 var(--sp-pink),
+    12px 12px 0 var(--sp-ink),
+    16px 16px 0 var(--sp-marigold);
+}
+.design-splay .sp-ribbon {
+  position: relative;
+  display: inline-block;
+  margin: 2.25rem 0 0;
+  padding: 0.6rem 2.6rem;
+  background: var(--sp-poppy);
+  color: var(--sp-cream);
+  font-size: clamp(1.25rem, 3.4vw, 1.75rem);
+  font-weight: 750;
+  line-height: 1.15;
+  rotate: 1.5deg;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 1.1rem) 50%, 100% 100%, 0 100%, 1.1rem 50%);
+  filter: drop-shadow(4px 4px 0 var(--sp-ink));
+}
+
+/* The home photo in a stack of coloured mounts, cane inside. */
+.design-splay .sp-frame {
+  position: relative;
+  z-index: 1;
+  /* Room for the 35px of mounts drawn outside it. */
+  width: min(30rem, calc(100% - 7rem));
+  margin: 2.5rem auto 3rem;
+  padding: 1rem;
+  rotate: -2deg;
+  background:
+    repeating-linear-gradient(45deg, var(--sp-oak) 0 3px, transparent 3px 9px),
+    repeating-linear-gradient(-45deg, var(--sp-oak) 0 3px, transparent 3px 9px), var(--sp-cane);
+  box-shadow:
+    0 0 0 5px var(--sp-ink),
+    0 0 0 16px var(--sp-marigold),
+    0 0 0 21px var(--sp-ink),
+    0 0 0 30px var(--sp-pink),
+    0 0 0 35px var(--sp-ink),
+    18px 18px 0 35px var(--sp-ink);
+}
+@media (min-width: 64rem) {
+  .design-splay .sp-frame {
+    width: min(30rem, calc(100% - 3rem));
+  }
+}
+.design-splay .sp-frame-photo {
+  aspect-ratio: 4 / 5;
+  border: 4px solid var(--sp-ink);
+}
+
+.design-splay .sp-hero-side {
+  position: relative;
+  z-index: 2;
+}
+.design-splay .sp-intro {
+  max-width: 34rem;
+  margin: 0;
+  padding: 1.25rem 1.5rem;
+  background: var(--sp-cream);
+  color: var(--sp-ink);
+  font-size: 1.1875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  border: 4px solid var(--sp-ink);
+  border-radius: 2rem 0.5rem 2rem 0.5rem;
+  box-shadow: 8px 8px 0 var(--sp-leaf);
+  rotate: 1deg;
+}
+.design-splay .sp-hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+.design-splay .sp-medallion {
+  width: 9.5rem;
+  height: 9.5rem;
+  padding: 0.5rem;
+  border-radius: 999px;
+  background: var(--sp-marigold);
+  outline: 4px dotted var(--sp-pink);
+  outline-offset: 5px;
+  box-shadow: 0 0 0 4px var(--sp-ink);
+}
+.design-splay .sp-medallion-photo {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  border: 4px solid var(--sp-ink);
+}
+.design-splay .sp-burst {
+  display: grid;
+  place-content: center;
+  width: 10rem;
+  height: 10rem;
+  background: var(--sp-pink);
+  color: var(--sp-ink);
+  text-align: center;
+  text-decoration: none;
+  rotate: 10deg;
+  clip-path: polygon(
+    50% 0%,
+    59% 13%,
+    75% 7%,
+    76% 24%,
+    93% 25%,
+    86% 41%,
+    100% 50%,
+    86% 59%,
+    93% 75%,
+    76% 76%,
+    75% 93%,
+    59% 87%,
+    50% 100%,
+    41% 87%,
+    25% 93%,
+    24% 76%,
+    7% 75%,
+    14% 59%,
+    0% 50%,
+    14% 41%,
+    7% 25%,
+    24% 24%,
+    25% 7%,
+    41% 13%
+  );
+  transition: rotate 200ms ease;
+}
+.design-splay .sp-burst:hover {
+  rotate: -4deg;
+}
+.design-splay .sp-burst-from {
+  font-weight: 700;
+  font-size: 1rem;
+}
+.design-splay .sp-burst-price {
+  font-family: var(--sp-display);
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+/* ==========================================
+   BUILD: cream with a ditsy print
+   ========================================== */
+
+.design-splay .sp-build {
+  position: relative;
+  padding: 5.5rem 1rem 5rem;
+  background:
+    radial-gradient(circle, #f6a9c8 2.5px, transparent 3px) 0 0 / 26px 26px,
+    radial-gradient(circle, #f8d77a 2px, transparent 2.5px) 13px 13px / 26px 26px,
+    var(--sp-cream);
+}
+.design-splay .sp-build > .sp-h2,
+.design-splay .sp-build-grid {
+  max-width: 76rem;
+  margin-inline: auto;
+}
+.design-splay .sp-build-grid {
+  display: grid;
+  gap: 3rem;
+}
+@media (min-width: 64rem) {
+  .design-splay .sp-build {
+    padding-inline: 2rem;
+  }
+  .design-splay .sp-build-grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    align-items: start;
+  }
+  .design-splay .sp-viewer-frame {
+    position: sticky;
+    top: 2rem;
+  }
+}
+.design-splay .sp-viewer-frame {
+  padding: 0.875rem;
+  border-radius: 2rem;
+  background: var(--sp-oak);
+  border: 4px solid var(--sp-ink);
+  box-shadow: 10px 10px 0 var(--sp-cobalt);
+}
+.design-splay .sp-viewer {
+  aspect-ratio: 4 / 3;
+  border-radius: 1.25rem;
+  border: 4px solid var(--sp-ink);
+}
+.design-splay [data-viewer-hint],
+.design-splay [data-viewer-reset] {
+  border-radius: 999px;
+  background: var(--sp-marigold);
+  color: var(--sp-ink);
+  font-family: var(--sp-text);
+  font-style: normal;
+  font-weight: 650;
+  border: 3px solid var(--sp-ink);
+  backdrop-filter: none;
+}
+
+/* --- the configurator, reskinned through its hooks --- */
+
+.design-splay .sp-config [data-part="reset"] {
+  font-weight: 650;
+  color: var(--sp-ink);
+  text-decoration: underline 2px var(--sp-pink);
+  text-underline-offset: 4px;
+}
+.design-splay .sp-config [data-part="dimension"] {
+  padding: 1rem 1.125rem 0.5rem;
+  border: 4px solid var(--sp-ink);
+  border-radius: 1.5rem 0.5rem 1.5rem 0.5rem;
+  box-shadow: 6px 6px 0 var(--sp-ink);
+}
+.design-splay .sp-config [data-part="dimension"][data-dimension="width"] {
+  background: var(--sp-pink);
+}
+.design-splay .sp-config [data-part="dimension"][data-dimension="height"] {
+  background: var(--sp-marigold);
+}
+.design-splay .sp-config [data-part="dimension"][data-dimension="depth"] {
+  background: #7fd39d;
+}
+.design-splay .sp-config [data-part="dimension-label"] {
+  font-family: var(--sp-display);
+  font-size: 1.625rem;
+  font-weight: 400;
+  line-height: 1.1;
+}
+.design-splay .sp-config [data-part="dimension-range"] {
+  color: var(--sp-ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.design-splay .sp-config [data-step-down],
+.design-splay .sp-config [data-step-up] {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  border: 3px solid var(--sp-ink);
+  background: var(--sp-cream);
+  color: var(--sp-ink);
+}
+.design-splay .sp-config [data-step-down]:hover,
+.design-splay .sp-config [data-step-up]:hover {
+  background: var(--sp-ink);
+  color: var(--sp-cream);
+}
+.design-splay .sp-config [data-number] {
+  height: 3rem;
+  border-radius: 999px;
+  border: 3px solid var(--sp-ink);
+  background: var(--sp-cream);
+  font-family: var(--sp-display);
+  font-size: 1.375rem;
+  padding-left: 1.25rem;
+}
+.design-splay .sp-config [data-part="unit"] {
+  color: var(--sp-ink);
+  font-weight: 700;
+}
+.design-splay .sp-config input[type="range"].slider::-webkit-slider-runnable-track {
+  height: 12px;
+  border: 3px solid var(--sp-ink);
+  background: linear-gradient(
+    to right,
+    var(--sp-ink) 0 var(--fill, 50%),
+    var(--sp-cream) var(--fill, 50%) 100%
+  );
+}
+.design-splay .sp-config input[type="range"].slider::-moz-range-track {
+  height: 6px;
+  border: 3px solid var(--sp-ink);
+  background: var(--sp-cream);
+}
+.design-splay .sp-config input[type="range"].slider::-moz-range-progress {
+  height: 6px;
+  background: var(--sp-ink);
+}
+.design-splay .sp-config input[type="range"].slider::-webkit-slider-thumb {
+  margin-top: -11px;
+  width: 28px;
+  height: 28px;
+  rotate: 0deg;
+  border-radius: 999px;
+  background: var(--sp-poppy);
+  border: 4px solid var(--sp-ink);
+  box-shadow: 0 0 0 3px var(--sp-cream);
+}
+.design-splay .sp-config input[type="range"].slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  rotate: 0deg;
+  border-radius: 999px;
+  background: var(--sp-poppy);
+  border: 4px solid var(--sp-ink);
+}
+
+.design-splay .sp-config [data-part="option-legend"] {
+  margin-bottom: 0.75rem;
+  font-family: var(--sp-display);
+  font-size: 1.75rem;
+  font-weight: 400;
+  line-height: 1.1;
+}
+.design-splay .sp-config [data-part="choices"] {
+  gap: 0.75rem;
+}
+.design-splay .sp-config [data-part="choice"] {
+  border: 3px solid var(--sp-ink);
+  border-radius: 999px;
+  background: var(--sp-cream);
+  padding: 0.6rem 1.1rem;
+  box-shadow: none;
+}
+.design-splay .sp-config [data-part="choice"]:hover {
+  background: #ffe3a3;
+}
+.design-splay .sp-config [data-part="choice"]:has(:checked) {
+  background: var(--sp-cobalt);
+  color: var(--sp-cream);
+  box-shadow: 4px 4px 0 var(--sp-marigold);
+}
+.design-splay .sp-config [data-part="choice"]:has(:checked) [data-part="choice-note"],
+.design-splay .sp-config [data-part="choice"]:has(:checked) [data-part="choice-price"] {
+  color: #dfe6ff;
+}
+.design-splay .sp-config [data-part="choice-name"] {
+  font-size: 1rem;
+  font-weight: 700;
+}
+.design-splay .sp-config [data-part="choice-note"],
+.design-splay .sp-config [data-part="choice-price"] {
+  color: var(--muted-foreground);
+  font-size: 0.8125rem;
+}
+.design-splay .sp-config [data-part="swatch"] {
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 3px solid var(--sp-ink);
+}
+
+/* The price as a striped carnival ticket. */
+.design-splay .sp-config [data-part="price-panel"] {
+  --background: var(--sp-cobalt-deep);
+  --foreground: var(--sp-cream);
+  --muted-foreground: #c9d3ff;
+  --border: rgb(251 241 220 / 0.35);
+  --input: var(--sp-cream);
+  --accent: var(--sp-cobalt);
+  --accent-foreground: var(--sp-cream);
+  --card: var(--sp-cobalt-deep);
+  position: relative;
+  padding: 1.75rem 1.5rem 1.5rem;
+  border: 4px solid var(--sp-ink);
+  border-radius: 1.75rem;
+  background:
+    repeating-linear-gradient(90deg, var(--sp-marigold) 0 18px, var(--sp-poppy) 18px 36px) top /
+      100% 14px no-repeat,
+    var(--sp-cobalt-deep);
+  color: var(--sp-cream);
+  box-shadow: 10px 10px 0 var(--sp-pink);
+}
+/* Workshop drawings here are oak on cobalt, not a colour mixed from both. */
+.design-splay .splay .iso-drawing .iso-top {
+  fill: var(--sp-cane);
+}
+.design-splay .splay .iso-drawing .iso-left {
+  fill: #cf9452;
+}
+.design-splay .splay .iso-drawing .iso-right {
+  fill: var(--sp-oak);
+}
+.design-splay .splay .iso-drawing polygon {
+  stroke: var(--sp-ink);
+}
+.design-splay .splay [data-fill="blueprint-foil"] {
+  background: var(--sp-ink);
+}
+.design-splay .splay .iso-drawing.iso-foil polygon {
+  stroke: var(--sp-marigold);
+}
+.design-splay .sp-config [data-part="live-drawing"] {
+  margin-top: 0.5rem;
+}
+.design-splay .sp-config [data-part="price"] {
+  font-family: var(--sp-display);
+  font-size: clamp(3.25rem, 9vw, 4.5rem);
+  font-weight: 400;
+  color: var(--sp-marigold);
+  text-shadow: 4px 4px 0 var(--sp-poppy);
+}
+.design-splay .sp-config [data-part="price-note"],
+.design-splay .sp-config [data-part="lead"] {
+  color: var(--sp-cream);
+  font-weight: 600;
+}
+.design-splay .sp-config [data-part="lead-note"] {
+  display: none;
+}
+.design-splay .sp-config [data-part="breakdown"],
+.design-splay .sp-config [data-part="lead"],
+.design-splay .sp-config [data-part="buy"],
+.design-splay .sp-config [data-part="save"],
+.design-splay .sp-config [data-part="unavailable"] {
+  border-top: 3px dashed rgb(251 241 220 / 0.45);
+}
+.design-splay .sp-config [data-part="breakdown"] summary {
+  font-weight: 650;
+}
+.design-splay .sp-config [data-part="qty"] input {
+  border-radius: 999px;
+  border: 3px solid var(--sp-cream);
+  background: var(--sp-cobalt);
+  color: var(--sp-cream);
+}
+.design-splay .sp-config [data-part="add"] {
+  height: 3.5rem;
+  border-radius: 999px;
+  border: 4px solid var(--sp-ink);
+  background: var(--sp-pink);
+  color: var(--sp-ink);
+  font-family: var(--sp-display);
+  font-size: 1.375rem;
+  font-weight: 400;
+  box-shadow: 5px 5px 0 var(--sp-marigold);
+}
+.design-splay .sp-config [data-part="add"]:hover {
+  background: var(--sp-marigold);
+  box-shadow: 5px 5px 0 var(--sp-pink);
+}
+.design-splay .sp-config [data-part="save"] button {
+  color: var(--sp-cream);
+  font-weight: 650;
+}
+
+/* ==========================================
+   SHED: green, laid in squares like the shed's pavers
+   ========================================== */
+
+.design-splay .sp-shed {
+  position: relative;
+  padding: 4.5rem 1rem 5rem;
+  background:
+    linear-gradient(#5fc283 3px, transparent 3px) 0 0 / 5rem 5rem,
+    linear-gradient(90deg, #5fc283 3px, transparent 3px) 0 0 / 5rem 5rem,
+    var(--sp-leaf);
+  border-block: 5px solid var(--sp-ink);
+}
+.design-splay .sp-shed > * {
+  max-width: 68rem;
+  margin-inline: auto;
+}
+.design-splay .sp-snaps {
+  display: grid;
+  gap: 3rem;
+  padding: 0 0.5rem;
+}
+@media (min-width: 40rem) {
+  .design-splay .sp-snaps {
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+  }
+  .design-splay .sp-snap-b {
+    margin-top: 4rem;
+  }
+}
+.design-splay .sp-snap {
+  position: relative;
+  padding: 0.75rem 0.75rem 3rem;
+  background: var(--sp-cream);
+  border: 4px solid var(--sp-ink);
+  box-shadow: 10px 10px 0 var(--sp-ink);
+}
+.design-splay .sp-snap::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: -1rem;
   left: 50%;
-  width: 5.5rem;
-  height: 1.6rem;
+  width: 6rem;
+  height: 1.9rem;
   translate: -50% 0;
-  background: oklch(0.92 0.035 85 / 0.85);
-  border: 1px solid oklch(0.8 0.03 80);
+  rotate: -4deg;
+  background: repeating-linear-gradient(90deg, var(--sp-pink) 0 10px, #f78bb8 10px 20px);
+  border: 2px solid var(--sp-ink);
+}
+.design-splay .sp-snap-a {
   rotate: -3deg;
 }
-.design-splay .splay-print-a {
-  rotate: -1.6deg;
+.design-splay .sp-snap-b {
+  rotate: 2.5deg;
 }
-.design-splay .splay-print-b {
-  rotate: 1.2deg;
+.design-splay .sp-snap-photo {
+  aspect-ratio: 3 / 4;
+  border: 3px solid var(--sp-ink);
+}
+.design-splay .sp-tape {
+  display: block;
+  width: fit-content;
+  max-width: min(100%, 40rem);
+  margin-top: 3.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--sp-marigold);
+  color: var(--sp-ink);
+  font-size: 1.125rem;
+  font-weight: 650;
+  border: 3px solid var(--sp-ink);
+  rotate: -1.5deg;
+  box-shadow: 6px 6px 0 var(--sp-ink);
 }
 
-/* A leg set at the splay, before a heading or a story section. */
-.design-splay .splay-leg,
-.design-splay .splay-step {
+/* ==========================================
+   FACTS: marigold awning, candy tiles, blobs
+   ========================================== */
+
+.design-splay .sp-facts {
+  padding: 4.5rem 1rem 5rem;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 2.5rem, #f9cb47 2.5rem 5rem), var(--sp-marigold);
+}
+.design-splay .sp-facts > * {
+  max-width: 76rem;
+  margin-inline: auto;
+}
+.design-splay .sp-facts > * + * {
+  margin-top: 3.5rem;
+}
+.design-splay .sp-tiles {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+}
+.design-splay .sp-tile {
+  padding: 1.25rem 1.5rem 1.5rem;
+  border: 4px solid var(--sp-ink);
+  border-radius: 1.5rem;
+  box-shadow: 6px 6px 0 var(--sp-ink);
+}
+.design-splay .sp-tile:nth-child(4n + 1) {
+  background: var(--sp-cobalt);
+  color: var(--sp-cream);
+  rotate: -1.5deg;
+}
+.design-splay .sp-tile:nth-child(4n + 2) {
+  background: var(--sp-pink);
+  rotate: 1deg;
+}
+.design-splay .sp-tile:nth-child(4n + 3) {
+  background: var(--sp-cream);
+  rotate: -0.5deg;
+}
+.design-splay .sp-tile:nth-child(4n + 4) {
+  background: #7fd39d;
+  rotate: 1.5deg;
+}
+.design-splay .sp-tile dt {
+  font-size: 0.9375rem;
+  font-weight: 650;
+}
+.design-splay .sp-tile dd {
+  margin: 0.25rem 0 0;
+  font-family: var(--sp-display);
+  font-size: clamp(1.25rem, 4.5vw, 1.625rem);
+  line-height: 1.1;
+}
+
+.design-splay .sp-blobs {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+.design-splay .sp-blob {
+  padding: 2.25rem 2.75rem 2.5rem;
+  background: var(--sp-cream);
+  border: 4px solid var(--sp-ink);
+  border-radius: 58% 42% 55% 45% / 42% 50% 50% 58%;
+}
+.design-splay .sp-blob:nth-child(3n + 2) {
+  border-radius: 44% 56% 40% 60% / 55% 45% 55% 45%;
+  background: #ffd6e7;
+}
+.design-splay .sp-blob:nth-child(3n + 3) {
+  border-radius: 52% 48% 62% 38% / 48% 58% 42% 52%;
+  background: #d9e2ff;
+}
+.design-splay .sp-blob h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  line-height: 1.1;
+  color: var(--sp-poppy);
+  text-shadow: 2px 2px 0 var(--sp-ink);
+}
+.design-splay .sp-blob p {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 500;
+}
+
+.design-splay .sp-last {
+  display: grid;
+  gap: 2.5rem;
+  align-items: center;
+}
+@media (min-width: 48rem) {
+  .design-splay .sp-last {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+}
+/* Sizes on a ticket stub, perforated down one side. */
+.design-splay .sp-ticket {
   position: relative;
-  padding-left: 1.75rem;
+  min-width: 0;
+  padding: 1.5rem 1rem 1.25rem 2rem;
+  background:
+    radial-gradient(circle at 0 50%, var(--sp-marigold) 7px, transparent 7.5px) 0 0 / 1.5rem 1.25rem
+      repeat-y,
+    var(--sp-cream);
+  border: 4px solid var(--sp-ink);
+  border-radius: 1rem;
+  box-shadow: 8px 8px 0 var(--sp-cobalt);
 }
-.design-splay .splay-leg::before,
-.design-splay .splay-step::before {
-  content: "";
-  position: absolute;
-  left: 0.35rem;
-  top: 0.2em;
-  width: 4px;
-  height: 1.6em;
-  background: var(--foreground);
-  rotate: 7deg;
-  transform-origin: top;
+.design-splay .sp-ticket h2 {
+  margin: 0 0 0.75rem;
+  font-size: 2rem;
+  line-height: 1.1;
 }
-.design-splay .splay-step::before {
-  height: 2.2rem;
-  background: var(--product-ink);
+.design-splay .sp-ticket [data-part="sizes"] table {
+  font-size: 0.9375rem;
+}
+@media (min-width: 40rem) {
+  .design-splay .sp-ticket {
+    padding: 1.75rem 1.75rem 1.5rem 2.75rem;
+  }
+  .design-splay .sp-ticket [data-part="sizes"] table {
+    font-size: 1rem;
+  }
+  .design-splay .sp-ticket [data-part="sizes"] thead th {
+    font-size: 0.9375rem;
+  }
+}
+.design-splay .sp-ticket [data-part="sizes"] th,
+.design-splay .sp-ticket [data-part="sizes"] td {
+  padding-right: 0.5rem;
+  border-color: var(--sp-ink);
+  font-style: normal;
+  white-space: nowrap;
+}
+.design-splay .sp-ticket [data-part="sizes"] thead th {
+  color: var(--sp-ink);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+.design-splay .sp-ticket [data-part="sizes"] tbody tr:nth-child(odd) {
+  background: #ffe3a3;
 }
 
-/* Highlights read like a tally: a short leaning tick before each value. */
-.design-splay .splay-tally dd::before {
-  content: "";
-  display: inline-block;
-  width: 3px;
-  height: 0.9em;
-  margin-right: 0.6rem;
-  background: var(--product-ink);
-  rotate: 7deg;
-  vertical-align: -0.05em;
+/* Care on a round pink sticker. */
+.design-splay .sp-care {
+  justify-self: center;
+  display: grid;
+  place-items: center;
+  width: min(100%, 16rem);
+  aspect-ratio: 1;
+  padding: 2.5rem;
+  border-radius: 999px;
+  background: var(--sp-pink);
+  border: 4px solid var(--sp-ink);
+  outline: 4px dashed var(--sp-ink);
+  outline-offset: -16px;
+  rotate: 6deg;
+  text-align: center;
+}
+.design-splay .sp-care [data-part="care"] h2 {
+  font-size: 1.625rem;
+  line-height: 1.1;
+}
+.design-splay .sp-care [data-part="care"] p {
+  color: var(--sp-ink);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+@media (min-width: 48rem) {
+  .design-splay .sp-care {
+    width: min(100%, 19rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .design-splay .sp-burst {
+    transition: none;
+  }
 }

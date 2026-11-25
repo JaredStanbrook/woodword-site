@@ -690,8 +690,7 @@ export const CATALOGUE: ProductData[] = [
     category: "tables",
     status: "draft",
     availability: "made_to_order",
-    summary:
-      "A solid oak console with legs that lean out both ways and a low shelf running past them.",
+    summary: "A solid oak console with splayed legs and a low shelf.",
     description: "",
     leadDaysStandard: 21,
     leadDaysCustom: 35,
@@ -715,35 +714,32 @@ export const CATALOGUE: ProductData[] = [
     options: [TIMBERS, FINISHES],
     design: {
       id: "splay",
-      headline: "Narrow at the top, wide at the floor, so it stands steady against a wall.",
+      headline: "Leans out. Stands firm.",
       intro:
-        "Solid oak, with the four legs splayed outward in both directions and a lower shelf that runs past them at each end. Made to the width and height of your hallway.",
+        "Solid oak, legs splayed both ways, a low shelf running past them. Built to fit your wall.",
       story: [
         {
           heading: "The splay",
-          body: "Each leg leans out from the top to the floor, front to back and side to side. The base ends up wider than the top, which is what keeps a narrow table from rocking.",
+          body: "Legs lean out to the floor, so a narrow table never rocks.",
         },
         {
           heading: "The shelf",
-          body: "The lower shelf sits on two rails between the legs and carries on past them at the ends, a place for books, a basket, or the things that collect by the door.",
+          body: "It runs past the legs, with room for books or a basket.",
         },
         {
           heading: "Your size",
-          body: "From 800 mm for a narrow hall to 1600 mm under a window. The legs keep their section; the top, aprons and shelf are cut to the length you choose.",
+          body: "Any length from 800 to 1600 mm, cut to fit your wall.",
         },
       ],
       highlights: [
         { label: "Timber", value: "Solid oak" },
         { label: "Legs", value: "Splayed both ways" },
-        { label: "Shelf", value: "Runs past the legs" },
-        { label: "Standard size", value: "1100 × 800 × 300 mm" },
+        { label: "Shelf", value: "Past the legs" },
       ],
-      care: "Dust with a dry cloth and wipe spills straight away. Oil the top again when it starts to look dry.",
+      care: "Dust it dry and oil the top when it looks thirsty.",
       extra: {
-        splay_note: "Legs splayed outward, both ways",
         shed_heading: "From the shed",
-        shed_note:
-          "Made in a tin shed with the door open to the lawn. These are the first one, before it went home.",
+        shed_note: "Built in a tin shed, door open to the lawn.",
       },
       photos: {},
     },
