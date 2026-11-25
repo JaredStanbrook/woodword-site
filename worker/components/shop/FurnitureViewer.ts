@@ -42,6 +42,8 @@ import {
   PMREMGenerator,
   Scene,
   ShadowMaterial,
+  Raycaster,
+  Vector2,
   Vector3,
   WebGLRenderer,
   type Material,
@@ -202,8 +204,15 @@ class FurnitureViewer extends HTMLElement {
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
     controls.enablePan = false;
-    // Zoom towards the pointer, so the piece can be looked at up close.
-    controls.zoomToCursor = true;
+    // The wheel zooms towards whatever is under the pointer (zoomAt below).
+    // OrbitControls' own zoomToCursor aims at a plane through the target,
+    // so pointing at the piece zoomed somewhere else in the room. A pinch
+    // still zooms towards the middle of the view.
+    canvas.addEventListener("wheel", (e) => this.zoomAt(e), {
+      passive: false,
+      capture: true,
+      signal: this.abort.signal,
+    });
     // From straight at the back wall to straight at the left wall, and from
     // well above to a little above the floor: always into the open corner.
     controls.minAzimuthAngle = 0.02;
@@ -485,6 +494,59 @@ class FurnitureViewer extends HTMLElement {
       this.controls.maxDistance = distance * 1.4;
       this.controls.update();
     }
+  }
+
+  /**
+   * Zooms in towards the point under the pointer and keeps that point under
+   * it: camera and target both move towards it by the same factor. The point
+   * becomes the new centre to turn around, so after zooming in on the piece,
+   * dragging turns around the piece. Zooming out drifts back to the room.
+   */
+  private zoomAt(e: WheelEvent) {
+    const controls = this.controls;
+    const camera = this.camera;
+    if (!controls || !camera || !this.scene) return;
+    e.preventDefault();
+    // Handled here: OrbitControls' own wheel zoom must not run as well.
+    e.stopImmediatePropagation();
+
+    const rect = this.renderer!.domElement.getBoundingClientRect();
+    const pointer = new Vector2(
+      ((e.clientX - rect.left) / rect.width) * 2 - 1,
+      -((e.clientY - rect.top) / rect.height) * 2 + 1,
+    );
+    const ray = new Raycaster();
+    ray.setFromCamera(pointer, camera);
+    // The nearest solid thing under the pointer; nothing (the sky round the
+    // room) means the middle of the view, as a plain zoom would.
+    const hit = ray.intersectObjects(this.scene.children, true).find((h) => {
+      const m = (h.object as Mesh).material as Material | undefined;
+      return h.object.visible && !(m && m.transparent);
+    });
+    const point = hit?.point ?? controls.target.clone();
+    if (!this.layout) return;
+
+    // A trackpad sends many small deltas, a wheel a few large ones.
+    const delta = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+    let factor = Math.min(1.25, Math.max(0.8, Math.exp(delta * 0.0015)));
+    const distance = camera.position.distanceTo(controls.target);
+    if (distance * factor < controls.minDistance) factor = controls.minDistance / distance;
+    if (distance * factor > controls.maxDistance) factor = controls.maxDistance / distance;
+    if (Math.abs(factor - 1) < 1e-4) return;
+
+    if (factor < 1) {
+      // In: towards the point under the pointer, which stays put on screen.
+      camera.position.sub(point).multiplyScalar(factor).add(point);
+      controls.target.sub(point).multiplyScalar(factor).add(point);
+    } else {
+      // Out: back towards the middle of the room, so zooming right out
+      // returns to the whole room rather than leaving it off to one side.
+      const offset = camera.position.clone().sub(controls.target).multiplyScalar(factor);
+      controls.target.lerp(this.roomTarget(), 1 - 1 / factor);
+      camera.position.copy(controls.target).add(offset);
+    }
+    controls.update();
+    this.requestRender();
   }
 
   private resize() {
