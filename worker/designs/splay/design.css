@@ -397,6 +397,7 @@
   }
 }
 .design-splay [data-viewer-hint],
+.design-splay [data-viewer-loading],
 .design-splay [data-viewer-reset] {
   border-radius: 999px;
   background: var(--sp-marigold);

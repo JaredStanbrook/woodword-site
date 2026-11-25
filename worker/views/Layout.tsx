@@ -115,8 +115,10 @@ export const Layout: FC<LayoutProps> = (props) => {
           type="module"
           src="${isProd ? "/static/client.js" : "/worker/components/main.ts"}"
         ></script>
-        <!-- Before any other script: cookieConsent.allows() (worker/lib/consent.ts). -->
+        <!-- Before any other script: cookieConsent.allows() (worker/lib/consent.ts).
+             The js class says scripts run, for styles that only make sense then. -->
         <script>
+          document.documentElement.classList.add("js");
           ${raw(CONSENT_SCRIPT)};
         </script>
         ${props.headExtra}

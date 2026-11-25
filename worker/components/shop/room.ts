@@ -126,7 +126,14 @@ export class Room {
       wall: std("#ede4d3"),
       wallTop: std("#cbbda5"),
       skirting: std("#e2d6c1", 0.7),
-      floor: new MeshStandardMaterial({ color: "#dcc19a", map: this.planks, roughness: 0.7 }),
+      floor: new MeshStandardMaterial({
+        color: "#dcc19a",
+        map: this.planks,
+        // The board joints and grain, felt as well as seen.
+        bumpMap: this.planks,
+        bumpScale: 0.8,
+        roughness: 0.62,
+      }),
       slabEdge: std("#b58f62", 0.8),
       door: std("#f5f0e7", 0.55),
       doorFrame: std("#d6c9b2", 0.6),

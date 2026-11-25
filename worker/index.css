@@ -336,6 +336,40 @@
   }
 }
 
+/* THE 3D VIEW LOADING (worker/designs/blocks.tsx Viewer). Shown once the
+   page knows scripts run (html.js), from before the viewer's code arrives
+   until its scene is built; never without JavaScript, where the drawing is
+   the whole view. */
+@layer components {
+  [data-viewer-loading] {
+    display: none;
+  }
+  .js furniture-viewer:not(:defined) [data-viewer-loading],
+  furniture-viewer[data-loading] [data-viewer-loading] {
+    display: inline-flex;
+  }
+  .viewer-spinner {
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 999px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    animation: viewer-spin 0.8s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .viewer-spinner {
+      animation: none;
+      border-right-color: currentColor;
+      opacity: 0.5;
+    }
+  }
+}
+@keyframes viewer-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* ISOMETRIC LINE DRAWING (lib/furniture.ts isoDrawing)
    An engraving: gilt lines over faces shaded from the page's product wash, so
    at night it reads as gold foil on a dark cover. */

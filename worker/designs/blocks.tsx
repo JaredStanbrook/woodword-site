@@ -149,6 +149,16 @@ export const Viewer = ({
     >
       <IsoDrawing parts={resizeParts(specOf(product), selection)} />
     </div>
+    {/* Shown while the 3D view downloads and builds (worker/index.css):
+        the drawing behind it is already the piece at the chosen size. */}
+    <p
+      class="pointer-events-none absolute left-3 top-3 z-10 items-center gap-2 rounded-full bg-background/85 px-3 py-1.5 text-xs font-medium backdrop-blur"
+      data-viewer-loading
+      role="status"
+    >
+      <span class="viewer-spinner" aria-hidden="true"></span>
+      <span data-viewer-loading-text>Loading 3D view</span>
+    </p>
     <div class="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3">
       <p
         class="hidden rounded-sm bg-background/80 px-3 py-1.5 text-sm italic text-muted-foreground backdrop-blur"

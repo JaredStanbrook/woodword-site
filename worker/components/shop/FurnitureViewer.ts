@@ -24,10 +24,8 @@
 // nothing moves, which matters on a phone.
 
 import {
-  ACESFilmicToneMapping,
   Box3,
   BoxGeometry,
-  CanvasTexture,
   Color,
   CylinderGeometry,
   DirectionalLight,
@@ -37,14 +35,13 @@ import {
   MeshPhysicalMaterial,
   MeshStandardMaterial,
   Object3D,
+  NeutralToneMapping,
   PCFSoftShadowMap,
   PerspectiveCamera,
   PlaneGeometry,
   PMREMGenerator,
-  RepeatWrapping,
   Scene,
   ShadowMaterial,
-  SRGBColorSpace,
   Vector3,
   WebGLRenderer,
   type Material,
@@ -56,6 +53,7 @@ import { normaliseSelection, resizeParts, chosenOptions } from "@server/lib/furn
 import type { MaterialSlot, Selection } from "@server/schema/furniture.config";
 import { furnitureStore, readFurnitureData, type FurnitureData } from "./store";
 import { Room, type RoomLayout } from "./room";
+import { contactShadow, grainTextures, woodBox } from "./wood";
 
 const DEFAULT_COLORS: Record<MaterialSlot, string> = {
   body: "#b98a5a",
@@ -65,37 +63,6 @@ const DEFAULT_COLORS: Record<MaterialSlot, string> = {
 };
 
 const MM = 1 / 1000;
-
-/** A pale, procedurally drawn grain, tinted by the material colour. */
-function woodTexture(): CanvasTexture {
-  const size = 512;
-  const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = size;
-  const ctx = canvas.getContext("2d")!;
-  ctx.fillStyle = "#f2f2f2";
-  ctx.fillRect(0, 0, size, size);
-  let seed = 7;
-  const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  for (let i = 0; i < 90; i++) {
-    const y0 = rand() * size;
-    const amp = 2 + rand() * 9;
-    const freq = 0.004 + rand() * 0.01;
-    const phase = rand() * Math.PI * 2;
-    ctx.strokeStyle = `rgba(90, 70, 50, ${0.05 + rand() * 0.12})`;
-    ctx.lineWidth = 0.6 + rand() * 2.2;
-    ctx.beginPath();
-    for (let x = 0; x <= size; x += 8) {
-      const y = y0 + Math.sin(x * freq + phase) * amp + Math.sin(x * freq * 3.1) * amp * 0.25;
-      if (x === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-  }
-  const tex = new CanvasTexture(canvas);
-  tex.colorSpace = SRGBColorSpace;
-  tex.wrapS = tex.wrapT = RepeatWrapping;
-  return tex;
-}
 
 interface GlbNode {
   object: Object3D;
@@ -124,19 +91,24 @@ class FurnitureViewer extends HTMLElement {
   private abort = new AbortController();
   private fitted = false;
   private room?: Room;
+  private contact?: ReturnType<typeof contactShadow>;
   private layout?: RoomLayout;
 
   connectedCallback() {
     this.data = readFurnitureData();
     if (!this.data) return;
     this.abort = new AbortController();
+    // "Loading 3D view" shows until the scene is built, or WebGL is missing.
+    this.dataset.loading = "";
 
     // Build when it is about to be seen, not on page load.
     this.intersection = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
           this.intersection?.disconnect();
-          this.init().catch((err) => console.warn("[viewer] 3D view unavailable:", err));
+          this.init()
+            .catch((err) => console.warn("[viewer] 3D view unavailable:", err))
+            .finally(() => delete this.dataset.loading);
         }
       },
       { rootMargin: "200px" },
@@ -153,6 +125,8 @@ class FurnitureViewer extends HTMLElement {
     this.controls?.dispose();
     for (const d of this.disposables) d.dispose();
     this.disposables = [];
+    // Each box part has its own geometry (wood.ts), not in disposables.
+    for (const mesh of this.meshes.values()) if (mesh.userData.box) mesh.geometry.dispose();
     this.renderer?.dispose();
     this.renderer?.forceContextLoss();
     this.renderer?.domElement.remove();
@@ -174,8 +148,9 @@ class FurnitureViewer extends HTMLElement {
     }
     this.renderer = renderer;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.toneMapping = ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.9;
+    // Neutral keeps a finish's colour true to its swatch; ACES drifts it.
+    renderer.toneMapping = NeutralToneMapping;
+    renderer.toneMappingExposure = 0.82;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = PCFSoftShadowMap;
     const canvas = renderer.domElement;
@@ -214,6 +189,9 @@ class FurnitureViewer extends HTMLElement {
     this.room = new Room();
     this.disposables.push(this.room);
     scene.add(this.room.group);
+    this.contact = contactShadow();
+    this.disposables.push(this.contact);
+    scene.add(this.contact.mesh);
 
     let usedGlb = false;
     if (data.modelUrl) usedGlb = await this.loadGlb(data.modelUrl).catch(() => false);
@@ -224,6 +202,8 @@ class FurnitureViewer extends HTMLElement {
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
     controls.enablePan = false;
+    // Zoom towards the pointer, so the piece can be looked at up close.
+    controls.zoomToCursor = true;
     // From straight at the back wall to straight at the left wall, and from
     // well above to a little above the floor: always into the open corner.
     controls.minAzimuthAngle = 0.02;
@@ -269,10 +249,20 @@ class FurnitureViewer extends HTMLElement {
   }
 
   private createMaterials() {
-    const grain = woodTexture();
-    this.disposables.push(grain);
+    const grain = grainTextures();
+    this.disposables.push(grain.map, grain.bump);
+    // An oiled or lacquered board: satin, a thin clear layer over the grain.
     const wood = (color: string) =>
-      new MeshStandardMaterial({ color, map: grain, roughness: 0.62, metalness: 0 });
+      new MeshPhysicalMaterial({
+        color,
+        map: grain.map,
+        bumpMap: grain.bump,
+        bumpScale: 0.6,
+        roughness: 0.58,
+        metalness: 0,
+        clearcoat: 0.3,
+        clearcoatRoughness: 0.45,
+      });
     this.materials.set("body", wood(DEFAULT_COLORS.body));
     this.materials.set("accent", wood(DEFAULT_COLORS.accent));
     this.materials.set(
@@ -293,14 +283,16 @@ class FurnitureViewer extends HTMLElement {
   }
 
   private buildFromParts() {
-    const box = new BoxGeometry(1, 1, 1);
+    // Boxes get their own geometry at their real size (see apply); a
+    // cylinder is a unit one, scaled.
     const cylinder = new CylinderGeometry(0.5, 0.5, 1, 32);
-    this.disposables.push(box, cylinder);
+    this.disposables.push(cylinder);
     for (const part of this.data!.model.parts) {
       const mesh = new Mesh(
-        part.shape === "cylinder" ? cylinder : box,
+        part.shape === "cylinder" ? cylinder : new BoxGeometry(1, 1, 1),
         this.materials.get(part.material ?? "body"),
       );
+      mesh.userData.box = part.shape !== "cylinder";
       mesh.name = part.name;
       mesh.castShadow = true;
       mesh.receiveShadow = true;
@@ -320,7 +312,12 @@ class FurnitureViewer extends HTMLElement {
     loader.setDRACOLoader(draco);
     this.disposables.push(draco);
 
-    const gltf = await loader.loadAsync(url);
+    const label = this.querySelector("[data-viewer-loading-text]");
+    const gltf = await loader.loadAsync(url, (e) => {
+      if (label && e.lengthComputable && e.total > 0) {
+        label.textContent = `Loading 3D model, ${Math.round((e.loaded / e.total) * 100)}%`;
+      }
+    });
     const root = gltf.scene;
     root.updateMatrixWorld(true);
 
@@ -388,7 +385,21 @@ class FurnitureViewer extends HTMLElement {
       for (const part of resolved) {
         const mesh = this.meshes.get(part.name);
         if (!mesh) continue;
-        mesh.scale.set(part.size[0] * MM, part.size[1] * MM, part.size[2] * MM);
+        if (mesh.userData.box) {
+          // Rebuilt only when this part's size changed: a slider move
+          // resizes a few parts, not all of them.
+          const key = part.size.join("x");
+          if (mesh.userData.size !== key) {
+            mesh.geometry.dispose();
+            mesh.geometry = woodBox(
+              [part.size[0] * MM, part.size[1] * MM, part.size[2] * MM],
+              part.name,
+            );
+            mesh.userData.size = key;
+          }
+        } else {
+          mesh.scale.set(part.size[0] * MM, part.size[1] * MM, part.size[2] * MM);
+        }
         mesh.position.set(part.position[0] * MM, part.position[1] * MM, part.position[2] * MM);
       }
     }
@@ -417,6 +428,8 @@ class FurnitureViewer extends HTMLElement {
     }
 
     this.layout = this.room!.update(sel.width, sel.height, sel.depth);
+    // The footprint's shadow: darkest under the piece, fading 110 mm past it.
+    this.contact?.mesh.scale.set(sel.width * MM + 0.22, sel.depth * MM + 0.22, 1);
     this.updateShadowBounds();
     if (!this.fitted) {
       this.fitCamera();
