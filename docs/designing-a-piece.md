@@ -133,14 +133,15 @@ steps:
    its rules beat the classes the blocks carry. Select by hook, never by a
    Tailwind class name:
 
-   | Block        | Hooks                                                                                                                                                                                                 |
-   | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-   | Gallery      | `gallery`, `gallery-main` (give it an aspect ratio, or pass `mainClass`), `gallery-thumbs`, `gallery-thumb` (the picked one is `:has(:checked)`); each picture has `data-fill="photo"` or `"drawing"` |
-   | Configurator | `size`, `reset`, `dimension` (with `data-dimension="width"` etc.), `dimension-label`, `dimension-range`, `unit`, plus `[data-step-down]`, `[data-step-up]`, `[data-number]` and `input.slider`        |
-   | Options      | `option-group`, `option-legend`, `choices`, `choice` (style the chosen one with `:has(:checked)`), `swatch`, `choice-name`, `choice-note`, `choice-price`                                             |
-   | Price panel  | `price-panel`, `live-drawing`, `price`, `price-note`, `breakdown`, `breakdown-lines`, `lead`, `lead-note`, `buy`, `qty`, `add`, `save`, `unavailable`                                                 |
-   | Viewer       | `viewer`, plus `[data-viewer-hint]` and `[data-viewer-reset]`                                                                                                                                         |
-   | Badge        | `availability` (with `data-availability`)                                                                                                                                                             |
+   | Block        | Hooks                                                                                                                                                                                                                                                                |
+   | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | Gallery      | `gallery`, `gallery-main` (give it an aspect ratio, or pass `mainClass`), `gallery-thumbs`, `gallery-thumb` (the picked one is `:has(:checked)`); each picture has `data-fill="photo"` or `"drawing"`                                                                |
+   | Configurator | `size`, `reset`, `dimension` (with `data-dimension="width"` etc.), `dimension-label`, `dimension-range`, `unit`, plus `[data-step-down]`, `[data-step-up]`, `[data-number]` and `input.slider`                                                                       |
+   | Options      | `option-group`, `option-legend`, `choices`, `choice` (style the chosen one with `:has(:checked)`), `swatch`, `choice-name`, `choice-note`, `choice-price`                                                                                                            |
+   | Price panel  | `price-panel`, `live-drawing`, `price`, `price-note`, `breakdown`, `breakdown-lines`, `lead`, `lead-note`, `buy`, `qty`, `add`, `save`, `unavailable`                                                                                                                |
+   | Viewer       | `viewer`, plus `[data-viewer-hint]` and `[data-viewer-reset]`                                                                                                                                                                                                        |
+   | Badge        | `availability` (with `data-availability`)                                                                                                                                                                                                                            |
+   | Card         | on the collection page: `card` (the element carrying `.design-<id>`, with `data-wide="true"` when it spans two columns), `card-frame`, `card-picture`, `card-panel` (wide cards only), `card-name`, `card-summary`, `card-price`, `card-caption` (under the picture) |
 
    Workshop drawings are SVG: restyle `.iso-drawing .iso-top`, `.iso-left`
    and `.iso-right` (fill) and `polygon` (stroke) under the root. Don't mix
@@ -160,8 +161,13 @@ steps:
   `@font-face`, `@media`, `@supports`, and `@keyframes` named `<id>-…`. The
   test checks this.
 - **Page styles go under the root** (`.design-<id> .<id>`). `.design-<id>`
-  on its own also wraps the piece's collection card and cart line, so it
-  sets only the four `--product*` tokens that colour those.
+  on its own also wraps the piece's collection card and cart line: put the
+  palette's custom properties and the four `--product*` tokens there, so
+  both can use them.
+- **The collection card matches the page.** Restyle it through its hooks
+  (`.design-<id>[data-part="card"]` and the parts inside it), so a customer
+  recognises the piece before clicking. Splay's card wears the page's
+  coloured mounts, cane weave, name, cream card and pink price.
 - **All words come from the admin.** Hard-code decoration, and the three
   short labels at most.
 - **Keep it usable.** Visible keyboard focus, buttons and inputs at least
@@ -189,8 +195,8 @@ steps:
    - dragging the 3D view on a phone turns the model without scrolling the
      page;
    - the price and add to cart work.
-5. Check the collection card: its colours come from `.design-<id>`, and with
-   two or more photos it turns through them.
+5. Screenshot the collection page at 390 px and 1440 px: the card looks
+   like the page, and with two or more photos it turns through them.
 
 ### Hand-off
 

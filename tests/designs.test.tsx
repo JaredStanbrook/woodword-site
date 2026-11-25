@@ -104,6 +104,11 @@ describe("page designs", () => {
         }
       });
       expect(rules, `${id} has rules`).toBeGreaterThan(0);
+      // A finished design dresses its collection card like its page.
+      if (!DESIGNS[id].draft)
+        expect(readFileSync(join(DESIGN_DIR, id, "design.css"), "utf8"), `${id} card`).toContain(
+          '[data-part="card-frame"]',
+        );
     }
   });
 

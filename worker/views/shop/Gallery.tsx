@@ -131,39 +131,61 @@ export const ProductCard = ({
       {p.name}
     </a>
   );
+  const price = priceLine(item, locale, currency);
 
-  if (wide) {
-    return (
-      <article class={`group relative sm:col-span-2 ${designClass(p)}`}>
-        <div class="relative overflow-hidden rounded-sm border-[3px] border-foreground bg-product-wash text-night-foreground shadow transition-[transform,box-shadow] duration-300 group-hover:-translate-y-0.5 group-hover:shadow-lg sm:grid sm:aspect-[2/1] sm:grid-cols-[1.4fr_1fr]">
-          <div class="relative aspect-square sm:aspect-auto">
-            <Picture item={item} std={std} />
-          </div>
-          <div class="hidden flex-col justify-end gap-3 border-l-2 border-night-foreground/15 p-7 sm:flex">
-            <h2 class="font-display text-4xl font-bold leading-[0.95] xl:text-5xl">{name}</h2>
-            <p class="text-base leading-snug text-night-foreground/80">{p.summary}</p>
-            <p class="text-lg font-semibold italic text-gilt">
-              {priceLine(item, locale, currency)}
+  // Hooks for the piece's design (worker/designs/<id>/design.css) to restyle
+  // its own card: card, card-frame, card-picture, card-panel, card-name,
+  // card-summary, card-price, card-caption.
+  return (
+    <article
+      class={`group relative ${wide ? "sm:col-span-2" : ""} ${designClass(p)}`}
+      data-part="card"
+      data-wide={wide ? "true" : undefined}
+    >
+      <div
+        class={`relative overflow-hidden rounded-sm border-[3px] border-foreground bg-product-wash text-night-foreground transition-transform duration-300 group-hover:-translate-y-0.5 ${
+          wide ? "sm:grid sm:aspect-[2/1] sm:grid-cols-[1.4fr_1fr]" : "aspect-square"
+        }`}
+        data-part="card-frame"
+      >
+        <div
+          class={wide ? "relative aspect-square sm:aspect-auto" : "absolute inset-0"}
+          data-part="card-picture"
+        >
+          <Picture item={item} std={std} />
+        </div>
+        {wide ? (
+          <div
+            class="hidden flex-col justify-end gap-3 border-l-2 border-night-foreground/15 p-7 sm:flex"
+            data-part="card-panel"
+          >
+            <h2
+              class="font-display text-4xl font-bold leading-[0.95] xl:text-5xl"
+              data-part="card-name"
+            >
+              {name}
+            </h2>
+            <p class="text-base leading-snug text-night-foreground/80" data-part="card-summary">
+              {p.summary}
+            </p>
+            <p class="text-lg font-semibold italic text-gilt" data-part="card-price">
+              {price}
             </p>
           </div>
-        </div>
-        {/* Small screens: the same one-line caption as every other piece. */}
-        <div class="mt-3 flex items-baseline justify-between gap-4 sm:hidden">
-          <h2 class="font-display text-[1.75rem] font-bold leading-none">{name}</h2>
-          <p class="shrink-0 text-base font-semibold italic">{priceLine(item, locale, currency)}</p>
-        </div>
-      </article>
-    );
-  }
-
-  return (
-    <article class={`group relative ${designClass(p)}`}>
-      <div class="relative aspect-square overflow-hidden rounded-sm border-[3px] border-foreground bg-product-wash shadow transition-[transform,box-shadow] duration-300 group-hover:-translate-y-0.5 group-hover:shadow-lg">
-        <Picture item={item} std={std} />
+        ) : null}
       </div>
-      <div class="mt-3 flex items-baseline justify-between gap-4">
-        <h2 class="font-display text-[1.75rem] font-bold leading-none">{name}</h2>
-        <p class="shrink-0 text-base font-semibold italic">{priceLine(item, locale, currency)}</p>
+      {/* Under the picture; for a wide card only on small screens, where the
+          panel beside the picture is hidden. */}
+      <div
+        class={`mt-3 flex items-baseline justify-between gap-4 ${wide ? "sm:hidden" : ""}`}
+        data-part="card-caption"
+      >
+        <h2 class="font-display text-[1.75rem] font-bold leading-none" data-part="card-name">
+          {name}
+        </h2>
+        <p class="shrink-0 text-base font-semibold italic" data-part="card-price">
+          {price}
+        </p>
       </div>
     </article>
   );

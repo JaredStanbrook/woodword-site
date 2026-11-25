@@ -20,19 +20,8 @@
   font-display: swap;
 }
 
-/* The piece anywhere in the shop (collection card, cart line). */
+/* The piece anywhere in the shop (page, collection card, cart line). */
 .design-splay {
-  --product: #f6b90e;
-  --product-foreground: #1a1640;
-  --product-wash: #142c7a;
-  --product-ink: #e8452c;
-}
-
-/* ==========================================
-   THE PAGE
-   ========================================== */
-
-.design-splay .splay {
   --sp-cobalt: #1d3fae;
   --sp-cobalt-deep: #142c7a;
   --sp-marigold: #f6b90e;
@@ -45,7 +34,17 @@
   --sp-ink: #1a1640;
   --sp-display: "Shrikhand", "Cooper Black", Georgia, serif;
   --sp-text: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --product: #f6b90e;
+  --product-foreground: #1a1640;
+  --product-wash: #142c7a;
+  --product-ink: #e8452c;
+}
 
+/* ==========================================
+   THE PAGE
+   ========================================== */
+
+.design-splay .splay {
   /* The shared blocks read these. */
   --background: var(--sp-cream);
   --foreground: var(--sp-ink);
@@ -567,16 +566,16 @@
   box-shadow: 10px 10px 0 var(--sp-pink);
 }
 /* Workshop drawings here are oak on cobalt, not a colour mixed from both. */
-.design-splay .splay .iso-drawing .iso-top {
+.design-splay .iso-drawing .iso-top {
   fill: var(--sp-cane);
 }
-.design-splay .splay .iso-drawing .iso-left {
+.design-splay .iso-drawing .iso-left {
   fill: #cf9452;
 }
-.design-splay .splay .iso-drawing .iso-right {
+.design-splay .iso-drawing .iso-right {
   fill: var(--sp-oak);
 }
-.design-splay .splay .iso-drawing polygon {
+.design-splay .iso-drawing polygon {
   stroke: var(--sp-ink);
 }
 .design-splay .sp-config [data-part="live-drawing"] {
@@ -633,8 +632,90 @@
   font-weight: 650;
 }
 
+/* ==========================================
+   THE COLLECTION CARD: the page in small
+   ========================================== */
+
+.design-splay[data-part="card"] {
+  font-family: var(--sp-text);
+  color: var(--sp-ink);
+}
+/* The picture in the page's stack of coloured mounts, room left for them. */
+.design-splay [data-part="card-frame"] {
+  margin: 1.125rem;
+  border: 4px solid var(--sp-ink);
+  border-radius: 1.25rem 0.4rem;
+  rotate: -1deg;
+  background:
+    radial-gradient(circle, var(--sp-cobalt-deep) 30%, transparent 33%) 0 0 / 18px 18px,
+    repeating-linear-gradient(45deg, #2c52c8 0 3px, transparent 3px 9px),
+    repeating-linear-gradient(-45deg, #2c52c8 0 3px, transparent 3px 9px),
+    var(--sp-cobalt);
+  box-shadow:
+    0 0 0 5px var(--sp-marigold),
+    0 0 0 9px var(--sp-ink),
+    0 0 0 14px var(--sp-pink),
+    0 0 0 18px var(--sp-ink);
+  transition: rotate 200ms ease;
+}
+.design-splay[data-part="card"]:hover [data-part="card-frame"] {
+  rotate: 1deg;
+}
+.design-splay [data-part="card-panel"] {
+  justify-content: center;
+  gap: 1.1rem;
+  border-left: 4px solid var(--sp-ink);
+}
+.design-splay [data-part="card-panel"] [data-part="card-name"] {
+  font-family: var(--sp-display);
+  font-weight: 400;
+  font-size: clamp(2.25rem, 4vw, 3.5rem);
+  line-height: 0.9;
+  color: var(--sp-cream);
+  rotate: -3deg;
+  text-shadow:
+    3px 3px 0 var(--sp-ink),
+    6px 6px 0 var(--sp-pink),
+    9px 9px 0 var(--sp-ink);
+}
+.design-splay [data-part="card-summary"] {
+  padding: 0.6rem 0.9rem;
+  background: var(--sp-cream);
+  color: var(--sp-ink);
+  font-weight: 500;
+  border: 3px solid var(--sp-ink);
+  border-radius: 1.25rem 0.4rem;
+  rotate: 1deg;
+}
+.design-splay [data-part="card-price"] {
+  align-self: flex-start;
+  padding: 0.3rem 1rem;
+  background: var(--sp-pink);
+  color: var(--sp-ink);
+  font-family: var(--sp-display);
+  font-style: normal;
+  font-weight: 400;
+  border: 3px solid var(--sp-ink);
+  border-radius: 999px;
+  rotate: -4deg;
+}
+.design-splay [data-part="card-caption"] {
+  align-items: center;
+  margin: 1.75rem 1.125rem 0;
+}
+.design-splay [data-part="card-caption"] [data-part="card-name"] {
+  font-family: var(--sp-display);
+  font-weight: 400;
+  text-shadow: 2px 2px 0 var(--sp-marigold);
+}
+.design-splay [data-part="card-caption"] [data-part="card-price"] {
+  align-self: center;
+  font-size: 0.95rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .design-splay .sp-burst {
+  .design-splay .sp-burst,
+  .design-splay [data-part="card-frame"] {
     transition: none;
   }
 }
