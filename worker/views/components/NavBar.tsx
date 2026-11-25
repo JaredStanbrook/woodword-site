@@ -31,27 +31,6 @@ const menuConfig: Record<string, Array<{ to: string; name: string }>> = {
 
 // --- COMPONENTS ---
 
-/**
- * The Mooihout mark: a table seen square-on, its legs and V-brace forming
- * an M, over a dimension line with architect's ticks. The same drawing as
- * public/brand/; drawn in currentColor so it follows its surroundings.
- */
-export const GrainMark = (cls = "h-8 w-7") => html`
-  <svg viewBox="10 10 80 91" class="${cls} shrink-0" aria-hidden="true" fill="currentColor">
-    <rect x="12" y="12" width="76" height="15" />
-    <rect x="17" y="26.4" width="15" height="52.6" />
-    <rect x="68" y="26.4" width="15" height="52.6" />
-    <polygon points="31.4,26.4 43.5,26.4 50,37.4 56.5,26.4 68.6,26.4 68.6,43 50,72 31.4,43" />
-    <path
-      d="M17 84V99M83 84V99M17 91.5H83M13.5 95L20.5 88M79.5 95L86.5 88"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="4"
-      stroke-linecap="round"
-    />
-  </svg>
-`;
-
 // --- MAIN NAVBAR ---
 
 interface NavBarProps {
@@ -74,23 +53,14 @@ const getMenuItems = (user: PropsUser | null | undefined) => {
   return items.length > 0 ? items : menuConfig.default;
 };
 
-/** A gilt double rule: the bands stamped across a book's spine. */
-const SpineBand = () => html`
-  <div class="flex flex-col gap-[3px] px-6" aria-hidden="true">
-    <span class="h-0.5 bg-gilt/70"></span>
-    <span class="h-0.5 bg-gilt/35"></span>
-  </div>
-`;
-
 const Wordmark = ({ appName, size }: { appName: string; size: "lg" | "sm" }) => html`
   <a
     href="/"
-    class="inline-flex items-center gap-2.5 font-display font-bold leading-none text-sidebar-foreground ${
+    class="inline-flex items-center font-display font-bold leading-none text-sidebar-foreground ${
       size === "lg" ? "text-[2.6rem]" : "h-11 text-[1.75rem]"
     }"
   >
-    <span class="text-gilt">${size === "sm" ? GrainMark() : GrainMark("h-11 w-10")}</span
-    ><span>${appName}</span>
+    ${appName}
   </a>
 `;
 
@@ -151,6 +121,8 @@ export const NavBar = ({ appName, user, currentPath, cartCount = 0 }: NavBarProp
           id="mobile-menu-toggle"
           class="inline-flex h-11 w-11 items-center justify-center rounded-full hover:bg-sidebar-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
           aria-label="Open menu"
+          aria-controls="mobile-menu"
+          aria-expanded="false"
         >
           <i data-lucide="menu" class="h-6 w-6"></i>
         </button>
@@ -166,14 +138,12 @@ export const NavBar = ({ appName, user, currentPath, cartCount = 0 }: NavBarProp
       <p class="mt-2 px-6 text-sm italic leading-snug text-sidebar-foreground/60">
         Furniture, made to measure
       </p>
-      <div class="mt-7">${SpineBand()}</div>
-      <nav class="mt-5 flex flex-col" aria-label="Main">
+      <nav class="mt-8 flex flex-col" aria-label="Main">
         ${menuItems.map((item) => link(item))}
         ${link({ to: "/cart", name: cartCount > 0 ? `Cart (${cartCount})` : "Cart" })}
       </nav>
       <div class="mt-auto">
-        ${SpineBand()}
-        <div class="mt-4 flex items-center justify-between gap-2 pl-6 pr-4">
+        <div class="flex items-center justify-between gap-2 pl-6 pr-4">
           ${
             user
               ? html`<div class="min-w-0">
@@ -206,56 +176,76 @@ export const NavBar = ({ appName, user, currentPath, cartCount = 0 }: NavBarProp
       </div>
     </aside>
 
-    <div
-      id="mobile-menu"
-      class="fixed inset-0 z-[100] hidden flex-col bg-sidebar text-sidebar-foreground lg:hidden"
-    >
-      <div class="flex h-14 items-center justify-between px-3">
-        ${Wordmark({ appName, size: "sm" })}
-        <button
-          id="mobile-menu-close"
-          class="inline-flex h-11 w-11 items-center justify-center rounded-full hover:bg-sidebar-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-          aria-label="Close menu"
-        >
-          <i data-lucide="x" class="h-6 w-6"></i>
-        </button>
+    <!-- Small screens: the menu drops down from the top, only as tall as its
+         items; the dimmed page behind it closes it. -->
+    <div id="mobile-menu" class="fixed inset-0 z-[100] hidden lg:hidden">
+      <div
+        data-menu-backdrop
+        class="absolute inset-0 bg-sidebar/50 opacity-0 transition-opacity duration-300 motion-reduce:transition-none"
+      ></div>
+      <div
+        data-menu-panel
+        class="relative -translate-y-full bg-sidebar pb-4 text-sidebar-foreground shadow-lg transition-transform duration-300 ease-out motion-reduce:transition-none"
+      >
+        <div class="flex h-14 items-center justify-between px-3">
+          ${Wordmark({ appName, size: "sm" })}
+          <button
+            id="mobile-menu-close"
+            class="inline-flex h-11 w-11 items-center justify-center rounded-full hover:bg-sidebar-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+            aria-label="Close menu"
+          >
+            <i data-lucide="x" class="h-6 w-6"></i>
+          </button>
+        </div>
+        <nav class="mt-2 flex flex-col" aria-label="Main">
+          ${menuItems.map((item) => link(item, true))}
+          ${link({ to: "/cart", name: cartCount > 0 ? `Cart (${cartCount})` : "Cart" }, true)}
+          ${
+            user
+              ? html`${link({ to: "/profile", name: "Sign-in and security" }, true)}
+                  <button
+                    hx-post="/web/auth/logout"
+                    class="flex min-h-11 items-center gap-3 px-6 text-xl text-sidebar-foreground/65"
+                  >
+                    <span class="h-1.5 w-1.5 shrink-0" aria-hidden="true"></span>Sign out
+                  </button>`
+              : link({ to: "/login", name: "Sign in" }, true)
+          }
+        </nav>
       </div>
-      <div class="mt-4">${SpineBand()}</div>
-      <nav class="mt-4 flex flex-col" aria-label="Main">
-        ${menuItems.map((item) => link(item, true))}
-        ${link({ to: "/cart", name: cartCount > 0 ? `Cart (${cartCount})` : "Cart" }, true)}
-        ${
-          user
-            ? html`${link({ to: "/profile", name: "Sign-in and security" }, true)}
-                <button
-                  hx-post="/web/auth/logout"
-                  class="flex min-h-11 items-center gap-3 px-6 text-xl text-sidebar-foreground/65"
-                >
-                  <span class="h-1.5 w-1.5 shrink-0" aria-hidden="true"></span>Sign out
-                </button>`
-            : link({ to: "/login", name: "Sign in" }, true)
-        }
-      </nav>
-      <div class="mt-auto pb-8">${SpineBand()}</div>
     </div>
 
     <script>
       (function () {
         const menu = document.getElementById("mobile-menu");
+        const panel = menu.querySelector("[data-menu-panel]");
+        const backdrop = menu.querySelector("[data-menu-backdrop]");
+        const toggle = document.getElementById("mobile-menu-toggle");
         const open = () => {
           menu.classList.remove("hidden");
-          menu.classList.add("flex");
+          panel.getBoundingClientRect(); // start the slide from above
+          panel.classList.remove("-translate-y-full");
+          backdrop.classList.remove("opacity-0");
+          toggle?.setAttribute("aria-expanded", "true");
           document.body.style.overflow = "hidden";
         };
         const close = () => {
-          menu.classList.add("hidden");
-          menu.classList.remove("flex");
+          panel.classList.add("-translate-y-full");
+          backdrop.classList.add("opacity-0");
+          toggle?.setAttribute("aria-expanded", "false");
           document.body.style.overflow = "";
+          const hide = () => menu.classList.add("hidden");
+          if (matchMedia("(prefers-reduced-motion: reduce)").matches) hide();
+          else panel.addEventListener("transitionend", hide, { once: true });
         };
-        document.getElementById("mobile-menu-toggle")?.addEventListener("click", open);
+        toggle?.addEventListener("click", open);
         document.getElementById("mobile-menu-close")?.addEventListener("click", close);
+        backdrop.addEventListener("click", close);
         menu.addEventListener("click", (e) => {
           if (e.target.closest("a")) close();
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && !menu.classList.contains("hidden")) close();
         });
       })();
     </script>

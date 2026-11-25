@@ -5,10 +5,6 @@
    scoped to .design-<id> and sits in the "designs" layer, declared after
    Tailwind's, so a design can restyle the shared blocks, utilities and all. */
 @import "./designs/draft/design.css" layer(designs);
-@import "./designs/nord/design.css" layer(designs);
-@import "./designs/hearth/design.css" layer(designs);
-@import "./designs/grid/design.css" layer(designs);
-@import "./designs/settle/design.css" layer(designs);
 @import "./designs/splay/design.css" layer(designs);
 
 /* THEME: "Candlelight"

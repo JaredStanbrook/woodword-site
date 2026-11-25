@@ -1,6 +1,6 @@
 // scripts/seed.ts
 //
-// Loads the example designs in worker/config/catalogue.ts into D1.
+// Loads the shop's piece from worker/config/catalogue.ts into D1.
 //
 //   npm run seed:local                 local database, published
 //   npm run seed -- --remote               production database, as drafts

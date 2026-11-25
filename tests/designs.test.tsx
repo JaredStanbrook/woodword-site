@@ -206,12 +206,17 @@ describe("design form fields", () => {
   });
 
   it("keeps text from another design when switching, and clears emptied fields", () => {
-    const values = { ...productToForm(existing), design: "nord", "extra.shed_note": "" };
+    const values = {
+      ...productToForm(existing),
+      design: "draft",
+      status: "draft",
+      "extra.shed_note": "",
+    };
     delete (values as any)["extra.splay_note"];
     const parsed = parseProductForm(values, existing);
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
-    expect(parsed.data.design.id).toBe("nord");
+    expect(parsed.data.design.id).toBe("draft");
     expect(parsed.data.design.extra.splay_note).toBe(console_.design.extra.splay_note);
     expect(parsed.data.design.extra.shed_note).toBeUndefined();
   });

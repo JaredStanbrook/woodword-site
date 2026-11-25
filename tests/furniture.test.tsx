@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 
 import { CATALOGUE } from "../worker/config/catalogue";
+import { EXAMPLES } from "./fixtures/examples";
+
 import {
   modelMismatch,
   modelSchema,
@@ -26,7 +28,11 @@ import { priceGlyphs, formatPrice } from "../worker/lib/money";
 import { ProductPage } from "../worker/views/shop/ProductPage";
 import { DESIGNS } from "../worker/designs";
 
-const specOf = (p: (typeof CATALOGUE)[number]): FurnitureSpec => ({
+// The shop's piece plus the retired examples, which cover resizing the
+// console does not (doors, spread shelves, aprons).
+const PIECES = [...CATALOGUE, ...EXAMPLES];
+
+const specOf = (p: (typeof PIECES)[number]): FurnitureSpec => ({
   dimensions: p.dimensions,
   model: p.model,
   pricing: p.pricing,
@@ -35,13 +41,13 @@ const specOf = (p: (typeof CATALOGUE)[number]): FurnitureSpec => ({
   leadDaysCustom: p.leadDaysCustom!,
 });
 
-const table = specOf(CATALOGUE[0]);
+const table = specOf(EXAMPLES[0]);
 const part = (spec: FurnitureSpec, sel: Parameters<typeof resizeParts>[1], name: string) =>
   resizeParts(spec, sel).find((p) => p.name === name)!;
 
 describe("catalogue", () => {
   it("every example is valid and its model fills its standard size", () => {
-    for (const p of CATALOGUE) {
+    for (const p of PIECES) {
       expect(dimensionsSchema.safeParse(p.dimensions).success, p.name).toBe(true);
       expect(modelSchema.safeParse(p.model).success, p.name).toBe(true);
       expect(pricingSchema.safeParse(p.pricing).success, p.name).toBe(true);
@@ -57,7 +63,7 @@ describe("catalogue", () => {
   });
 
   it("stays inside its size at the largest and smallest size", () => {
-    for (const p of CATALOGUE) {
+    for (const p of PIECES) {
       const spec = specOf(p);
       for (const end of ["min", "max"] as const) {
         const sel = normaliseSelection(spec, {
@@ -108,7 +114,7 @@ describe("resizing by component", () => {
   });
 
   it("spreads middle shelves evenly and keeps them their thickness", () => {
-    const shelves = specOf(CATALOGUE[2]);
+    const shelves = specOf(EXAMPLES[2]);
     const tall = normaliseSelection(shelves, { height: 2400 });
     const ys = [1, 2, 3, 4, 5].map((i) => part(shelves, tall, `shelf_${i}`));
     for (const s of ys) expect(s.size[1]).toBe(24);
@@ -118,7 +124,7 @@ describe("resizing by component", () => {
   });
 
   it("keeps cabinet doors meeting in the middle and handles by the meeting line", () => {
-    const cab = specOf(CATALOGUE[1]);
+    const cab = specOf(EXAMPLES[1]);
     const wider = normaliseSelection(cab, { width: 2200 });
     const right = part(cab, wider, "door_right");
     expect(right.position[0] - right.size[0] / 2).toBe(0);
@@ -155,7 +161,7 @@ describe("selection", () => {
 
 describe("pricing", () => {
   it("lines always sum to the total", () => {
-    for (const p of CATALOGUE) {
+    for (const p of PIECES) {
       const spec = specOf(p);
       for (const sel of [
         standardSelection(spec),
@@ -188,7 +194,7 @@ describe("pricing", () => {
   });
 
   it("gives a starting price no higher than the standard price", () => {
-    for (const p of CATALOGUE) {
+    for (const p of PIECES) {
       const spec = specOf(p);
       expect(startingPrice(spec)).toBeLessThanOrEqual(
         quote(spec, standardSelection(spec)).totalCents,
@@ -217,7 +223,7 @@ describe("manufacturing", () => {
 
 describe("admin product form", () => {
   it("round-trips every example through the form", () => {
-    for (const p of CATALOGUE) {
+    for (const p of PIECES) {
       const parsed = parseProductForm(productToForm(p));
       expect(parsed.ok, p.name).toBe(true);
       if (parsed.ok) {
@@ -230,7 +236,7 @@ describe("admin product form", () => {
   });
 
   it("refuses a model that does not fill the standard size", () => {
-    const values = productToForm(CATALOGUE[0]);
+    const values = productToForm(EXAMPLES[0]);
     values.widthStandard = "2000";
     values.widthMax = "2400";
     const parsed = parseProductForm(values);
@@ -239,7 +245,7 @@ describe("admin product form", () => {
   });
 
   it("reports bad JSON instead of throwing", () => {
-    const values = { ...productToForm(CATALOGUE[0]), parts: "[{oops" };
+    const values = { ...productToForm(EXAMPLES[0]), parts: "[{oops" };
     const parsed = parseProductForm(values);
     expect(parsed.ok).toBe(false);
     if (!parsed.ok) expect(parsed.errors.parts).toMatch(/JSON/);
@@ -248,7 +254,7 @@ describe("admin product form", () => {
 
 describe("product page designs", () => {
   it("renders every example with the configurator, the viewer and the rolling price", async () => {
-    for (const [i, p] of CATALOGUE.entries()) {
+    for (const [i, p] of PIECES.entries()) {
       const full = {
         ...p,
         id: i + 1,

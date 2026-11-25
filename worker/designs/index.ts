@@ -8,14 +8,10 @@
 import type { SelectProduct } from "@server/schema/product.schema";
 import type { DesignDef } from "./types";
 import { draft } from "./draft";
-import { grid } from "./grid";
-import { hearth } from "./hearth";
-import { nord } from "./nord";
-import { settle } from "./settle";
 import { splay } from "./splay";
 
 export const DESIGNS: Record<string, DesignDef> = Object.fromEntries(
-  [splay, nord, hearth, grid, settle, draft].map((d) => [d.id, d]),
+  [splay, draft].map((d) => [d.id, d]),
 );
 
 /** A piece's design, or the draft one if its design has gone. */

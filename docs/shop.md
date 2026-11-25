@@ -94,7 +94,7 @@ and `APP_LOCALE` in `wrangler.jsonc`.
 ```bash
 cp .dev.vars.example .dev.vars   # set JWT_SECRET; ENVIRONMENT=development simulates payment
 npm run migrate:local
-npm run seed:local               # the four example designs
+npm run seed:local               # the Splay console
 npm run create-admin:local -- --email you@example.com --password '…'
 npm run dev                      # or: npm run build && npx wrangler dev
 ```
